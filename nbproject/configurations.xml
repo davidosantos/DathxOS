@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>system/drivers/Chip8259.h</itemPath>
+      <itemPath>system/Cmos.h</itemPath>
+      <itemPath>system/monitor/Console.h</itemPath>
+      <itemPath>system/RunTime/ElfLoader.h</itemPath>
+      <itemPath>system/fs/FAT32.h</itemPath>
+      <itemPath>system/fs/File.h</itemPath>
+      <itemPath>system/drivers/HardDriveDriver.h</itemPath>
+      <itemPath>system/drivers/HardwareIO.h</itemPath>
+      <itemPath>system/fs/MBR.h</itemPath>
+      <itemPath>system/memory/Memory.h</itemPath>
+      <itemPath>system/memory/Paging.h</itemPath>
+      <itemPath>system/Syscalls.h</itemPath>
+      <itemPath>system/Tasks/Tasks.h</itemPath>
+      <itemPath>system/autoCheck.h</itemPath>
+      <itemPath>system/multiboot.h</itemPath>
+      <itemPath>system/memory/pageManagment.h</itemPath>
+      <itemPath>system/processor.h</itemPath>
+      <itemPath>util/util.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>system/drivers/Chip8259.cpp</itemPath>
+      <itemPath>system/Cmos.cpp</itemPath>
+      <itemPath>system/monitor/Console.cpp</itemPath>
+      <itemPath>system/DathxMain.cpp</itemPath>
+      <itemPath>system/RunTime/ElfLoader.cpp</itemPath>
+      <itemPath>system/fs/FAT32.cpp</itemPath>
+      <itemPath>system/fs/File.cpp</itemPath>
+      <itemPath>system/drivers/HardDriveDriver.cpp</itemPath>
+      <itemPath>system/drivers/HardwareIO.cpp</itemPath>
+      <itemPath>system/Interrupts.asm</itemPath>
+      <itemPath>system/fs/MBR.cpp</itemPath>
+      <itemPath>system/memory/Memory.cpp</itemPath>
+      <itemPath>system/memory/Paging.cpp</itemPath>
+      <itemPath>system/Start.asm</itemPath>
+      <itemPath>system/Syscalls.cpp</itemPath>
+      <itemPath>system/Tasks/Tasks.cpp</itemPath>
+      <itemPath>system/autoCheck.cpp</itemPath>
+      <itemPath>system/memory/pageManagment.cpp</itemPath>
+      <itemPath>system/processor.cpp</itemPath>
+      <itemPath>util/util.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <commandLine>-O -fstrength-reduce -fomit-frame-pointer -finline-functions -fno-builtin -fno-threadsafe-statics -Wall -Wextra -fno-exceptions -nostdinc -fno-strict-aliasing -fno-common -fno-stack-protector -nodefaultlibs</commandLine>
+        </ccTool>
+        <asmTool>
+          <commandlineTool>nasm</commandlineTool>
+          <commandLine>-f elf</commandLine>
+        </asmTool>
+        <linkerTool>
+          <commandlineTool>ld</commandlineTool>
+          <commandLine>-T ./scripts/link.ld -o "./bin/DathxKernel.bin"</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="system/Cmos.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Cmos.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/DathxMain.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Interrupts.asm" ex="false" tool="4" flavor2="0">
+      </item>
+      <item path="system/RunTime/ElfLoader.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/RunTime/ElfLoader.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/Start.asm" ex="false" tool="4" flavor2="0">
+      </item>
+      <item path="system/Syscalls.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Syscalls.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/Tasks/Tasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Tasks/Tasks.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/autoCheck.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/autoCheck.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/Chip8259.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/Chip8259.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/HardDriveDriver.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/HardDriveDriver.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/HardwareIO.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/HardwareIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/fs/FAT32.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/fs/FAT32.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/fs/File.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/fs/File.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/fs/MBR.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/fs/MBR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/memory/Memory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/memory/Memory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/memory/Paging.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/memory/Paging.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/memory/pageManagment.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/memory/pageManagment.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/monitor/Console.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/monitor/Console.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/multiboot.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/processor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/processor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="util/util.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="util/util.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="system/Cmos.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Cmos.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/DathxMain.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Interrupts.asm" ex="false" tool="4" flavor2="0">
+      </item>
+      <item path="system/RunTime/ElfLoader.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/RunTime/ElfLoader.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/Start.asm" ex="false" tool="4" flavor2="0">
+      </item>
+      <item path="system/Syscalls.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Syscalls.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/Tasks/Tasks.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Tasks/Tasks.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/autoCheck.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/autoCheck.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/Chip8259.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/Chip8259.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/HardDriveDriver.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/HardDriveDriver.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/HardwareIO.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/HardwareIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/fs/FAT32.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/fs/FAT32.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/fs/File.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/fs/File.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/fs/MBR.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/fs/MBR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/memory/Memory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/memory/Memory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/memory/Paging.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/memory/Paging.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/memory/pageManagment.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/memory/pageManagment.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/monitor/Console.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/monitor/Console.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/multiboot.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/processor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/processor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="util/util.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="util/util.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
