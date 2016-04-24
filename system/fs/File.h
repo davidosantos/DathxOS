@@ -16,7 +16,7 @@ extern FAT *fat;
 class File {
 public:
     
-    FAT::_DirEntryStructure fileInfo;
+    FAT::shortNameEntry fileInfo;
 
     returnCode open(const s8 *fileName);
 

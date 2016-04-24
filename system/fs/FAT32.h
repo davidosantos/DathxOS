@@ -20,8 +20,11 @@
 #define IsLongName         0xF
 #define IsDeleted         0xE5
 #define IsFree         0x00
-
-
+#define isON         1
+#define slash 0x2f
+#define dot 0x2e
+#define space 0x20
+ 
 class FAT {
 public:
 
@@ -117,7 +120,6 @@ public:
         Fat12_16_Structure structure;
     } __attribute__((packed)) FAT12_16_Structure;
 
-
     struct _FSInfoSect {
         u32 Signature;
         u8 Reserved[480];
@@ -133,15 +135,14 @@ public:
         _FSInfoSect structure;
     } __attribute__((packed)) _FSInfoSector;
 
-   
-
-    struct _DirEntryStructure {
+    struct shortNameEntry {
 
         union {
             u8 Entry;
-            s8 Name[11];
-
+            s8 shortName[8];
         };
+        
+        s8 extention[3];
 
         union {
 
@@ -156,7 +157,7 @@ public:
                 ATTR_VOLUME_ID : 1,
                 ATTR_DIRECTORY : 1,
                 ATTR_ARCHIVE : 1,
-                upper2Bits : 2;
+                : 2;
             } __attribute__((packed));
         } __attribute__((packed));
 
@@ -202,21 +203,37 @@ public:
 
 
             name = new s8 [11];
-            for (u8 i = 0; i < sizeof (Name); i++) {
-                name[i] = Name[i];
+            for (u8 i = 0; i < sizeof (shortName); i++) {
+                name[i] = shortName[i];
             }
             return name;
 
         }
+
+        u32 getClusterNumber() {
+            return (FstClusHI << 16 | FstClusLO);
+        }
+
     } __attribute__((packed));
 
-    struct _DirEntryStructureLong {
+    struct longNameEntry {
 
-        struct {
-            u8 Order : 6;
-            u8 lastLong : 1;
+        union {
+
+            struct {
+                u8 Sequence : 6,
+                lastLongFlag : 1;
+            };
         };
-        s8 Name1[10];
+
+        union {
+            s8 Name1[10];
+
+            struct {
+                s8 character : 8,
+                : 8;
+            } chars1[5];
+        };
 
         union {
 
@@ -231,16 +248,33 @@ public:
                 ATTR_VOLUME_ID : 1,
                 ATTR_DIRECTORY : 1,
                 ATTR_ARCHIVE : 1,
-                upper2Bits : 2;
+                : 2;
             } __attribute__((packed));
         } __attribute__((packed));
+
         u8 subComp;
         u8 CheckSum;
-        s8 Name2[12];
-        u16 ClusterLow;
-        s8 Name3[4];
 
-        s8 *getName(u16 index, _DirEntryStructureLong *structure) {
+        union {
+            s8 Name2[12];
+
+            struct {
+                s8 character : 8,
+                : 8;
+            } chars2[6];
+        };
+        u16 ClusterLow;
+
+        union {
+            s8 Name3[4];
+
+            struct {
+                s8 character : 8,
+                : 8;
+            } chars3[2];
+        };
+
+        s8 *getName(u16 index, longNameEntry *structure) {
             s8* name;
 
 
@@ -248,7 +282,7 @@ public:
 
             for (s16 i = index; i > -1; i--) { //determine the size of array
 
-                if (structure[i].lastLong == 0) {
+                if (structure[i].lastLongFlag == 0) {
 
                     arraySize = arraySize + 13;
                 }
@@ -259,7 +293,7 @@ public:
             for (s16 i = index; i > -1; i--) { //copy the array
 
 
-                if (structure[i].lastLong == 0) {
+                if (structure[i].lastLongFlag == 0) {
 
                     for (u8 j = 0; j < 10; j++) {
                         if (structure[i].Name1[j] != 0)
@@ -313,10 +347,10 @@ public:
         u512 data;
 
         union {
-            _DirEntryStructure structure[16];
-            _DirEntryStructureLong structureLongNames[16];
+            shortNameEntry shortName[16];
+            longNameEntry longName[16];
         };
-    } __attribute__((packed)) _DirEntry;
+    } __attribute__((packed)) _Cluster;
 
     struct ___FATEntry {
         u32 value : 28,
@@ -341,39 +375,49 @@ public:
             ___FATEntry structure[128];
         };
     } __attribute__((packed)) _FATEntry;
-    
+
     static _FSInfoSector FSInfoSector;
-    static FAT32_Structure FAT32;
+    static FAT32_Structure BPB;
     static FAT12_16_Structure FAT12_16;
     static _FATEntry FATEntry;
-    static _DirEntry DirEntry;
+    static _Cluster DirEntry;
     static u32 RootDirSectors;
     static u32 DataRegionStart;
     static u32 RootDirSectorsCount;
     static u32 DataSec;
     static u32 CountofClusters;
     static u32 FATTAbleStartSector;
-    
+
 public:
 
-    static returnCode readSector(const s8 *file, u512 *to);
+    static returnCode readCluster(FAT::shortNameEntry *file, u512 *to);
 
-    static returnCode readSector(u32 sectorNumber, u512 *to);
-
-    static returnCode readFileInfo(const s8 *file, _DirEntryStructure *to);
+    static returnCode readCluster(u32 sectorNumber, u512 *to);
 
     static u32 readFAT(u32 Cluster);
 
     static void setup();
+    
+    static shortNameEntry find(const s8 *dirFile);
+    
     //    FAT32(const FAT32& orig);
     //    virtual ~FAT32();
 private:
 
-    static returnCode find(const s8 *dirFile, u16 *EntryNumber);
+    
 
 
 
-    static u8 getCheckSum(s8 *name);
+    static u8 getCheckSum(u8 *pFcbName);
+
+    static FAT::longNameEntry findNextLongNameEntry(_Cluster *data, u8 checksum, u8 sequece);
+    static FAT::shortNameEntry findNextShortNameEntry(_Cluster *data);
+    
+    static FAT::shortNameEntry isThereShortNameEntry(_Cluster *data, const s8 *name);
+    static FAT::shortNameEntry isThereLongNameEntry(_Cluster *data, const s8 *name);
+    static u32 getSector(u32 Cluster);
+
+
 };
 
 #endif	/* FAT32_H */

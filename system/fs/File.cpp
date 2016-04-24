@@ -19,12 +19,15 @@ File::File() {
 
 returnCode File::open(const s8 *fileName) {
     offset = 0;
-    if (fat->readFileInfo(fileName, &fileInfo) == OK) {
-        if (fat->readSector(fileName, &fileBuffer) == OK) {
+    fileInfo = fat->find(fileName);
+   
+    if (fileInfo.Attrib != 0) {
+        
+        if (fat->readCluster(&fileInfo, &fileBuffer) == OK) {
             openned = true;
             fileSectorIndexInBuffer = 0;
-            fileSectorsCount = (fileInfo.FileSize / fat->FAT32.structure.BytesPerSector);
-            if (fileInfo.FileSize > (fileSectorsCount * fat->FAT32.structure.BytesPerSector)) {
+            fileSectorsCount = (fileInfo.FileSize / fat->BPB.structure.BytesPerSector);
+            if (fileInfo.FileSize > (fileSectorsCount * fat->BPB.structure.BytesPerSector)) {
                 fileSectorsCount++;
             }
 
@@ -42,14 +45,14 @@ returnCode File::open(const s8 *fileName) {
 }
 
 returnCode File::read(u32 offset, u32 size, u8 *to) {
-    //monitor->print("Byte in file %h" ,offset);
+  
     if ((size + offset) > fileInfo.FileSize) {
         return Error;
     } else {
         u8 *cto = to;
         for (u32 i = offset; i < (offset + size); i++) {
-            if ((i / fat->FAT32.structure.BytesPerSector) != fileSectorIndexInBuffer) {
-                fileSectorIndexInBuffer = (i / fat->FAT32.structure.BytesPerSector);
+            if ((i / fat->BPB.structure.BytesPerSector) != fileSectorIndexInBuffer) {
+                fileSectorIndexInBuffer = (i / fat->BPB.structure.BytesPerSector);
                 u32 nextSector = fat->readFAT(fileFirstSector);
                 fileCurrentSector = nextSector;
                 for (u32 j = 1; j < fileSectorIndexInBuffer; j++) {
@@ -61,10 +64,10 @@ returnCode File::read(u32 offset, u32 size, u8 *to) {
                         fileCurrentSector = nextSector;
                     }
                 }
-                if (fat->readSector(fileCurrentSector, &fileBuffer) == Error)
+                if (fat->readCluster(fileCurrentSector, &fileBuffer) == Error)
                     return Error;
             }
-            *cto++ = fileBuffer.dataU8[i - (fileSectorIndexInBuffer * fat->FAT32.structure.BytesPerSector)];
+            *cto++ = fileBuffer.dataU8[i - (fileSectorIndexInBuffer * fat->BPB.structure.BytesPerSector)];
         }
         return OK;
     }

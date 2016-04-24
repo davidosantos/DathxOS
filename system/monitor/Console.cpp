@@ -32,8 +32,8 @@ void Console::print(u16 y, u16 x, const s8 *String) {
             const s8 type = *String;
 
             switch (type) {
-                case 'd':
-
+                case 'c':
+                    
                     break;
 
                 case 'h':
