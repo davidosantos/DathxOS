@@ -1,4 +1,5 @@
-
+;This application will check whether register has been wrongly changed during
+;task switches 
 section .text
 global StartProgram:function
 Start:
