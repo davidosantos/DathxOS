@@ -17,7 +17,10 @@ extern "C" void SyscallsDelivery(u32 parameter){
 
 
 void Syscalls::interruptReceiver(u32 function) {
+    if(function > 10){
+    
     CallsDirectives *directive = (CallsDirectives*) function;
+   
     switch (directive->Function) {
         case 1:
             switch(directive->Subfunction){
@@ -32,6 +35,12 @@ void Syscalls::interruptReceiver(u32 function) {
         case 2:
             Console::clear();
             break;
+    }
+    } else {
+    
+    if(function == 3){
+         Console::print(45,0,"Integrity check error");
+    }
     }
 
 }

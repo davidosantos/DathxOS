@@ -11,6 +11,8 @@
             <file>file:/home/david/Documents/Dathx%20OS/system/Tasks/Tasks.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/fs/File.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/fs/FAT32.cpp</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/RunTime/ElfLoader.cpp</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/fs/File.h</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/DathxMain.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/monitor/Console.cpp</file>
         </group>

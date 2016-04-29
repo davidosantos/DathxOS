@@ -246,6 +246,7 @@ void inline Tasks::saveTask(u32 task_Id) {
 
     TasksList[task_Id].taskState->eip = eipReg;
     TasksList[task_Id].taskState->eax = eaxReg;
+    TasksList[task_Id].taskState->ebx = ebxReg;
     TasksList[task_Id].taskState->ecx = ecxReg;
     TasksList[task_Id].taskState->edx = edxReg;
     TasksList[task_Id].taskState->esp = espReg;
@@ -268,6 +269,7 @@ void inline Tasks::loadTask(u32 task_Id) {
 
     eipReg = TasksList[task_Id].taskState->eip;
     eaxReg = TasksList[task_Id].taskState->eax;
+    ebxReg = TasksList[task_Id].taskState->ebx;
     ecxReg = TasksList[task_Id].taskState->ecx;
     edxReg = TasksList[task_Id].taskState->edx;
     espReg = TasksList[task_Id].taskState->esp;

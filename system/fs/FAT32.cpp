@@ -78,27 +78,7 @@ void FAT::setup() {
     } else {
         Console::print("Read info sector Error");
     }
-    //    f(BPB_FATSz16 != 0)
-    //FATSz = BPB_FATSz16;
-    //Else
-    //FATSz = BPB_FATSz32;
-    //If(FATType == FAT16)
-    //FATOffset = N * 2;
-    //Else if (FATType == FAT32)
-    //FATOffset = N * 4;
-    //ThisFATSecNum = BPB_ResvdSecCnt + (FATOffset / BPB_BytsPerSec);
-    //ThisFATEntOffset = REM(FATOffset / BPB_BytsPerSec);
-    //    u32 ThisFATSecNum = 0;
-    //    u32 ThisFATEntOffset = 0;
-    //
-    //    if (FAT32.structure.BytesPerSector != 0) {
-    //        u32 FAtOffset = (FAT32.structure.ExtSectorFAT32.RootCluster * 4);
-    //        ThisFATSecNum = (MBR::mbrPart.partions[0].entries.startingAt + FAT32.structure.RsvdSecCnt) + (FAtOffset / FAT32.structure.BytesPerSector);
-    //        ThisFATEntOffset = (FAtOffset % FAT32.structure.BytesPerSector);
-    //
-    //        HardDriveDriver::read(ThisFATSecNum, Read_Cmd, &FATEntry.data);
-    //
-    //    }
+
 
     /*
     FAT Data Structure
@@ -127,37 +107,10 @@ void FAT::setup() {
     DataRegionStart = (MBR::mbrPart.partions[0].entries.startingAt +
             BPB.structure.RsvdSecCnt)+
             ((BPB.structure.NumFATs * FATSz) + RootDirSectors);
-
-    //Console::print("FAT32.structure.ExtSectorFAT32.RootCluster %h", FAT32.structure.ExtSectorFAT32.RootCluster);
-    //    u32 rootSectors = RootDirSectors;
-    //    u32 readCount = 0;
-    //    u32 firstSectorCluster;
-    //    do {
-    //        HardDriveDriver::read(rootSectors++, Read_Cmd, &DirEntry.data);
-    //
-    //
-    //
-    //        for (u32 i = 0; i <= 16; i++) {
-    //            if (DirEntry.structure[i].Attrib == IsLongName &&
-    //                    DirEntry.structure[i].Entry != IsDeleted &&
-    //                    DirEntry.structure[i].Entry != IsFree &&
-    //                    DirEntry.structure[i].Entry == 0x01) {
-    //                //Console::print("Long name: %s", DirEntry.structureLongNames[i].getName(i, DirEntry.structureLongNames));
-    //
-    //            }
-    //            if (DirEntry.structure[i].Attrib != IsLongName &&
-    //                    DirEntry.structure[i].Attrib != 0 &&
-    //                    DirEntry.structure[i].Entry != IsDeleted &&
-    //                    DirEntry.structure[i].Entry != IsFree) {
-    //
-    //                firstSectorCluster = (u32) (DirEntry.structure[i].FstClusHI << 16 | DirEntry.structure[i].FstClusLO);
-    //                // Console::print("%ctkFATS:  %s", DirEntry.structure[i].getName());
-    //                // Console::print("FAT:  %h", readFATEntry(firstSectorCluster));
-    //            }
-    //        }
-    //
-    //
-    //    } while ((readCount++) <= 14);
+    
+    if (BPB.structure.SectPerCluster > 1){
+        Console::print("FS Error: Cluster greater than 512 bytes is not yet supported!");
+    }
 
 
 }
@@ -179,6 +132,7 @@ void FAT::setup() {
  * @return 
  */
 FAT::shortNameEntry FAT::find(const s8 *dirFileName) {
+    //u32 nextCluster = BPB.structure.ExtSectorFAT32.RootCluster;
     u32 nextCluster = RootDirSectors;
     // u32 readNextEntry = 0;
     bool isFinished = false;
@@ -191,19 +145,36 @@ FAT::shortNameEntry FAT::find(const s8 *dirFileName) {
     shortNameEntry shortNameEnt;
     shortNameEntry longNameEnt;
     HardDriveDriver::read((DataRegionStart + nextCluster), Read_Cmd, &cluster.data);
+    int teste = 0;
+    for (int i = 0;; i++) {
+        if (dirFileName[nameIndex + i] != slash) {
+            string[i] = dirFileName[nameIndex + i];
+            if (string[i] == 0) {
+
+                break;
+            }
+        } else {
+            string[i] = 0;
+            nameIndex += i + 1; //skip the slash
+            break;
+        }
+    }
 
     do {
-        for (int i = 0;; i++) {
-            if (dirFileName[nameIndex + i] != slash) {
-                string[i] = dirFileName[nameIndex + i];
-                if (string[i] == 0) {
 
+        if (shortNameFound == true || longNameFound == true) {
+            for (int i = 0;; i++) {
+                if (dirFileName[nameIndex + i] != slash) {
+                    string[i] = dirFileName[nameIndex + i];
+                    if (string[i] == 0) {
+
+                        break;
+                    }
+                } else {
+                    string[i] = 0;
+                    nameIndex += i + 1; //skip the slash
                     break;
                 }
-            } else {
-                string[i] = 0;
-                nameIndex += i + 1; //skip the slash
-                break;
             }
         }
 
@@ -231,7 +202,7 @@ FAT::shortNameEntry FAT::find(const s8 *dirFileName) {
             longNameEnt = isThereLongNameEntry(&cluster, string);
             if (longNameEnt.Attrib != 0) {
                 if (longNameEnt.ATTR_DIRECTORY == isON) {
-                    HardDriveDriver::read(getSector(shortNameEnt.getClusterNumber()), Read_Cmd, &cluster.data);
+                    HardDriveDriver::read(getSector(longNameEnt.getClusterNumber()), Read_Cmd, &cluster.data);
                     longNameFound = true;
                 } else if (longNameEnt.ATTR_ARCHIVE == isON) {
                     return longNameEnt;
@@ -243,13 +214,29 @@ FAT::shortNameEntry FAT::find(const s8 *dirFileName) {
 
 
 
-
+        teste++;
         if (shortNameFound == false && longNameFound == false) {
-            isFinished = true;
+            if (nextCluster < BPB.structure.ExtSectorFAT32.RootCluster) {
+                nextCluster++;
+                //Console::print("nextCluster++;: %h", nextCluster);
+            } else {
+                nextCluster = readFAT(nextCluster);
+                //Console::print("nextCluster readFAT;: %h", nextCluster);
+            }
+
+            if (nextCluster == EoF || nextCluster == EoF2) {
+                //  Console::print("teste++;: %i", teste);
+                //Console::print("nextCluster: %h", nextCluster);
+                isFinished = true;
+            } else {
+                if (getSector(nextCluster) > 0x4ec65)
+                    //  Console::print("getSector(nextCluster):::: %h", getSector(nextCluster));
+                    HardDriveDriver::read(getSector(nextCluster), Read_Cmd, &cluster.data);
+            }
         }
 
     } while (isFinished == false);
-    
+
     shortNameEnt.Attrib = 0;
     return shortNameEnt;
 
@@ -321,6 +308,7 @@ FAT::shortNameEntry FAT::isThereLongNameEntry(_Cluster *data, const s8 *name) {
             u8 checkSum = getCheckSum((u8*) data->shortName[entryIndex].shortName);
             u8 sequence = 1;
             u16 charIndexLongNames = 0;
+
             bool isEntryFindFinished = false;
             bool foundLongName = false;
 
@@ -337,11 +325,14 @@ FAT::shortNameEntry FAT::isThereLongNameEntry(_Cluster *data, const s8 *name) {
                             foundLongName = true;
                             break;
                         }
+
                     }
+
                     if (!isEntryFindFinished) {
                         for (int j = 0; j < 6; j++) {
                             if (name[charIndexLongNames++] != longNameEnt.chars2[j].character) {
                                 isEntryFindFinished = true;
+
                                 break;
                             }
                             if ((name[charIndexLongNames] == 0)
@@ -352,10 +343,12 @@ FAT::shortNameEntry FAT::isThereLongNameEntry(_Cluster *data, const s8 *name) {
                             }
                         }
                     }
+
                     if (!isEntryFindFinished) {
                         for (int j = 0; j < 2; j++) {
                             if (name[charIndexLongNames++] != longNameEnt.chars3[j].character) {
                                 isEntryFindFinished = true;
+
                                 break;
                             }
                             if (name[charIndexLongNames] && longNameEnt.lastLongFlag == isON) {
@@ -366,15 +359,20 @@ FAT::shortNameEntry FAT::isThereLongNameEntry(_Cluster *data, const s8 *name) {
                             }
                         }
                     }
+
                     if (foundLongName) {
                         if (name[charIndexLongNames] == 0) {
+
                             return data->shortName[entryIndex];
                         }
                     }
+
                 } else {
                     isEntryFindFinished = true;
+
                 }
             } while (isEntryFindFinished == false);
+
         }
     }
 
@@ -388,6 +386,9 @@ FAT::longNameEntry FAT::findNextLongNameEntry(_Cluster *data, u8 checksum, u8 se
     for (u32 i = 0; i < (BPB.structure.BytesPerSector / 32 * BPB.structure.SectPerCluster); i++) {
         if (data->longName[i].CheckSum == checksum &&
                 data->longName[i].Sequence == sequece) {
+            if (checksum == 51) {
+                Console::print("242::: %i", data->longName[i].Sequence);
+            }
             return data->longName[i];
         }
     }

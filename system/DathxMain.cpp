@@ -130,52 +130,38 @@ int main() {
 
     Console::print("%ct\12Machine Memory: %h pages", totalMemoryInKB * 1024 / 4096);
 #endif
-
- 
-    File *file = new File();
-    if(file->open("pasta/Nova pasta/apptorunonkernel.bin") == Error){
-        Console::print("pasta/Nova pasta/apptorunonkernel.bin Open error");
-    } else {
-        Console::print("pasta/Nova pasta/apptorunonkernel.bin Opened: %s",file->fileInfo.shortName );
-    }
-    
-    File *file3 = new File();
-    if(file3->open("pasta/Novo(a) Documento de texto.txt") == Error){
-        Console::print("pasta/Novo(a) Documento de texto.txt Open error");
-    } else {
-        Console::print("pasta/Novo(a) Documento de texto.txt Opened: %s",file3->fileInfo.shortName );
-    }
-    
-    u8 david[5];
-    
-    if(file3->read(0,10,david) == OK){
-        Console::print("arquivo lido %s", (const s8*)david);
-    } else {
-        Console::print("erro arquivo nao lido %s", (const s8*)david);
-    }
-    
+   
     ElfLoader *exec = new ElfLoader();
 
     for(int i =0; i < 1;i++){
 
-        if (exec->openFile("apptorunonkernel.bin") == OK) {
+        if (exec->openFile("bin/apptorunonkernel.bin") == OK) {
     
             if (exec->loadProgram() == Error) {
                 Console::print("%cttLoadError");
             }
     
-            Console::print("%ctuapptorunonkernel.bin Opened");
+            Console::print("%ctuapp.bin Opened");
         } else {
-            Console::print("%cttapptorunonkernel.bin open error");
+            Console::print("%cttapp.bin open error");
         }
     }
     
+    ElfLoader *exec2 = new ElfLoader();
+
+    for(int i =0; i < 1;i++){
+
+        if (exec2->openFile("bin/integrit_checker") == OK) {
     
-   File *file2 = new File();
-  // if (file2->open("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkfff.txt") == OK){
+            if (exec2->loadProgram() == Error) {
+                Console::print("%cttintegrit_checker load error");
+            }
     
-   // Console::print("File, Size: %i",file2->fileInfo.FileSize);
-   //}
+            Console::print("%ctuintegrit_checker Opened");
+        } else {
+            Console::print("%cttintegrit_checker open error");
+        }
+    }
     
     
 

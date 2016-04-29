@@ -1,0 +1,36 @@
+ENTRY(Main)
+OUTPUT_FORMAT(elf32-i386)
+phys = 0x00100000;
+SECTIONS
+{
+  .text phys : AT(phys) {
+    
+    Kernel_Code_Start = .;
+    build/Debug/GNU-Linux-x86/Start.o(.text)
+    build/Debug/GNU-Linux-x86/CrossFireMain.o(.text)
+    *(.text)
+    Kernel_Code_End = .;
+    Kernel_ReadOnly_Start = .;
+    *(.rodata)
+    Kernel_ReadOnly_End = .;
+    . = ALIGN(4096);
+    
+  }
+
+  .data : AT(phys + (Kernel_Data_Start - Kernel_Code_Start))
+  {
+    
+    Kernel_Data_Start = .;
+    *(.data)
+    Kernel_Data_End = .;
+    . = ALIGN(4096);
+  }
+  .bss : AT(phys + (Kernel_BSS_Start - Kernel_Code_Start))
+  {
+    
+    Kernel_BSS_Start = .;
+    *(.bss)
+    Kernel_BSS_End = .;
+    . = ALIGN(4096);
+  }
+}
