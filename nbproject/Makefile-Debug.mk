@@ -43,6 +43,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/system/Syscalls.o \
 	${OBJECTDIR}/system/Tasks/Tasks.o \
 	${OBJECTDIR}/system/autoCheck.o \
+	${OBJECTDIR}/system/drivers/APIC.o \
 	${OBJECTDIR}/system/drivers/Chip8259.o \
 	${OBJECTDIR}/system/drivers/HardDriveDriver.o \
 	${OBJECTDIR}/system/drivers/HardwareIO.o \
@@ -118,6 +119,11 @@ ${OBJECTDIR}/system/autoCheck.o: system/autoCheck.cpp
 	${MKDIR} -p ${OBJECTDIR}/system
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/autoCheck.o system/autoCheck.cpp
+
+${OBJECTDIR}/system/drivers/APIC.o: system/drivers/APIC.cpp 
+	${MKDIR} -p ${OBJECTDIR}/system/drivers
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/drivers/APIC.o system/drivers/APIC.cpp
 
 ${OBJECTDIR}/system/drivers/Chip8259.o: system/drivers/Chip8259.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/drivers

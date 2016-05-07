@@ -20,6 +20,8 @@ extern "C" {
 #define s32 int
 #define s16 short int
 #define s8 char
+#define cs8 const char
+#define scs8 static const char
 
      enum returnCode {
         Error = -1,

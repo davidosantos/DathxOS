@@ -90,7 +90,7 @@ public:
     static void loadPDBR(Paging::PagesDir *Ptr);
 
     static u32 getPDBR();
-    
+
     static u32 getSIDT();
     static u32 getSGDT();
     static u32 getSLDT();
@@ -217,6 +217,160 @@ public:
             };
         };
     } _PageFaultErroCode;
+
+
+
+
+
+
+#define getString 0x00
+#define getStringEx 0x80000002
+#define ProcessorSignature 0x01
+#define CacheandTLBDescriptors 0x02
+#define ProcessorSerialNumber 0x03
+#define ProcessorSignatureEx 0x80000001
+#define CacheandTLBDescriptorsEx 0x80000002
+#define ProcessorSerialNumberEx 0x80000003
+
+    struct CPUString {
+
+        union {
+            s8 String[4 * 3];
+
+            struct {
+                u32 EBX;
+                u32 EDX;
+                u32 ECX;
+                u32 EAX;
+            };
+        };
+    } __attribute__((packed));
+
+    struct CPUBrandString {
+
+        union {
+            s8 String[3 * 4 * 4];
+
+            struct {
+                u32 EAX;
+                u32 EBX;
+                u32 ECX;
+                u32 EDX;
+            } regs[3];
+        };
+    } __attribute__((packed));
+
+    struct CPUFeatures {
+
+        union {
+
+            struct {
+                u32 EAX;
+                u32 EBX;
+                u32 ECX;
+                u32 EDX;
+            };
+
+            struct {
+
+                struct {
+                    u32 SteppingId : 4,
+                    ModelNumber : 4,
+                    FamilyId : 4,
+                    ProcessorType : 2,
+                    : 2,
+                    ExtendedModel : 4,
+                    ExtendedFamily : 8,
+                    : 4;
+                };
+
+                struct {
+                    u32 BrandId : 8,
+                    CLFLUSH : 8,
+                    Count : 8,
+                    ApicID : 8;
+                };
+
+                struct {
+                    u32 SSE3 : 1,
+                    PCLMUQDQ : 1,
+                    DTES64 : 1,
+                    MONITOR : 1,
+                    DSCPL : 1,
+                    VMX : 1,
+                    SMX : 1,
+                    EIST : 1,
+                    TM2 : 1,
+                    SSSE3 : 1,
+                    CNXTID : 1,
+                    SDBG : 1,
+                    FMA : 1,
+                    CMPX : 1,
+                    xTPRUPDATE : 1,
+                    PDCM : 1,
+                    : 1,
+                    PCID : 1,
+                    DCA : 1,
+                    SSE41 : 1,
+                    SSE42 : 1,
+                    x2APIC : 1,
+                    MOVBE : 1,
+                    POPCNT : 1,
+                    TSCDeadline : 1,
+                    AESNI : 1,
+                    XSAVE : 1,
+                    OSXSAVE : 1,
+                    AVX : 1,
+                    F16C : 1,
+                    RDRAND : 1,
+                    : 1;
+                };
+
+                struct {
+                    u32
+                    FPU : 1,
+                    VME : 1,
+                    DE : 1,
+                    PSE : 1,
+                    TSC : 1,
+                    MSR : 1,
+                    PAE : 1,
+                    MCE : 1,
+                    CX8 : 1,
+                    APIC : 1,
+                    : 1,
+                    SEP : 1,
+                    MTRR : 1,
+                    PGE : 1,
+                    MCA : 1,
+                    CMOV : 1,
+                    PAT : 1,
+                    PSE36 : 1,
+                    PSN : 1,
+                    CLFSH : 1,
+                    : 1,
+                    DS : 1,
+                    ACPI : 1,
+                    MMX : 1,
+                    FXSR : 1,
+                    SSE : 1,
+                    SSE2 : 1,
+                    SS : 1,
+                    HTT : 1,
+                    TM : 1,
+                    : 1,
+                    PBE : 1;
+                };
+            };
+        };
+    } __attribute__((packed));
+
+
+
+    static CPUString getCPUString();
+    static CPUFeatures getCPUFeatures();
+    static CPUBrandString getCPUBrandString(CPUFeatures *features);
+    scs8 *getTypeStr(s8 type);
 
 };
 

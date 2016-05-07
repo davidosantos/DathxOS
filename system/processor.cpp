@@ -137,8 +137,8 @@ void processor::setupIDT() {
 
     }
     //adds system calls
-    addIDTDesc((u32)&Syscall0x80, 0x08, intrrgt_rng0, 0x80);
-    
+    addIDTDesc((u32) & Syscall0x80, 0x08, intrrgt_rng0, 0x80);
+
     PointIDT->size = 255 * 8;
     LIDT(PointIDT);
 }
@@ -339,6 +339,76 @@ void processor::Clear_NT() {
 
     asm ("pushf; andl $0xffffbfff, (%esp); popf;");
 
+}
+
+processor::CPUString processor::getCPUString() {
+    CPUString cpustr;
+    asm ("cpuid;"
+                : "=a"(cpustr.EAX), "=b"(cpustr.EBX), "=c"(cpustr.ECX), "=d"(cpustr.EDX) /* output */
+                : "a"(getString) /* input */
+                );
+    cpustr.String[4 * 3] = 0; //Null Terminated String
+    return cpustr;
+}
+
+processor::CPUFeatures processor::getCPUFeatures() {
+    CPUFeatures cpusig;
+    asm ("cpuid;"
+                : "=a"(cpusig.EAX), "=b"(cpusig.EBX), "=c"(cpusig.ECX), "=d"(cpusig.EDX) /* output */
+                : "a"(ProcessorSignature) /* input */
+                );
+    return cpusig
+            ;
+}
+
+processor::CPUBrandString processor::getCPUBrandString(CPUFeatures *features) {
+
+    //To use the brand string method, execute CPUID with EAX input of 8000002H through 80000004H. For each input
+    //value, CPUID returns 16 ASCII characters using EAX, EBX, ECX, and EDX. The returned string will be NULL-termi-nated.
+
+    //Starting with processor signature family ID = 0FH, model = 03H, brand
+    //index method is no longer supported. Use brand string method instead.
+
+    CPUBrandString brandStr;
+    for (int i = 0; i < (3 * 4 * 4); i++) {
+        brandStr.String[i] = 0; //clear
+    }
+
+    if (features->BrandId == 0) {
+        u8 regsIndex = 0;
+        for (u32 command = getStringEx; command <= 0x80000004; command++) {
+            asm ("cpuid;"
+                        : /* output */
+                        "=a"(brandStr.regs[regsIndex].EAX),
+                        "=b"(brandStr.regs[regsIndex].EBX),
+                        "=c"(brandStr.regs[regsIndex].ECX),
+                        "=d"(brandStr.regs[regsIndex].EDX)
+                        : "a"(command) /* input */
+                        );
+            regsIndex++;
+        }
+
+    } else {
+        switch (features->BrandId) {
+
+        }
+    }
+    return brandStr;
+}
+
+cs8 *processor::getTypeStr(s8 type) {
+    switch (type) {
+        case 0:
+            return "Original OEM Processor";
+        case 1:
+            return "Intel OverDrive Processor";
+        case 2:
+            return "Dual processor";
+        case 3:
+            return "Intel reserved";
+        default:
+            return "";
+    }
 }
 
 /**

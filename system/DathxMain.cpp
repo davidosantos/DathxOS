@@ -19,6 +19,7 @@
 #include "drivers/Chip8259.h"
 
 #define KernelStackSize 0x1000
+#define initFs yes
 //#define DEBUG
 
 
@@ -52,7 +53,8 @@ static u32 Kernel_Stack_START = 0;
 
 static multiboot_info_t *multiboot_Info;
 static u32 magic_code;
-
+static processor::CPUString cpustr;
+static processor::CPUFeatures cpuFeature;
 
 static Paging::PagesDir *kernelPageDir;
 
@@ -92,14 +94,24 @@ int main() {
     processor::loadPDBR(kernelPageDir);
     processor::enablePaging();
 
+    cpustr = processor::getCPUString();
+    cpuFeature = processor::getCPUFeatures();
+    Console::print("CPU: %s", cpustr.String);
+    Console::print("CPU has Apic: %s", cpuFeature.APIC == 1 ? "Yes" : "No");
+    Console::print("CPU ApicID %h", cpuFeature.ApicID);
+    Console::print("CPU x2APIC  %h", cpuFeature.x2APIC);
+    Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
+    Console::print("CPU Processor Type: %s", processor::getTypeStr(cpuFeature.ProcessorType));
+
+
 
 
     //--------------------------- File System -------------------------
-
+#ifdef initFs
     HardDriveDriver::setup(0);
     MBR::setup();
     FAT::setup();
-
+#endif
 
     //--------------------------Hardware config ------------------------
 
@@ -130,40 +142,40 @@ int main() {
 
     Console::print("%ct\12Machine Memory: %h pages", totalMemoryInKB * 1024 / 4096);
 #endif
-   
+#ifdef initFs
     ElfLoader *exec = new ElfLoader();
 
-    for(int i =0; i < 1;i++){
+    for (int i = 0; i < 1; i++) {
 
         if (exec->openFile("bin/apptorunonkernel.bin") == OK) {
-    
+
             if (exec->loadProgram() == Error) {
                 Console::print("%cttLoadError");
             }
-    
+
             Console::print("%ctuapp.bin Opened");
         } else {
             Console::print("%cttapp.bin open error");
         }
     }
-    
+
     ElfLoader *exec2 = new ElfLoader();
 
-    for(int i =0; i < 1;i++){
+    for (int i = 0; i < 1; i++) {
 
         if (exec2->openFile("bin/integrit_checker") == OK) {
-    
+
             if (exec2->loadProgram() == Error) {
                 Console::print("%cttintegrit_checker load error");
             }
-    
+
             Console::print("%ctuintegrit_checker Opened");
         } else {
             Console::print("%cttintegrit_checker open error");
         }
     }
-    
-    
+
+#endif
 
     asm("sti");
     while (true) {
