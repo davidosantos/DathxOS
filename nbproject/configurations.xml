@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -19,6 +19,7 @@
       <itemPath>system/Syscalls.h</itemPath>
       <itemPath>system/Tasks/Tasks.h</itemPath>
       <itemPath>system/autoCheck.h</itemPath>
+      <itemPath>system/drivers/msr.h</itemPath>
       <itemPath>system/multiboot.h</itemPath>
       <itemPath>system/memory/pageManagment.h</itemPath>
       <itemPath>system/processor.h</itemPath>
@@ -69,7 +70,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -82,6 +83,9 @@
           <commandLine>-f elf</commandLine>
         </asmTool>
         <linkerTool>
+          <linkerAddLib>
+            <pElem>build/Debug/GNU-Linux/system</pElem>
+          </linkerAddLib>
           <commandlineTool>ld</commandlineTool>
           <commandLine>-T ./scripts/link.ld -o "./bin/DathxKernel.bin"</commandLine>
         </linkerTool>
@@ -127,6 +131,8 @@
       <item path="system/drivers/HardwareIO.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/drivers/HardwareIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/msr.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/fs/FAT32.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -228,6 +234,8 @@
       <item path="system/drivers/HardwareIO.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/drivers/HardwareIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/msr.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/fs/FAT32.cpp" ex="false" tool="1" flavor2="0">
       </item>

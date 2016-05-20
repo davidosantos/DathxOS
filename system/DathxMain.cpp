@@ -17,6 +17,7 @@
 #include "RunTime/ElfLoader.h"
 #include "Cmos.h"
 #include "drivers/Chip8259.h"
+#include "drivers/APIC.h"
 
 #define KernelStackSize 0x1000
 #define initFs yes
@@ -63,7 +64,7 @@ extern "C" void ExternalInterrupt00();
 /*
  * 
  */
-int main() {
+int main() {  //David test
 
     asm("cli");
     asm("movl %%ebx,%0 " ::"m" (multiboot_Info));
@@ -99,13 +100,18 @@ int main() {
     Console::print("CPU: %s", cpustr.String);
     Console::print("CPU has Apic: %s", cpuFeature.APIC == 1 ? "Yes" : "No");
     Console::print("CPU ApicID %h", cpuFeature.ApicID);
+    Console::print("CPU FamilyId %h", cpuFeature.FamilyId);
+    Console::print("CPU Model Specific %h", cpuFeature.MSR);
     Console::print("CPU x2APIC  %h", cpuFeature.x2APIC);
     Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
     Console::print("CPU Processor Type: %s", processor::getTypeStr(cpuFeature.ProcessorType));
 
-
-
-
+    APIC::setup(&cpuFeature, kernelPageDir);
+   // APIC::disableAPIC();
+    
+    
+    APIC::startTimer(1000000);
+    APIC::enableAPIC();
     //--------------------------- File System -------------------------
 #ifdef initFs
     HardDriveDriver::setup(0);
@@ -116,8 +122,8 @@ int main() {
     //--------------------------Hardware config ------------------------
 
     Chip8259::remap(32); // remap to 32
-    Chip8259::UnMask();
-    Chip8259::AnableRTCIntrs();
+    //Chip8259::UnMask();
+    //Chip8259::AnableRTCIntrs();
 
 
     Console::print("%ct9Welcome to Dathx OS RUTH E DAVID");
@@ -185,6 +191,7 @@ int main() {
         //asm("int $32");
         // asm("sti");
         //Console::print(47,0,"%getFree: %h", (u32) pageManagment::getFree());
+        Console::print(45, 0, "%cb5APIC::getCurrentCount(): %i        ", APIC::getCurrentCount());
         Console::print(49, 0, "%cb2Loop: %h", var);
         // Console::print(45, 0, "%ct\13%cbbUsed Memory: %h bytes", (u32) getUsedMemory());
         //Console::print(47, 0, "%ct\13%cbtTopMemory: %h bytes", (u32) topMemoryPointer);

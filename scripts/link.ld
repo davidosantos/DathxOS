@@ -6,10 +6,10 @@ SECTIONS
   .text phys : AT(phys) {
    . = ALIGN(4K);
     Kernel_Code_Start = .;
-    build/Debug/GNU-Linux-x86/system/Start.o(.text)
-    build/Debug/GNU-Linux-x86/system/DathxMain.o(.text)
+    build/Debug/GNU-Linux/system/Start.o(.text)
+    build/Debug/GNU-Linux/system/DathxMain.o(.text)
     intsStart = .;
-    build/Debug/GNU-Linux-x86/system/Interrupts.o(.text)
+    build/Debug/GNU-Linux/system/Interrupts.o(.text)
     intsEnd = .;
     *(.text)
     *(.rodata)

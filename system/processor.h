@@ -12,6 +12,7 @@
 #include "memory/Paging.h"
 #include "memory/Memory.h"
 #include "autoCheck.h"
+#include "../system/drivers/msr.h"
 
 #define prsnt_rng0_data_r0_naccssd 0x90	//present, ring 0, data, read only, not accessed. generate this binary 	10010000
 #define prsnt_rng0_data_rw_naccssd 0x92	//;present, ring 0, data, read/wright, not accessed. generate this binary 	10010010
@@ -242,8 +243,8 @@ public:
                 u32 EDX;
                 u32 ECX;
                 u32 EAX;
-            };
-        };
+            }__attribute__((packed));
+        }__attribute__((packed));
     } __attribute__((packed));
 
     struct CPUBrandString {
@@ -257,7 +258,7 @@ public:
                 u32 ECX;
                 u32 EDX;
             } regs[3];
-        };
+        }__attribute__((packed));
     } __attribute__((packed));
 
     struct CPUFeatures {
@@ -269,7 +270,7 @@ public:
                 u32 EBX;
                 u32 ECX;
                 u32 EDX;
-            };
+            }__attribute__((packed));
 
             struct {
 
@@ -282,14 +283,14 @@ public:
                     ExtendedModel : 4,
                     ExtendedFamily : 8,
                     : 4;
-                };
+                }__attribute__((packed));
 
                 struct {
                     u32 BrandId : 8,
                     CLFLUSH : 8,
                     Count : 8,
                     ApicID : 8;
-                };
+                }__attribute__((packed));
 
                 struct {
                     u32 SSE3 : 1,
@@ -324,7 +325,7 @@ public:
                     F16C : 1,
                     RDRAND : 1,
                     : 1;
-                };
+                }__attribute__((packed));
 
                 struct {
                     u32
@@ -360,9 +361,34 @@ public:
                     TM : 1,
                     : 1,
                     PBE : 1;
-                };
-            };
-        };
+                }__attribute__((packed));
+            }__attribute__((packed));
+        }__attribute__((packed));
+    } __attribute__((packed));
+
+    struct MSR {
+
+        union {
+
+            struct {
+                u32 low;
+                u32 high;
+            } __attribute__((packed));
+
+            struct {
+u32:
+                8,
+                BSP : 1,
+                : 2,
+                ApicEnabled : 1,
+                ApicBase : 24;
+            } __attribute__((packed));
+
+            struct { //MAXPHYADDR (Reserved)
+u32:
+                32;
+            }__attribute__((packed));
+        } __attribute__((packed));
     } __attribute__((packed));
 
 
@@ -371,6 +397,9 @@ public:
     static CPUFeatures getCPUFeatures();
     static CPUBrandString getCPUBrandString(CPUFeatures *features);
     scs8 *getTypeStr(s8 type);
+    static bool getModelSpecificReg(CPUFeatures *features, MSR *to, u32 base);
+    
+    static bool setModelSpecificReg(CPUFeatures *features, MSR *to, u32 base);
 
 };
 

@@ -21,7 +21,7 @@ FC=gfortran
 AS=nasm
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -72,7 +72,7 @@ FFLAGS=
 ASFLAGS=-f elf
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-Lbuild/Debug/GNU-Linux/system
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

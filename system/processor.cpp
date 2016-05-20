@@ -411,6 +411,27 @@ cs8 *processor::getTypeStr(s8 type) {
     }
 }
 
+bool processor::getModelSpecificReg(CPUFeatures *features, MSR *to, u32 base) {
+    if (features->MSR == 1) {
+        asm volatile("rdmsr" : "=a"(to->low), "=d"(to->high) : "c"(base));
+        return true;
+        // asm volatile("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
+    } else {
+        return false;
+    }
+    return false;
+}
+
+bool processor::setModelSpecificReg(CPUFeatures *features, MSR *to, u32 base) {
+    if (features->MSR == 1) {
+        asm volatile("wrmsr" : "=a"(to->low), "=d"(to->high) : "c"(base));
+        return true;
+    } else {
+        return false;
+    }
+    return false;
+}
+
 /**
  * 
  * @param oldeFlags
