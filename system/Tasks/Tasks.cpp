@@ -30,6 +30,7 @@ Tasks::Task Tasks::TasksList[50];
 
 void IntsReturnTaskSwitch(){
     Tasks::interruptReceiver();
+    APIC::issueEOI();
 }
 
 

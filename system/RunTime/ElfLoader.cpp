@@ -147,11 +147,12 @@ returnCode ElfLoader::loadProgram() {
 
     loadAddrs = new u8 [pHeader[0].p_memsz];
 
-    Console::print("pageDir %h", (u32) pageDir);
-    Console::print("loadAddrs %h", (u32) loadAddrs);
+    //Console::print("pageDir %h", (u32) pageDir);
+   // Console::print("loadAddrs %h", (u32) loadAddrs);
 
-
-    Paging::mapRange(0, 0x600000, pageDir, 0);
+    
+   Paging::mapRange(0, 0x800000, pageDir, 0);
+    
 
     Paging::mapRange(pHeader[0].p_vaddr, (pHeader[0].p_vaddr +
             pHeader[0].p_memsz), pageDir, (u32*) loadAddrs);
@@ -163,7 +164,7 @@ returnCode ElfLoader::loadProgram() {
         if (sHeader[i].sh_type != 0 && (sHeader[i].sh_size != 0 && sHeader[i].sh_addr != 0)) {
 
             if (strcmp((const char*) (stringTable + sHeader[i].sh_name), ".bss")) {
-                Console::print("section bss %i", i);
+               // Console::print("section bss %i", i);
             } else {
 
                 if (file.read(sHeader[i].sh_offset, sHeader[i].sh_size,

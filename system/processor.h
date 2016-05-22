@@ -91,6 +91,7 @@ public:
     static void loadPDBR(Paging::PagesDir *Ptr);
 
     static u32 getPDBR();
+    static u32 getCR2();
 
     static u32 getSIDT();
     static u32 getSGDT();
@@ -203,10 +204,10 @@ public:
 
     static u32 IDTInitDesc[48];
 
-    typedef struct PageFaultErroCode {
+    struct PageFaultErroCode {
 
         union {
-            u32 cause : 3;
+            u32 cause;
 
             struct {
                 u32 Present : 1,
@@ -214,10 +215,26 @@ public:
                 User : 1,
                 ReservedWrite : 1,
                 InstructionFecth : 1,
-                Reserved : 28;
+                : 10,
+                SGX : 1,
+                Reserved : 16;
             };
         };
-    } _PageFaultErroCode;
+    } __attribute__((packed));
+    
+    struct ErroCode {
+
+        union {
+            u32 cause;
+            struct {
+                u32 External : 1,
+                InterruptTable : 1,
+                GDTorLDT : 1,
+                Index : 14,
+                 : 15;
+            };
+        };
+    } __attribute__((packed));
 
 
 
@@ -379,7 +396,8 @@ public:
 u32:
                 8,
                 BSP : 1,
-                : 2,
+                : 1,
+                xAPIC : 1,
                 ApicEnabled : 1,
                 ApicBase : 24;
             } __attribute__((packed));

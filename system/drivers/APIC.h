@@ -6,7 +6,7 @@
  */
 
 #ifndef APIC_H
-#define	APIC_H
+#define APIC_H
 
 #include "../../util/util.h"
 #include "../monitor/Console.h"
@@ -18,6 +18,8 @@
                 }__attribute__((aligned(16), packed));
 
 #define ApicDefautAddrs  0xFEE00000
+#define ON 1
+#define OFF 0
 
 class APIC {
 public:
@@ -80,10 +82,224 @@ timer interrupt.
      */
     static void startTimer(u32 count);
     static u32 getCurrentCount();
+    static void issueEOI();
 
     APIC();
     //    APIC(const APIC& orig);
     //    virtual ~APIC();
+
+    union LocalAPICIDReg {
+
+        struct {
+u32:
+            25,
+            APICID : 4,
+            : 4;
+        };
+
+        struct {
+u32:
+            25,
+            APICIDXeon : 8;
+        };
+        u32 x2APICID;
+    } __attribute__((packed));
+
+    struct LocalAPICVersionReg {
+        u32 version : 8,
+        : 8, //reserved
+        MaxLVTEntry : 8,
+        EOIBroadCast : 1,
+        : 7; //reserved
+    } __attribute__((packed));
+
+    struct TaskPriorityReg {
+        u32 TaskPrioritySubClass : 4,
+        TaskPriorityClass : 4,
+        : 24;
+    } __attribute__((packed));
+
+    struct ArbitrationPriorityReg {
+        u32 ArbitrationPrioritySubClass : 4,
+        ArbitrationPriorityClass : 4,
+        : 24;
+    } __attribute__((packed));
+
+    struct ProcessorPriorityReg {
+        u32 AProcessorPrioritySubClass : 4,
+        ProcessorPriorityClass : 4,
+        : 24;
+    } __attribute__((packed));
+
+    struct LogicalDestinationReg {
+u32:
+        24,
+        DestinationLogicalAPICID : 8;
+    } __attribute__((packed));
+
+    struct DestinationFormatReg {
+u32:
+        24,
+        DestinationFormat : 8;
+        //Flat model: 1111B
+        //Cluster model: 0000B
+    } __attribute__((packed));
+
+    struct SpuriousInterruptVectorReg {
+
+        struct {
+            u32 SpuriousVector : 8,
+            ApicSoftwareEnabled : 1,
+            FocusProcessorChecking : 1,
+            : 2,
+            EOIBroadcastSuppression : 1,
+            : 19;
+        };
+
+        /**
+         1. Not supported on all processors.
+        2. Not supported in Pentium 4 and Intel Xeon processors.
+        3. For the P6 family and Pentium processors, bits 0 through 3
+        are always 0.
+         */
+    } __attribute__((packed));
+
+    struct ErrorStatusReg {
+        u32 SendChecksumError : 1,
+        ReceiveChecksumError : 1,
+        SendAcceptError : 1,
+        ReceiveAcceptError : 1,
+        RedirectableIPI : 1,
+        SendIllegalVector : 1,
+        ReceivedIllegalVector : 1,
+        IllegalRegisterAddress : 1,
+        : 24;
+    } __attribute__((packed));
+
+    struct CMCIReg {
+        u32 vector : 8,
+        deliveryMode : 3,
+        : 1,
+        DeliveryStatus : 1, //bit 12
+        : 3,
+        Mask : 1,
+        : 15;
+
+    } __attribute__((packed));
+
+    struct InterruptCommandReg {
+        u32 vector : 8,
+        deliveryMode : 3,
+        DestinationMode : 1,
+        DeliveryStatus : 1,
+        : 1,
+        level : 1,
+        truggerMode : 1,
+        : 2,
+        destinationShorthand : 2,
+        : 12;
+
+    } __attribute__((packed));
+
+    struct InterruptCommandReg0 {
+u32:
+        24,
+        DestinationField : 8;
+
+    } __attribute__((packed));
+
+    struct TimerReg {
+        u32 vector : 8,
+        : 4,
+        DeliveryStatus : 1,
+        : 3,
+        Mask : 1,
+        timerMode : 2,
+        : 13;
+    } __attribute__((packed));
+
+    struct ThermalSensorReg {
+        u32 vector : 8,
+        deliveryMode : 3,
+        : 1,
+        DeliveryStatus : 1, //bit 12
+        : 3,
+        Mask : 1,
+        : 15;
+
+    } __attribute__((packed));
+
+    struct PerformanceMonitoringCountersReg {
+        u32 vector : 8,
+        deliveryMode : 3,
+        : 1,
+        DeliveryStatus : 1, //bit 12
+        : 3,
+        Mask : 1,
+        : 15;
+
+    } __attribute__((packed));
+
+    struct LINT0Reg {
+        u32 vector : 8,
+        deliveryMode : 3,
+        : 1,
+        DeliveryStatus : 1, //bit 12
+        InterruptInputPinPolarity : 1,
+        RemoteIRR : 1,
+        TriggerMode : 1,
+        Mask : 1,
+        : 15;
+
+    } __attribute__((packed));
+
+    struct LINT1Reg {
+        u32 vector : 8,
+        deliveryMode : 3,
+        : 1,
+        DeliveryStatus : 1, //bit 12
+        InterruptInputPinPolarity : 1,
+        RemoteIRR : 1,
+        TriggerMode : 1,
+        Mask : 1,
+        : 15;
+
+    } __attribute__((packed));
+
+    struct ErrorReg {
+        u32 vector : 8,
+        : 4,
+        DeliveryStatus : 1, //bit 12
+        : 4,
+        Mask : 1,
+        : 15;
+
+    } __attribute__((packed));
+    
+     struct DivideConfigurationReg {
+
+            /**
+             * 0X00: Divide by 2
+             * 0X01: Divide by 4
+             * 0X10: Divide by 8
+             * 0X11: Divide by 16
+             * 1X00: Divide by 32
+             * 1X01: Divide by 64
+             * 1X10: Divide by 128
+             * 1X11: Divide by 1
+             * X = not used
+             */
+            union {
+                u32 value;
+
+                struct {
+                    u32 lowOrderBits : 2,
+                    : 1,
+                    highOrderBits : 1;
+                };
+            };
+
+        }  __attribute__((packed));
 
 
 private:
@@ -93,55 +309,28 @@ private:
         ReservedReg;
 
         struct {
-
-            union {
-
-                struct {
-u32:
-                    25,
-                    APICID : 4,
-                    : 4;
-                };
-
-                struct {
-u32:
-                    25,
-                    APICIDXeon : 8;
-                };
-                u32 x2APICID;
-            };
-
-        } LocalAPICIDReg __attribute__((aligned(16), packed));
+            LocalAPICIDReg LocalAPICIDRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 version : 8,
-            : 8, //reserved
-            MaxLVTEntry : 8,
-            EOIBroadCast : 1,
-            : 7; //reserved
-        } LocalAPICVersionReg __attribute__((aligned(16), packed));
+            LocalAPICVersionReg LocalAPICVersionRegister;
+        } __attribute__((aligned(16), packed));
 
         ReservedReg
         ReservedReg
         ReservedReg
         ReservedReg
         struct {
-            u32 TaskPrioritySubClass : 4,
-            TaskPriorityClass : 4,
-            : 24;
-        } TaskPriorityReg __attribute__((aligned(16), packed));
+            TaskPriorityReg TaskPriorityRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 ArbitrationPrioritySubClass : 4,
-            ArbitrationPriorityClass : 4,
-            : 24;
-        } ArbitrationPriorityReg __attribute__((aligned(16), packed));
+            ArbitrationPriorityReg ArbitrationPriorityRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 AProcessorPrioritySubClass : 4,
-            ProcessorPriorityClass : 4,
-            : 24;
-        } ProcessorPriorityReg __attribute__((aligned(16), packed));
+            ProcessorPriorityReg ProcessorPriorityRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
             /**
@@ -152,7 +341,7 @@ mode, the interrupt handler must include a write to the end-of-interrupt (EOI) r
 write must occur at the end of the handler routine, sometime before the IRET instruction. This action indicates that
 the servicing of the current interrupt is complete and the local APIC can issue the next interrupt from the ISR.
              */
-            u32 EOIReg;
+            u32 EOIRegister;
             /**
              Upon receiving an EOI, the APIC clears the highest priority bit in the ISR and dispatches the next highest priority
 interrupt to the processor. If the terminated interrupt was a level-triggered interrupt, the local APIC also sends an
@@ -181,40 +370,18 @@ the system.
         } __attribute__((aligned(16), packed));
 
         struct {
-u32:
-            24,
-            DestinationLogicalAPICID : 8;
-        } LogicalDestinationReg __attribute__((aligned(16), packed));
+            LogicalDestinationReg LogicalDestinationRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-u32:
-            24,
-            DestinationFormat : 8;
+            DestinationFormatReg DestinationFormatRegister;
             //Flat model: 1111B
             //Cluster model: 0000B
-        } DestinationFormatReg __attribute__((aligned(16), packed));
+        } __attribute__((aligned(16), packed));
 
         struct {
-
-            union {
-                u32 value;
-
-                struct {
-                    u32 SpuriousVector : 8,
-                    ApicSoftwareEnabled : 1,
-                    FocusProcessorChecking : 1,
-                    : 2,
-                    EOIBroadcastSuppression : 1,
-                    : 19;
-                };
-            };
-            /**
-             1. Not supported on all processors.
- 2. Not supported in Pentium 4 and Intel Xeon processors.
- 3. For the P6 family and Pentium processors, bits 0 through 3
- are always 0.
-             */
-        } SpuriousInterruptVectorReg __attribute__((aligned(16), packed));
+            SpuriousInterruptVectorReg SpuriousInterruptVectorRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
 u16:
@@ -319,16 +486,8 @@ u16:
         } __attribute__((aligned(16), packed));
 
         struct {
-            u32 SendChecksumError : 1,
-            ReceiveChecksumError : 1,
-            SendAcceptError : 1,
-            ReceiveAcceptError : 1,
-            RedirectableIPI : 1,
-            SendIllegalVector : 1,
-            ReceivedIllegalVector : 1,
-            IllegalRegisterAddress : 1,
-            : 24;
-        } ErrorStatusReg __attribute__((aligned(16), packed));
+            ErrorStatusReg ErrorStatusRegister;
+        } __attribute__((aligned(16), packed));
 
         ReservedReg
         ReservedReg
@@ -338,120 +497,49 @@ u16:
         ReservedReg
 
         struct {
-            u32 vector : 8,
-            deliveryMode : 3,
-            : 1,
-            DeliveryStatus : 1, //bit 12
-            : 3,
-            Masked : 1,
-            : 15;
-
-        } CMCIReg __attribute__((aligned(16), packed));
+            CMCIReg CMCIRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 vector : 8,
-            deliveryMode : 3,
-            DestinationMode : 1,
-            DeliveryStatus : 1,
-            : 1,
-            level : 1,
-            truggerMode : 1,
-            : 2,
-            destinationShorthand : 2,
-            : 12;
-
-        } InterruptCommandReg __attribute__((aligned(16), packed));
+            InterruptCommandReg InterruptCommandRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-u32:
-            24,
-            DestinationField : 8;
-
-        } InterruptCommandReg0 __attribute__((aligned(16), packed));
+            InterruptCommandReg0 InterruptCommandRegister0;
+        } __attribute__((aligned(16), packed));
 
         struct {
-
-            union {
-                u32 value;
-
-                struct {
-                    u32 vector : 8,
-                    : 4,
-                    DeliveryStatus : 1,
-                    : 3,
-                    Masked : 1,
-                    timerMode : 2,
-                    : 13;
-                };
-            };
-
-        } TimerReg __attribute__((aligned(16), packed));
+            TimerReg TimerRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 vector : 8,
-            deliveryMode : 3,
-            : 1,
-            DeliveryStatus : 1, //bit 12
-            : 3,
-            Masked : 1,
-            : 15;
-
-        } ThermalSensorReg __attribute__((aligned(16), packed));
+            ThermalSensorReg ThermalSensorRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 vector : 8,
-            deliveryMode : 3,
-            : 1,
-            DeliveryStatus : 1, //bit 12
-            : 3,
-            Masked : 1,
-            : 15;
-
-        } PerformanceMonitoringCountersReg __attribute__((aligned(16), packed));
+            PerformanceMonitoringCountersReg PerformanceMonitoringCountersRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 vector : 8,
-            deliveryMode : 3,
-            : 1,
-            DeliveryStatus : 1, //bit 12
-            InterruptInputPinPolarity : 1,
-            RemoteIRR : 1,
-            TriggerMode : 1,
-            Masked : 1,
-            : 15;
-
-        } LINT0Reg __attribute__((aligned(16), packed));
+            LINT0Reg LINT0Register;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 vector : 8,
-            deliveryMode : 3,
-            : 1,
-            DeliveryStatus : 1, //bit 12
-            InterruptInputPinPolarity : 1,
-            RemoteIRR : 1,
-            TriggerMode : 1,
-            Masked : 1,
-            : 15;
-
-        } LINT1Reg __attribute__((aligned(16), packed));
+            LINT1Reg LINT1Register;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 vector : 8,
-            : 4,
-            DeliveryStatus : 1, //bit 12
-            : 4,
-            Masked : 1,
-            : 15;
+            ErrorReg ErrorRegister;
 
-        } ErrorReg __attribute__((aligned(16), packed));
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 value;
-        } InitialCountReg __attribute__((aligned(16), packed));
+            u32 InitialCountRegister;
+        } __attribute__((aligned(16), packed));
 
         struct {
-            u32 value;
-        } CurrentCountReg __attribute__((aligned(16), packed));
+            u32 CurrentCountRegister;
+        } __attribute__((aligned(16), packed));
 
         ReservedReg
         ReservedReg
@@ -459,40 +547,19 @@ u32:
         ReservedReg
 
         struct {
-
-            /**
-             * 000: Divide by 2
-             * 001: Divide by 4
-             * 010: Divide by 8
-             * 011: Divide by 16
-             * 100: Divide by 32
-             * 101: Divide by 64
-             * 110: Divide by 128
-             * 111: Divide by 1
-             * 
-             */
-            union {
-                u32 value;
-
-                struct {
-                    u32 lowOrderBits : 2,
-                    : 1,
-                    highOrderBits : 1;
-                };
-            };
-
-        } DivideConfigurationReg __attribute__((aligned(16), packed));
+          DivideConfigurationReg DivideConfigurationRegister;
+        } __attribute__((aligned(16), packed));
 
         ReservedReg
     } __attribute__((packed));
 
     static Registers *apicRegisters;
-    static processor::MSR msr;
-    
+    static processor::MSR modelSpecificReg;
+
 
 
 
 };
 
-#endif	/* APIC_H */
+#endif /* APIC_H */
 

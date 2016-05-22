@@ -10,6 +10,7 @@
 #include "../../util/util.h"
 #include "../../system/memory/Paging.h"
 #include "../../system/memory/Memory.h"
+#include "../drivers/APIC.h"
 
 
 extern u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg;

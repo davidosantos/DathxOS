@@ -21,7 +21,7 @@
 
 #define KernelStackSize 0x1000
 #define initFs yes
-//#define DEBUG
+#define DEBUG
 
 
 
@@ -40,9 +40,9 @@ u32 *baseMemoryPointer;
 //u32 *topMemoryPointer;
 
 #ifndef Regs
-#define	Regs
+#define Regs
 //Changed via nasm in InterruptsDel... external int one
-u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg;
+u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg, kerPageDir;
 u16 ssReg, dsReg, esReg, fsReg, gsReg;
 #endif
 
@@ -64,7 +64,7 @@ extern "C" void ExternalInterrupt00();
 /*
  * 
  */
-int main() {  //David test 
+int main() { //David test 
 
     asm("cli");
     asm("movl %%ebx,%0 " ::"m" (multiboot_Info));
@@ -82,7 +82,8 @@ int main() {  //David test
 
 
     // topMemoryPointer = (u32*) ((multiboot_Info->mem_lower + multiboot_Info->mem_upper)*1024 / 4);
-
+    
+    //--------------------------Memory config ------------------------
     pageManagment::setup(totalMemoryInKB * 1024 / 4096);
     pageManagment::setRangeBusy(0, baseMemoryPointer);
 
@@ -91,27 +92,41 @@ int main() {  //David test
     processor::setupIDT();
     //processor::setupLDT();
     kernelPageDir = Paging::getNewDir();
+    kerPageDir = (u32) kernelPageDir;
     Paging::mapRange(0, totalMemoryAdress, kernelPageDir, 0);
     processor::loadPDBR(kernelPageDir);
     processor::enablePaging();
 
     cpustr = processor::getCPUString();
     cpuFeature = processor::getCPUFeatures();
-    Console::print("CPU: %s", cpustr.String);
-    Console::print("CPU has Apic: %s", cpuFeature.APIC == 1 ? "Yes" : "No");
-    Console::print("CPU ApicID %h", cpuFeature.ApicID);
-    Console::print("CPU FamilyId %h", cpuFeature.FamilyId);
-    Console::print("CPU Model Specific %h", cpuFeature.MSR);
-    Console::print("CPU x2APIC  %h", cpuFeature.x2APIC);
-    Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
-    Console::print("CPU Processor Type: %s", processor::getTypeStr(cpuFeature.ProcessorType));
+//    Console::print("CPU: %s", cpustr.String);
+//    Console::print("CPU has Apic: %s", cpuFeature.APIC == 1 ? "Yes" : "No");
+//    Console::print("CPU ApicID %h", cpuFeature.ApicID);
+//    Console::print("CPU FamilyId %h", cpuFeature.FamilyId);
+//    Console::print("CPU Model Specific %h", cpuFeature.MSR);
+//    Console::print("CPU x2APIC  %h", cpuFeature.x2APIC);
+//    Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
+//    Console::print("CPU Processor Type: %s", processor::getTypeStr(cpuFeature.ProcessorType));
 
-    APIC::setup(&cpuFeature, kernelPageDir);
-   // APIC::disableAPIC();
-    
-    
-    APIC::startTimer(1000000);
-    APIC::enableAPIC();
+
+
+    //--------------------------Hardware config ------------------------
+
+    if (cpuFeature.APIC == ON) {
+        Chip8259::remap(32); // remap to 32
+        //Chip8259::Mask();
+        APIC::setup(&cpuFeature, kernelPageDir);
+        APIC::startTimer(100000);
+        APIC::enableAPIC();
+    } else {
+        Chip8259::remap(32); // remap to 32
+        Chip8259::UnMask();
+        Chip8259::AnableRTCIntrs();
+    }
+
+
+
+
     //--------------------------- File System -------------------------
 #ifdef initFs
     HardDriveDriver::setup(0);
@@ -119,11 +134,7 @@ int main() {  //David test
     FAT::setup();
 #endif
 
-    //--------------------------Hardware config ------------------------
 
-    Chip8259::remap(32); // remap to 32
-    //Chip8259::UnMask();
-    //Chip8259::AnableRTCIntrs();
 
 
     Console::print("%ct9Welcome to Dathx OS RUTH E DAVID");
@@ -141,12 +152,12 @@ int main() {  //David test
     Console::print("%ct\12totalMemoryInKB %h", totalMemoryInKB);
 
     Console::print("%ct\12Machine Memory: %i MB", (totalMemoryInKB / 1024));
-    Console::print("%ct\12Machine Memory: %i bytes", totalMemoryInKB * 1024);
+    Console::print("%ct\12Machine Memory: %h bytes", totalMemoryInKB * 1024);
     //  Console::print("%ct\12Machine Memory Top: %h bytes", (multiboot_Info->mem_lower + multiboot_Info->mem_upper)*1024/4);
     //    u32 *t = paging->getPhysAddrs((u32)(multiboot_Info->mem_lower + multiboot_Info->mem_upper)*1024/4,paging->ppageDir);
     //    Console::print("%ct\12Machine Memory Top: %h bytes",(u32)t);
 
-    Console::print("%ct\12Machine Memory: %h pages", totalMemoryInKB * 1024 / 4096);
+    Console::print("%ct\12Machine Memory: %i pages", totalMemoryInKB * 1024 / 4096);
 #endif
 #ifdef initFs
     ElfLoader *exec = new ElfLoader();
@@ -165,21 +176,21 @@ int main() {  //David test
         }
     }
 
-    ElfLoader *exec2 = new ElfLoader();
-
-    for (int i = 0; i < 1; i++) {
-
-        if (exec2->openFile("bin/integrit_checker") == OK) {
-
-            if (exec2->loadProgram() == Error) {
-                Console::print("%cttintegrit_checker load error");
-            }
-
-            Console::print("%ctuintegrit_checker Opened");
-        } else {
-            Console::print("%cttintegrit_checker open error");
-        }
-    }
+//    ElfLoader *exec2 = new ElfLoader();
+//
+//    for (int i = 0; i < 1; i++) {
+//
+//        if (exec2->openFile("bin/integrit_checker") == OK) {
+//
+//            if (exec2->loadProgram() == Error) {
+//                Console::print("%cttintegrit_checker load error");
+//            }
+//
+//            Console::print("%ctuintegrit_checker Opened");
+//        } else {
+//            Console::print("%cttintegrit_checker open error");
+//        }
+//    }
 
 #endif
 
@@ -191,9 +202,12 @@ int main() {  //David test
         //asm("int $32");
         // asm("sti");
         //Console::print(47,0,"%getFree: %h", (u32) pageManagment::getFree());
-        Console::print(45, 0, "%cb5APIC::getCurrentCount(): %i        ", APIC::getCurrentCount());
+        Console::print(39, 0, "%cb7pageManagment::totalPages: %i     ", (u32) pageManagment::totalPages);
+        Console::print(41, 0, "%cb7pageManagment::totalCount: %i     ", (u32) pageManagment::totalCountReserved);
+        //Console::print(43, 0, "%cb7pageManagment::getFree(): %i     ", (u32) pageManagment::getFree());
+        Console::print(45, 0, "%cb5APIC::getCurrentCount(): %h     ", APIC::getCurrentCount());
         Console::print(49, 0, "%cb2Loop: %h", var);
-        // Console::print(45, 0, "%ct\13%cbbUsed Memory: %h bytes", (u32) getUsedMemory());
+        //Console::print(45, 0, "%ct\13%cbbUsed Memory: %h bytes", (u32) getUsedMemory());
         //Console::print(47, 0, "%ct\13%cbtTopMemory: %h bytes", (u32) topMemoryPointer);
         //asm("ljmp $0x190,$0 ");
         // asm("sti");

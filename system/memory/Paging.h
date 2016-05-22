@@ -69,7 +69,7 @@ private:
         Dirty : 1,
         unused : 7,
         phys : 20;
-    } __attribute__((aligned(4)));
+    } __attribute__((aligned(4), packed));
 
     struct PageDirEntry {
         u32 Present : 1,
@@ -79,7 +79,7 @@ private:
         Dirty : 1,
         unused : 7,
         phys : 20;
-    } __attribute__((aligned(4)));
+    } __attribute__((aligned(4), packed));
 
 //    struct PageDir {
 //        PageDirEntry dirs [1024];
@@ -92,11 +92,11 @@ public:
 
     struct PagesDir {
         PageDirEntry dir[1024];
-    } __attribute__((aligned(4096)));
+    } __attribute__((aligned(4096),packed));
 
     struct PagesTable {
         PageTableEntry page[1024];
-    } __attribute__((aligned(4096)));
+    } __attribute__((aligned(4096),packed));
 
 
 

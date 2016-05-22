@@ -25,11 +25,11 @@ Paging::Paging() {
  * @return ((u32) currentDir << 16 |  currentPage);
  */
 u32 *Paging::getNewPage() {
-    //    //page align
-    //u32 currentPage = ((u32) ((u32) baseMemoryPointer + usedMemoryCounter + pageSize) >> 12);
-    // usedMemoryCounter += pageSize;
-    // return (u32*)(currentPage * pageSize);
-    return pageManagment::getFree();
+    u32 *Address = pageManagment::getFree();
+    for (int i = 0; i < pageSize / 4; i++) {
+        Address[i] = 0; //clean that page
+    }
+    return Address;
 }
 
 Paging::PagesDir *Paging::getNewDir() {
@@ -147,9 +147,6 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, u32 physStart) {
 }
 
 /**
- * This function is designed to map virtual memory into physical,
- * the physical memory is chosen my function getNewPage(), and
- * applications has no access to that physical address
  * @param virtStart - start of virtual address
  * @param virtEnd - this is where virtual address end.
  */
@@ -165,19 +162,23 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
     u32 physIndex = (u32) physStart >> 12;
 
     for (; pdIndex <= pdIndexEnd; pdIndex++) {
-        //get page table and convert to physical address
-        PagesTable *pTable = (PagesTable*) getNewPage();
-        //ppageTable = mountTable; //get address
-        //Console::print("pTable %h", (u32)pTable);
-        pageDir->dir[pdIndex].phys = ((u32) pTable >> 12);
-        pageDir->dir[pdIndex].Present = 1;
-        pageDir->dir[pdIndex].unused = 0;
-
-        //check whether is is the last page to allocate, if it is
-        //then the End will be pdIndexEnd whick might be less than _1kb
+        PagesTable *pTable;
+        //if the page table pointed by pdIndex is already present, the use the same
+        if (pageDir->dir[pdIndex].phys && pageDir->dir[pdIndex].Present) {
+            pTable = (PagesTable*) (pageDir->dir[pdIndex].phys << 12);
+            } else {
+            //get page table physical address and convert to logical
+            pTable = (PagesTable*) getNewPage();
+            //Console::print("pTable %h", (u32)pTable);
+            pageDir->dir[pdIndex].phys = ((u32) pTable >> 12);
+            pageDir->dir[pdIndex].Present = 1;
+            pageDir->dir[pdIndex].unused = 0;
+        }
+        //check whether is is the last directory to allocate, if it is
+        //then the End will be ptIndexEnd which might be less than _1kb
         u32 End = (pdIndex == pdIndexEnd) ? ptIndexEnd : _1kb;
 
-        for (; ptIndex <= End; ptIndex++) {
+        for (ptIndex = 0; ptIndex <= End; ptIndex++) {
             pTable->page[ptIndex].phys = physIndex;
             pTable->page[ptIndex].Present = 1;
             physIndex++;

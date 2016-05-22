@@ -80,6 +80,14 @@ void processor::setupIDT() {
 
     IDT = new IDTEntry [255];
 
+    for (u32 i = 0; i < 256; i++) {
+        //add for security reasons, some application may cause invalid interrupt
+        //and crash the whole system.
+        addIDTDesc((u32) & Syscall0x80, 0x08, intrrgt_rng0, i);
+
+
+    }
+
     IDTInitDesc[0] = (u32) & InternalInterrupt00;
     IDTInitDesc[1] = (u32) & InternalInterrupt01;
     IDTInitDesc[2] = (u32) & InternalInterrupt02;
@@ -262,11 +270,13 @@ void processor::addGDTDesc(u16 entry, u32 limit, u32 base, u8 type, u8 flags) {
 }
 
 void processor::addIDTDesc(u32 base, u16 sel, u8 type, u32 Entry) {
-    IDT[Entry].offset_15_0 = (base >> 0);
-    IDT[Entry].selector = sel;
-    IDT[Entry].undef = 0;
-    IDT[Entry].type = type;
-    IDT[Entry].offset_31_16 = (base >> 16);
+    if (Entry <= 255) {
+        IDT[Entry].offset_15_0 = (base >> 0);
+        IDT[Entry].selector = sel;
+        IDT[Entry].undef = 0;
+        IDT[Entry].type = type;
+        IDT[Entry].offset_31_16 = (base >> 16);
+    }
 }
 
 void processor::loadPDBR(Paging::PagesDir *Ptr) {
@@ -294,6 +304,12 @@ void processor::enablePaging() {
 u32 processor::getPDBR() {
     u32 value;
     asm ("movl %%cr3,%0 " : "=r" (value));
+    return value;
+}
+
+u32 processor::getCR2() {
+    u32 value;
+    asm ("movl %%cr2,%0 " : "=r" (value));
     return value;
 }
 
@@ -440,68 +456,68 @@ bool processor::setModelSpecificReg(CPUFeatures *features, MSR *to, u32 base) {
  */
 extern "C" void HandlerIRQ00() {
 
-    ////processor::IRQDispacher->HandlerIRQ00();
+    //Console::print("IRQ00");
 
 }
 
 extern "C" void HandlerIRQ01() {
-    // //processor::IRQDispacher->HandlerIRQ01();
+     Console::print("IRQ01");
 }
 
 extern "C" void HandlerIRQ02() {
-    // //processor::IRQDispacher->HandlerIRQ02();
+    Console::print("IRQ02");
 }
 
 extern "C" void HandlerIRQ03() {
-    // //processor::IRQDispacher->HandlerIRQ03();
+    Console::print("IRQ03");
 }
 
 extern "C" void HandlerIRQ04() {
-    // //processor::IRQDispacher->HandlerIRQ04();
+    Console::print("IRQ04");
 }
 
 extern "C" void HandlerIRQ05() {
-    //  //processor::IRQDispacher->HandlerIRQ05();
+    Console::print("IRQ05");
 }
 
 extern "C" void HandlerIRQ06() {
-    // //processor::IRQDispacher->HandlerIRQ06();
+    Console::print("IRQ06");
 }
 
 extern "C" void HandlerIRQ07() {
-    // //processor::IRQDispacher->HandlerIRQ07();
+    Console::print("IRQ07");
 }
 
 extern "C" void HandlerIRQ08() {
-    //  //processor::IRQDispacher->HandlerIRQ08();
+   Console::print("IRQ08");
 }
 
 extern "C" void HandlerIRQ09() {
-    // //processor::IRQDispacher->HandlerIRQ09();
+    Console::print("IRQ09");
 }
 
 extern "C" void HandlerIRQ10() {
-    // //processor::IRQDispacher->HandlerIRQ10();
+    Console::print("IRQ10");
 }
 
 extern "C" void HandlerIRQ11() {
-    //processor::IRQDispacher->HandlerIRQ11();
+   Console::print("IRQ11");
 }
 
 extern "C" void HandlerIRQ12() {
-    //processor::IRQDispacher->HandlerIRQ12();
+    Console::print("IRQ12");
 }
 
 extern "C" void HandlerIRQ13() {
-    //processor::IRQDispacher->HandlerIRQ13();
+    Console::print("IRQ13");
 }
 
 extern "C" void HandlerIRQ14() {
-    //processor::IRQDispacher->HandlerIRQ14();
+    Console::print("IRQ14");
 }
 
 extern "C" void HandlerIRQ15() {
-    //processor::IRQDispacher->HandlerIRQ15();
+    Console::print("IRQ15");
 }
 
 extern "C" void Divideerror() {
@@ -640,7 +656,7 @@ Begin:
 }
 
 extern "C" void Doublefault() {
-    autoCheck::runCheck();
+    //    autoCheck::runCheck();
 Begin:
     ;
 
@@ -726,42 +742,28 @@ Begin:
     goto Begin;
 }
 
-extern "C" void Generalprotection() {//u32 oldeFlags, u32 oldCS, u32 oldEIP, u32 errorCode) {
-    autoCheck::runCheck();
+extern "C" void Generalprotection(processor::ErroCode errorCode, u32 oldEIP, u32 oldCS, u32 oldEFLAGS, u32 oldEIP2, u32 oldCS2, u32 oldEFLAGS2) {
+    //    autoCheck::runCheck();
 Begin:
     ;
-    const u8 msg[] = {"General Protection, Error: "};
 
-    u8* videoPtr = (u8*) 0xB8600;
-
-    for (u32 i = 0; i < sizeof msg; i++) {
-
-        *videoPtr++ = msg[i];
-        *videoPtr++ = 15;
-    }
-
-    u32 temp = 0;
-
-    u32 *pointer = &temp;
-
-    s8 Chars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
-    int n = 0;
-    int d = 1;
-    while (*pointer / d >= 10)
-        d *= 10;
-    while (d != 0) {
-        int dgt = *pointer / d;
-        *pointer %= d;
-        d /= 10;
-        if (n || dgt > 0 || d == 0) {
-            *videoPtr++ = Chars[dgt];
-            * videoPtr++ = 15;
-
-            ++n;
+    Console::print("General Protection, Event was: %s", errorCode.External == 1 ? "External" : "Internal");
+    if (errorCode.InterruptTable == 1) {
+        Console::print("Gate of IDT: %i", errorCode.Index);
+    } else {
+        if (errorCode.GDTorLDT == 0) {
+            Console::print("Gate of GDT: %i", errorCode.Index);
+        } else {
+            Console::print("Gate of LDT: %i", errorCode.Index);
         }
     }
 
+    Console::print("General Protection oldEIP %h", oldEIP);
+    Console::print("General Protection oldCS %h", oldCS);
+    Console::print("General Protection oldEFLAGS %h", oldEFLAGS);
+    Console::print("General Protection oldEIP2 %h", oldEIP2);
+    Console::print("General Protection oldCS2 %h", oldCS2);
+    Console::print("General Protection oldEFLAGS2 %h", oldEFLAGS2);
 
 
 
@@ -775,18 +777,36 @@ Begin:
 
 #include "memory/Paging.h"
 
-extern "C" void Pagefault(processor::_PageFaultErroCode pageFault) {
+static u32 pageFaults = 0;
+
+extern "C" void Pagefault(processor::PageFaultErroCode *pageFault, Paging::PagesDir *ppageDir) {
+
+    pageFaults++;
+
+    //Console::clear();
+    Console::print(1, 0, "Page fault due to:");
+    Console::print(3, 0, "cause %h", pageFault->cause);
+    if (pageFault->Present == 1) Console::print(5, 0, "Present");
+    if (pageFault->Write == 1) Console::print(7, 0, "Write");
+    else Console::print(7, 0, "read");
+    if (pageFault->User == 1) Console::print(9, 0, "User");
+    if (pageFault->InstructionFecth == 1) Console::print(11, 0, "InstructionFecth");
+    if (pageFault->SGX == 1) Console::print(13, 0, "SGX");
+    if (pageFault->ReservedWrite == 1) Console::print(15, 0, "ReservedWrite");
+    if (pageFault->Reserved) Console::print(17, 0, "pageFault.Reserved %i", pageFault->Reserved);
+
+    u32 faultAdress = processor::getCR2();
+    u32 *physAddress = Paging::getNewPage();
+    Console::print(19, 0, "Linear Address: %h", (u32) faultAdress);
+    Console::print(21, 0, "physAddress: %h", (u32) physAddress);
+    Console::print(23, 0, "ppageDir: %h", (u32) ppageDir);
+    Console::print(27, 0, "pageFaults: %i", pageFaults);
 
 
-    //    Console::clear();
-    //    Console::print("Page fault due to:");
-    //
-    //    if (pageFault.Present == 1) Console::print("Present");
-    //    if (pageFault.Write == 1) Console::print("Write");
-    //    if (pageFault.User == 1) Console::print("User");
-    //    if (pageFault.InstructionFecth == 1) Console::print("InstructionFecth");
-    //    if (pageFault.ReservedWrite == 1) Console::print("ReservedWrite");
-    //    if (pageFault.Reserved) Console::print("pageFault.Reserved %i", pageFault.Reserved);
+    Paging::mapRange(faultAdress, faultAdress,
+            ppageDir,physAddress );
+
+
     //
     //    switch (pageFault.cause) {
     //        case 0:
@@ -840,9 +860,9 @@ extern "C" void Pagefault(processor::_PageFaultErroCode pageFault) {
     //
     //
 
-    autoCheck::runCheck();
-    while (true) {
-    }
+    //autoCheck::runCheck();
+    // while (true) {
+    //}
 
 
 }

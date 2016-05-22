@@ -22,19 +22,21 @@ int main(int argc, char** argv) {
     static CallsDirectives call, *callp;
 
     callp = &call;
-
+    //u32 *pony = 0;
     while (true) {
-        
+
         value++;
-        
+
         callp->Function = 1;
         callp->Subfunction = 2;
         callp->y = 47;
         callp->x = 0;
         callp->Value = value;
         callp->String = name;
-        
-        asm("movl %0,%%eax" ::"m" (callp));
+
+        //pony++;
+        //asm("movl %0,%%eax" ::"m" (*pony) : "eax");
+        asm("movl %0,%%eax" ::"m" (callp): "eax");
         asm("int $0x80");
 
     }

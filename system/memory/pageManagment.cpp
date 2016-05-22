@@ -11,23 +11,23 @@
 pageManagment::bitMapPage *pageManagment::bitMapPagePointer;
 
 u32 pageManagment::totalPages;
-u32 pageManagment::totalCount;
-//u32 pageManagment::lastPagesBitCount;
+u32 pageManagment::totalCountReserved; //This pages are reserved for memory manager. Each page manage 128MB
+u32 pageManagment::lastPagesBitCount;
 
 void pageManagment::setup(u32 totalPages) {
     pageManagment::totalPages = totalPages;
-    totalCount = totalPages / (sizeof (bitMapPage) * byteSize);
-    totalCount++; //because pages has base of 0
+    totalCountReserved = totalPages / (sizeof (bitMapPage) * byteSize);
+    totalCountReserved++; //because pages has base of 0
 //    u32 currentPage = ((u32) ((u32) baseMemoryPointer + usedMemoryCounter + pageSize) >> 12);
 //    usedMemoryCounter += (pageSize*totalPages);
     
             
     bitMapPagePointer = (bitMapPage*)baseMemoryPointer;
-    u32 *to = (u32*)((((u32)bitMapPagePointer>>12)+totalCount) *pageSize);
+    u32 *to = (u32*)((((u32)bitMapPagePointer>>12)+totalCountReserved) *pageSize);
     pageManagment::setRangeBusy((u32*)bitMapPagePointer,to);
     //bitMapPagePointer = new bitMapPage [sizeof (bitMapPage) * totalCount];
     u32 pagesToMark = ((u32) bitMapPagePointer >> 12);
-    for (u16 i = 0; i < totalCount; i++) {
+    for (u16 i = 0; i < totalCountReserved; i++) {
         pageManagment::clearPage((bitMapPage*) (pagesToMark * pageSize));
         pageManagment::setBusy((u32*) (pagesToMark * pageSize));
         pagesToMark++;
@@ -68,14 +68,18 @@ void pageManagment::clearPage(bitMapPage *adrss) {
 
 u32 *pageManagment::getFree() {
     u32 pageRet = 0;
-    for (u32 pageIndex = 0; pageIndex < totalCount; pageIndex++) {
+    for (u32 pageIndex = 0; pageIndex < totalCountReserved; pageIndex++) {
         for (u32 byteIndex = 0; byteIndex < sizeof (bitMapPage); byteIndex++) {
             for (u32 bitIndex = 0; bitIndex < byteSize; bitIndex++) {
                 if (pageManagment::bitMapPagePointer[pageIndex].bytes[byteIndex]
                         .getBit(bitIndex) == free) {
                     pageManagment::bitMapPagePointer[pageIndex].bytes[byteIndex]
                             .setBit(bitIndex, used);
+                    if(pageRet <= totalPages){
                     return (u32*) (pageRet * pageSize);
+                    } else{
+                        return (u32*) - 1;
+                    }
                 }
                 pageRet++;
             }

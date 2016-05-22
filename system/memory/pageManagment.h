@@ -6,7 +6,7 @@
  */
 
 #ifndef PAGEMANAGMENT_H
-#define	PAGEMANAGMENT_H
+#define PAGEMANAGMENT_H
 #include "../../util/util.h"
 #include "../monitor/Console.h"
 #include "Memory.h"
@@ -97,15 +97,16 @@ class pageManagment {
 
     static bitMapPage *bitMapPagePointer;
 
-    static u32 totalPages;
-    static u32 totalCount;
-    static u32 lastPagesBitCount;
+
 
 public:
+    static u32 totalPages;
+    static u32 totalCountReserved;
+    static u32 lastPagesBitCount;
 
     static void setup(u32 totalPages);
     static void setBusy(u32 *adrss);
-    static void setRangeBusy(u32 *adrss,u32 *adrss2);
+    static void setRangeBusy(u32 *adrss, u32 *adrss2);
     static void setFree(u32 *adrss);
     static void clearPage(bitMapPage *adrss);
     static u32 *getFree();
@@ -119,5 +120,5 @@ private:
 
 };
 
-#endif	/* PAGEMANAGMENT_H */
+#endif /* PAGEMANAGMENT_H */
 

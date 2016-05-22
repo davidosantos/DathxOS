@@ -7,15 +7,19 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/david/Documents/Dathx%20OS/system/Tasks/Tasks.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/processor.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/drivers/APIC.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/Interrupts.asm</file>
-            <file>file:/home/david/Documents/Dathx%20OS/system/processor.h</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/DathxMain.cpp</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/Tasks/Tasks.cpp</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/Tasks/Tasks.h</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/autoCheck.cpp</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/Start.asm</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/RunTime/ElfLoader.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/drivers/APIC.h</file>
             <file>file:/home/david/Documents/Dathx%20OS/scripts/createboot.sh</file>
+            <file>file:/home/david/Documents/Dathx%20OS/system/memory/Paging.cpp</file>
             <file>file:/home/david/Documents/Dathx%20OS/system/drivers/msr.h</file>
-            <file>file:/home/david/Documents/Dathx%20OS/system/DathxMain.cpp</file>
         </group>
     </open-files>
 </project-private>

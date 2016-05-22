@@ -1,4 +1,4 @@
-[BITS 32]
+;[BITS 32]
 ;This File Contains interrups addresses
 section .text
 align 4
@@ -22,6 +22,7 @@ align 4
 [EXTERN fsReg]
 [EXTERN gsReg]
 [EXTERN cr3Reg]
+[EXTERN kerPageDir]
 
 [EXTERN SyscallsDelivery]
 
@@ -100,20 +101,10 @@ align 4
 %macro saveALL 0
 ;cli
 pushad
-push ss
-push gs
-push ds
-push es
-push fs
 
 %endmacro
 
 %macro restoreALL 0
-pop fs
-pop es
-pop ds
-pop gs
-pop ss
 popad
 ;sti
 %endmacro
@@ -299,15 +290,29 @@ call Stackexception
 restoreALL
 iretd
 InternalInterrupt13:
-saveALL
+cli
+;mov     dword   [SavedErrorCode],esp  ;get error code address
+;saveALL
+;push    dword   [SavedErrorCode]
 call Generalprotection
-restoreALL
+;restoreALL
 iretd
 InternalInterrupt14:
+cli
+mov     dword   [SavedErrorCode],esp  ;get error code address
 saveALL
-call Pagefault
+cld
+mov     dword   eax,cr3
+mov     dword   [SavedPageDir],eax
+push    dword   [SavedPageDir]
+push    dword   [SavedErrorCode]
+call            Pagefault
+pop     dword   eax ;remove arg1
+pop     dword   eax ;remove arg2
+pop     dword   eax ;remove erro code
 restoreALL
 iretd
+
 InternalInterrupt15:
 saveALL
 call reserved1
@@ -398,9 +403,11 @@ iretd
 
 
 ExternalInterrupt00:
-cli
+cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ00
+mov     dword   eax,[kerPageDir]
+mov     dword   cr3,eax                     ;hangle task switch in kernel page dir
 call IntsReturnTaskSwitch
 restoreTaskState
 iretd
@@ -574,3 +581,8 @@ ret
 ;restoreALL
 ;iretd
 
+section .data
+align 4
+
+SavedErrorCode dd 0
+SavedPageDir dd 0
