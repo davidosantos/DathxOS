@@ -23,7 +23,9 @@ void Syscalls::interruptReceiver(u32 function) {
         switch (directive->Function) {
             case 1: //Print Text
                 switch (directive->Subfunction) {
-
+                    case 1:
+                        Console::print(directive->y, directive->x, directive->String);
+                        break;
 
                     case 2:
                         Console::print(directive->y, directive->x, directive->String, directive->Value);

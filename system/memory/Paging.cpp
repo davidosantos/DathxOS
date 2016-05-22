@@ -166,7 +166,7 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
         //if the page table pointed by pdIndex is already present, the use the same
         if (pageDir->dir[pdIndex].phys && pageDir->dir[pdIndex].Present) {
             pTable = (PagesTable*) (pageDir->dir[pdIndex].phys << 12);
-            } else {
+        } else {
             //get page table physical address and convert to logical
             pTable = (PagesTable*) getNewPage();
             //Console::print("pTable %h", (u32)pTable);
