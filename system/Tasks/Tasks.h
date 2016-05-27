@@ -11,6 +11,7 @@
 #include "../../system/memory/Paging.h"
 #include "../../system/memory/Memory.h"
 #include "../drivers/APIC.h"
+#include "../RunTime/ElfLoader.h"
 
 
 extern u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg;
@@ -25,7 +26,10 @@ public:
     static void interruptReceiver();
 
     //void NewTask(const s8 *name, u32 Addrs);
-    static void NewTask(const s8 *name, u32 Addrs, Paging::PagesDir *pageDir, u32 *stack, u32 stackSize);
+    
+    static void createProcess(const s8 *file);
+    
+    static void NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDir, u32 *stack, u32 stackSize);
 
     static void NewInternalTask(u16 entry, const s8 *name, bool loadTaskReg, void (*Addrs)());
 
@@ -74,7 +78,7 @@ public:
         const s8 *Name;
         u16 Selector; //>> by 3 to get the gdt entry
         u32 PID;
-        u32 Addrs;
+        void (*Addrs)();
         TSS* taskState;
     } __attribute__((packed));
 

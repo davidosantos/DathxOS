@@ -140,40 +140,16 @@ Program Headers:
 
  */
 
-returnCode ElfLoader::loadProgram() {
-    Paging::PagesDir *pageDir = Paging::getNewDir();
-    u8 *loadAddrs; // = (u32*) Paging::getNewPage();
-    //Paging::mapRange(sHeader[i].sh_addr, sHeader[i].sh_size,pageDir,loadAddrs);
-
-    loadAddrs = new u8 [pHeader[0].p_memsz];
-
-    //Console::print("pageDir %h", (u32) pageDir);
-   // Console::print("loadAddrs %h", (u32) loadAddrs);
-
+returnCode ElfLoader::loadProgram(Paging::PagesDir *pageDir) {
     
-   Paging::mapRange(0, 0x800000, pageDir, 0);
-    
-
-    Paging::mapRange(pHeader[0].p_vaddr, (pHeader[0].p_vaddr +
-            pHeader[0].p_memsz), pageDir, (u32*) loadAddrs);
-    //10000), pageDir, (u32*) loadAddrs);
-
-
     for (u8 i = 0; i < Header->e_shnum; i++) {
 
         if (sHeader[i].sh_type != 0 && (sHeader[i].sh_size != 0 && sHeader[i].sh_addr != 0)) {
 
-            if (strcmp((const char*) (stringTable + sHeader[i].sh_name), ".bss")) {
-               // Console::print("section bss %i", i);
-            } else {
-
+            if (!strcmp((const char*) (stringTable + sHeader[i].sh_name), ".bss")) {
+            
                 if (file.read(sHeader[i].sh_offset, sHeader[i].sh_size,
                         (u8*) Paging::getPhysAddrs((u32*) sHeader[i].sh_addr, pageDir)) == OK) {
-
-                    //Console::print("section num %i", i);
-                    //Console::print("Add at prog %h", sHeader[i].sh_addr);
-                    //Console::print("Add at phys %h", (u32) Paging::getPhysAddrs((u32*)sHeader[i].sh_addr, pageDir));
-                    //falta carregar
                 } else {
                     return Error;
                 }
@@ -181,9 +157,6 @@ returnCode ElfLoader::loadProgram() {
         }
     }
 
-    u32 *stack = new u32 [100];
-
-    Tasks::NewTask("File", Header->e_entry, pageDir, stack, 100);
     return OK;
 }
 

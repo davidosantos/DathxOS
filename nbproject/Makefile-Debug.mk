@@ -35,16 +35,19 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/DathxLib/Drivers.o \
 	${OBJECTDIR}/system/Cmos.o \
 	${OBJECTDIR}/system/DathxMain.o \
 	${OBJECTDIR}/system/Interrupts.o \
 	${OBJECTDIR}/system/RunTime/ElfLoader.o \
+	${OBJECTDIR}/system/RunTime/IRQHandler.o \
+	${OBJECTDIR}/system/RunTime/SysCallHandler.o \
 	${OBJECTDIR}/system/Start.o \
-	${OBJECTDIR}/system/Syscalls.o \
 	${OBJECTDIR}/system/Tasks/Tasks.o \
 	${OBJECTDIR}/system/autoCheck.o \
 	${OBJECTDIR}/system/drivers/APIC.o \
 	${OBJECTDIR}/system/drivers/Chip8259.o \
+	${OBJECTDIR}/system/drivers/DriverLoader.o \
 	${OBJECTDIR}/system/drivers/HardDriveDriver.o \
 	${OBJECTDIR}/system/drivers/HardwareIO.o \
 	${OBJECTDIR}/system/fs/FAT32.o \
@@ -82,6 +85,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dathx_os: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dathx_os ${OBJECTFILES} ${LDLIBSOPTIONS} -T ./scripts/link.ld -o "./bin/DathxKernel.bin"
 
+${OBJECTDIR}/DathxLib/Drivers.o: DathxLib/Drivers.cpp 
+	${MKDIR} -p ${OBJECTDIR}/DathxLib
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/DathxLib/Drivers.o DathxLib/Drivers.cpp
+
 ${OBJECTDIR}/system/Cmos.o: system/Cmos.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system
 	${RM} "$@.d"
@@ -101,14 +109,19 @@ ${OBJECTDIR}/system/RunTime/ElfLoader.o: system/RunTime/ElfLoader.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/RunTime/ElfLoader.o system/RunTime/ElfLoader.cpp
 
+${OBJECTDIR}/system/RunTime/IRQHandler.o: system/RunTime/IRQHandler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/system/RunTime
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/RunTime/IRQHandler.o system/RunTime/IRQHandler.cpp
+
+${OBJECTDIR}/system/RunTime/SysCallHandler.o: system/RunTime/SysCallHandler.cpp 
+	${MKDIR} -p ${OBJECTDIR}/system/RunTime
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/RunTime/SysCallHandler.o system/RunTime/SysCallHandler.cpp
+
 ${OBJECTDIR}/system/Start.o: system/Start.asm 
 	${MKDIR} -p ${OBJECTDIR}/system
 	$(AS) $(ASFLAGS) -g -o ${OBJECTDIR}/system/Start.o system/Start.asm
-
-${OBJECTDIR}/system/Syscalls.o: system/Syscalls.cpp 
-	${MKDIR} -p ${OBJECTDIR}/system
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/Syscalls.o system/Syscalls.cpp
 
 ${OBJECTDIR}/system/Tasks/Tasks.o: system/Tasks/Tasks.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/Tasks
@@ -129,6 +142,11 @@ ${OBJECTDIR}/system/drivers/Chip8259.o: system/drivers/Chip8259.cpp
 	${MKDIR} -p ${OBJECTDIR}/system/drivers
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/drivers/Chip8259.o system/drivers/Chip8259.cpp
+
+${OBJECTDIR}/system/drivers/DriverLoader.o: system/drivers/DriverLoader.cpp 
+	${MKDIR} -p ${OBJECTDIR}/system/drivers
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/drivers/DriverLoader.o system/drivers/DriverLoader.cpp
 
 ${OBJECTDIR}/system/drivers/HardDriveDriver.o: system/drivers/HardDriveDriver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/drivers

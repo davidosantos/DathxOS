@@ -18,18 +18,22 @@
 #include "Cmos.h"
 #include "drivers/Chip8259.h"
 #include "drivers/APIC.h"
+#include "RunTime/IRQHandler.h"
+#include "drivers/DriverLoader.h"
 
 #define KernelStackSize 0x1000
 #define initFs yes
-#define DEBUG
-
+//#define DEBUG
+//#define showMultiboot
 
 
 Time time;
 Date date;
 
 extern "C" u32 Kernel_Code_Start;
+extern "C" u32 Kernel_Code_End;
 extern "C" u32 Kernel_Data_Start;
+extern "C" u32 Kernel_Data_End;
 extern "C" u32 Kernel_BSS_Start;
 extern "C" u32 Kernel_BSS_End;
 
@@ -57,14 +61,22 @@ static u32 magic_code;
 static processor::CPUString cpustr;
 static processor::CPUFeatures cpuFeature;
 
-static Paging::PagesDir *kernelPageDir;
+static Paging::PagesDir *kernel_Page_Directory;
 
 extern "C" void ExternalInterrupt00();
+
+void test() {
+    Console::print("My Handler");
+}
+
+void test2() {
+    /// Console::print("My Handler2");
+}
 
 /*
  * 
  */
-int main() { //David test 
+int main() {
 
     asm("cli");
     asm("movl %%ebx,%0 " ::"m" (multiboot_Info));
@@ -72,50 +84,67 @@ int main() { //David test
 
     totalMemoryInKB = (multiboot_Info->mem_lower + multiboot_Info->mem_upper);
     totalMemoryAdress = (multiboot_Info->mem_lower + multiboot_Info->mem_upper)*1024 / 4;
-    baseMemoryPointer = (u32*) ((((u32) & Kernel_BSS_End >> 12) + 2) * 0x1000); //base memory begins 2 pages after the kernel
-    // static u8 *Kernel_Stack = new u8 [KernelStackSize];
-    Kernel_Stack_END = ((((u32) & Kernel_BSS_End >> 12) + 1) * 0x1000) - 1; //(u32) Kernel_Stack + KernelStackSize - 1;
-    Kernel_Stack_START = (u32) & Kernel_BSS_End; //(u32) Kernel_Stack;
+
+    baseMemoryPointer = (u32*) ((((u32) & Kernel_BSS_End >> 12) + 2) * 0x1000); //2 pages after the kernel
+    Kernel_Stack_END = ((((u32) & Kernel_BSS_End >> 12) + 1) * 0x1000) - 1;
+    Kernel_Stack_START = (u32) & Kernel_BSS_End + 1;
     asm("movl %0,%%esp " ::"m" (Kernel_Stack_END));
     asm("movl %0,%%ebp " ::"m" (Kernel_Stack_START));
 
 
-
-    // topMemoryPointer = (u32*) ((multiboot_Info->mem_lower + multiboot_Info->mem_upper)*1024 / 4);
-    
     //--------------------------Memory config ------------------------
     pageManagment::setup(totalMemoryInKB * 1024 / 4096);
     pageManagment::setRangeBusy(0, baseMemoryPointer);
 
+    if (multiboot_Info->mmap_info == 1) {
+        memory_map_t *mmap = (memory_map*) multiboot_Info->mmap_addr;
+
+        for (mmap = (memory_map_t *) multiboot_Info->mmap_addr;
+                (unsigned long) mmap < multiboot_Info->mmap_addr + multiboot_Info->mmap_length;
+                mmap = (memory_map_t *) ((unsigned long) mmap
+                + mmap->size + sizeof (mmap->size))) {
+            if (mmap->type != MULTIBOOT_MEMORY_AVAILABLE) {
+                u32 *rsvd_start = (u32*) (mmap->base_addr_low + mmap->base_addr_high);
+                u32 *rsvd_end = (u32*) ((mmap->base_addr_low + mmap->base_addr_high) + (u32) (mmap->length_low + mmap->length_high));
+                pageManagment::setRangeBusy(rsvd_start, rsvd_end);
+            }
+        }
+    }
+
+    kernel_Page_Directory = Paging::getNewDir();
 
     processor::setupGDT();
     processor::setupIDT();
     //processor::setupLDT();
-    kernelPageDir = Paging::getNewDir();
-    kerPageDir = (u32) kernelPageDir;
-    Paging::mapRange(0, totalMemoryAdress, kernelPageDir, 0);
-    processor::loadPDBR(kernelPageDir);
+
+    kerPageDir = (u32) kernel_Page_Directory;
+    Paging::mapRange(0, totalMemoryAdress, kernel_Page_Directory, 0);
+    processor::loadPDBR(kernel_Page_Directory);
     processor::enablePaging();
 
     cpustr = processor::getCPUString();
     cpuFeature = processor::getCPUFeatures();
-//    Console::print("CPU: %s", cpustr.String);
-//    Console::print("CPU has Apic: %s", cpuFeature.APIC == 1 ? "Yes" : "No");
-//    Console::print("CPU ApicID %h", cpuFeature.ApicID);
-//    Console::print("CPU FamilyId %h", cpuFeature.FamilyId);
-//    Console::print("CPU Model Specific %h", cpuFeature.MSR);
-//    Console::print("CPU x2APIC  %h", cpuFeature.x2APIC);
-//    Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
-//    Console::print("CPU Processor Type: %s", processor::getTypeStr(cpuFeature.ProcessorType));
+    //    Console::print("CPU: %s", cpustr.String);
+    //    Console::print("CPU has Apic: %s", cpuFeature.APIC == 1 ? "Yes" : "No");
+    //    Console::print("CPU ApicID %h", cpuFeature.ApicID);
+    //    Console::print("CPU FamilyId %h", cpuFeature.FamilyId);
+    //    Console::print("CPU Model Specific %h", cpuFeature.MSR);
+    //    Console::print("CPU x2APIC  %h", cpuFeature.x2APIC);
+    //    Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
+    //    Console::print("CPU Processor Type: %s", processor::getTypeStr(cpuFeature.ProcessorType));
 
 
+    Console::print("%ct9Welcome to Dathx OS RUTH E DAVID");
+    Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
 
     //--------------------------Hardware config ------------------------
+    IRQHandler::setup();
+   // IRQHandler::add(0, test2);
 
     if (cpuFeature.APIC == ON) {
         Chip8259::remap(32); // remap to 32
         //Chip8259::Mask();
-        APIC::setup(&cpuFeature, kernelPageDir);
+        APIC::setup(&cpuFeature, kernel_Page_Directory);
         APIC::startTimer(100000);
         APIC::enableAPIC();
     } else {
@@ -132,65 +161,55 @@ int main() { //David test
     HardDriveDriver::setup(0);
     MBR::setup();
     FAT::setup();
+    Tasks::createProcess("bin/apptorunonkernel.bin");
+    //Tasks::createProcess("bin/integrit_checker");
+
+  //  DriverLoader::loadDriver("drivers/keyboardfordathxos.dri");
+    DriverLoader::loadDriver("drivers/keyboard.dri");
+  
 #endif
+#ifdef showMultiboot
 
+    Console::print("%ct\12mem_info %h", multiboot_Info->mem_info);
+    Console::print("%ct\12mmap_info %h", multiboot_Info->mmap_info);
+    if (multiboot_Info->mmap_info == 1) {
+        memory_map_t *mmap = (memory_map*) multiboot_Info->mmap_addr;
 
-
-
-    Console::print("%ct9Welcome to Dathx OS RUTH E DAVID");
-#ifdef DEBUG
-    Console::print("%ct\12Kernel_Stack_START %h", Kernel_Stack_START);
-    Console::print("%ct\12Kernel_Stack_END %h", Kernel_Stack_END);
-    Console::print("%ct\12Kernel Magic Code %h", magic_code);
-
-    Console::print("%ct\12Kernel_Code_Start %h", (u32) & Kernel_Code_Start);
-    Console::print("%ct\12Kernel_Data_Start %h", (u32) & Kernel_Data_Start);
-    Console::print("%ct\12Kernel_BSS_Start %h", (u32) & Kernel_BSS_Start);
-    Console::print("%ct\12Kernel_BSS_End %h", (u32) & Kernel_BSS_End);
-    Console::print("%ct\12intsStart %h", (u32) & intsStart);
-    Console::print("%ct\12intsEnd %h", (u32) & intsEnd);
-    Console::print("%ct\12totalMemoryInKB %h", totalMemoryInKB);
-
-    Console::print("%ct\12Machine Memory: %i MB", (totalMemoryInKB / 1024));
-    Console::print("%ct\12Machine Memory: %h bytes", totalMemoryInKB * 1024);
-    //  Console::print("%ct\12Machine Memory Top: %h bytes", (multiboot_Info->mem_lower + multiboot_Info->mem_upper)*1024/4);
-    //    u32 *t = paging->getPhysAddrs((u32)(multiboot_Info->mem_lower + multiboot_Info->mem_upper)*1024/4,paging->ppageDir);
-    //    Console::print("%ct\12Machine Memory Top: %h bytes",(u32)t);
-
-    Console::print("%ct\12Machine Memory: %i pages", totalMemoryInKB * 1024 / 4096);
-#endif
-#ifdef initFs
-    ElfLoader *exec = new ElfLoader();
-
-    for (int i = 0; i < 1; i++) {
-
-        if (exec->openFile("bin/apptorunonkernel.bin") == OK) {
-
-            if (exec->loadProgram() == Error) {
-                Console::print("%cttLoadError");
+        for (mmap = (memory_map_t *) multiboot_Info->mmap_addr;
+                (unsigned long) mmap < multiboot_Info->mmap_addr + multiboot_Info->mmap_length;
+                mmap = (memory_map_t *) ((unsigned long) mmap
+                + mmap->size + sizeof (mmap->size))) {
+            if (mmap->type != MULTIBOOT_MEMORY_AVAILABLE) {
+                u32 *rsvd_start = (u32*) (mmap->base_addr_low + mmap->base_addr_high);
+                u32 *rsvd_end = (u32*) ((mmap->base_addr_low + mmap->base_addr_high) + (u32) (mmap->length_low + mmap->length_high));
+                Console::print("Reserved from %h", (u32) rsvd_start);
+                Console::print("Reserved to %h", (u32) rsvd_end);
             }
-
-            Console::print("%ctuapp.bin Opened");
-        } else {
-            Console::print("%cttapp.bin open error");
         }
+
+
     }
 
-//    ElfLoader *exec2 = new ElfLoader();
-//
-//    for (int i = 0; i < 1; i++) {
-//
-//        if (exec2->openFile("bin/integrit_checker") == OK) {
-//
-//            if (exec2->loadProgram() == Error) {
-//                Console::print("%cttintegrit_checker load error");
-//            }
-//
-//            Console::print("%ctuintegrit_checker Opened");
-//        } else {
-//            Console::print("%cttintegrit_checker open error");
-//        }
-//    }
+#endif
+#ifdef DEBUG
+    Console::print("%ct\12Multiboot Magic Code %h", magic_code);
+    Console::print("%ct\12Kernel_Code_Start %h", (u32) & Kernel_Code_Start);
+    Console::print("%ct\12intsStart %h", (u32) & intsStart);
+    Console::print("%ct\12intsEnd %h", (u32) & intsEnd);
+    Console::print("%ct\12Kernel_Code_End %h", (u32) & Kernel_Code_End);
+    Console::print("%ct\12Kernel_Data_Start %h", (u32) & Kernel_Data_Start);
+    Console::print("%ct\12Kernel_Data_End %h", (u32) & Kernel_Data_End);
+    Console::print("%ct\12Kernel_BSS_Start %h", (u32) & Kernel_BSS_Start);
+    Console::print("%ct\12Kernel_BSS_End %h", (u32) & Kernel_BSS_End);
+    Console::print("%ct\12Kernel_Stack_START %h", Kernel_Stack_START);
+    Console::print("%ct\12Kernel_Stack_END %h", Kernel_Stack_END);
+    Console::print("%ct\12Kernel_Page_Dir %h", (u32) kernel_Page_Directory);
+
+    Console::print("%ct\12totalMemoryAdress %i", totalMemoryAdress);
+    Console::print("%ct\12totalMemoryInKB %i", totalMemoryInKB);
+    Console::print("%ct\12Machine Memory: %i MB", (totalMemoryInKB / 1024));
+    Console::print("%ct\12Machine Memory: %i bytes", totalMemoryInKB * 1024);
+    Console::print("%ct\12Machine Memory: %i pages", totalMemoryInKB * 1024 / 4096);
 
 #endif
 
@@ -201,12 +220,14 @@ int main() { //David test
         var++;
         //asm("int $32");
         // asm("sti");
-        //Console::print(47,0,"%getFree: %h", (u32) pageManagment::getFree());
-        Console::print(39, 0, "%cb7pageManagment::totalPages: %i     ", (u32) pageManagment::totalPages);
-        Console::print(41, 0, "%cb7pageManagment::totalCount: %i     ", (u32) pageManagment::totalCountReserved);
+        //Console::print("%getFree: %h", (u32) pageManagment::getFree());
+        // Console::print(39, 0, "%cb7pageManagment::totalPages: %i     ", (u32) pageManagment::totalPages);
+        //Console::print(41, 0, "%cb7pageManagment::totalCount: %i     ", (u32) pageManagment::totalCountReserved);
         //Console::print(43, 0, "%cb7pageManagment::getFree(): %i     ", (u32) pageManagment::getFree());
-        Console::print(45, 0, "%cb5APIC::getCurrentCount(): %h     ", APIC::getCurrentCount());
+        //Console::print(45, 0, "%cb5APIC::getCurrentCount(): %h     ", APIC::getCurrentCount());
         Console::print(49, 0, "%cb2Loop: %h", var);
+        Console::print(49, 26, "%cb2CR3: %h", processor::getPDBR());
+        Console::print(49, 54, "%cb2KPD: %h", (u32) kernel_Page_Directory);
         //Console::print(45, 0, "%ct\13%cbbUsed Memory: %h bytes", (u32) getUsedMemory());
         //Console::print(47, 0, "%ct\13%cbtTopMemory: %h bytes", (u32) topMemoryPointer);
         //asm("ljmp $0x190,$0 ");

@@ -1,0 +1,439 @@
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x10000c
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          200380 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         4
+  Size of section headers:           40 (bytes)
+  Number of section headers:         17
+  Section header string table index: 14
+
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .text             PROGBITS        00100000 001000 007000 00  AX  0   0 16
+  [ 2] .data             PROGBITS        00107000 008000 001000 00  WA  0   0  4
+  [ 3] .bss              NOBITS          00108000 008000 012000 00  WA  0   0 32
+  [ 4] .debug_info       PROGBITS        00000000 009000 0162e6 00      0   0  1
+  [ 5] .debug_abbrev     PROGBITS        00000000 01f2e6 00405e 00      0   0  1
+  [ 6] .debug_aranges    PROGBITS        00000000 023344 000298 00      0   0  1
+  [ 7] .debug_line       PROGBITS        00000000 0235dc 001acf 00      0   0  1
+  [ 8] .debug_str        PROGBITS        00000000 0250ab 004ddf 01  MS  0   0  1
+  [ 9] .comment          PROGBITS        00000000 029e8a 00002d 01  MS  0   0  1
+  [10] .debug_loc        PROGBITS        00000000 029eb7 002e56 00      0   0  1
+  [11] .stab             PROGBITS        00000000 02cd10 000ac8 0c     12   0  4
+  [12] .stabstr          STRTAB          00000000 02d7d8 000028 00      0   0  1
+  [13] .debug_ranges     PROGBITS        00000000 02d800 000238 00      0   0  1
+  [14] .shstrtab         STRTAB          00000000 030e1c 00009d 00      0   0  1
+  [15] .symtab           SYMTAB          00000000 02da38 001700 10     16  59  4
+  [16] .strtab           STRTAB          00000000 02f138 001ce4 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  LOAD           0x001000 0x00100000 0x00100000 0x07000 0x07000 R E 0x1000
+  LOAD           0x008000 0x00108000 0x00108001 0x00000 0x12000 RW  0x1000
+  LOAD           0x008000 0x00107000 0x00207001 0x01000 0x01000 RW  0x1000
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x10
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .text 
+   01     .bss 
+   02     .data 
+   03     
+
+There is no dynamic section in this file.
+
+There are no relocations in this file.
+
+The decoding of unwind sections for machine type Intel 80386 is not currently supported.
+
+Symbol table '.symtab' contains 368 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 00100000     0 SECTION LOCAL  DEFAULT    1 
+     2: 00107000     0 SECTION LOCAL  DEFAULT    2 
+     3: 00108000     0 SECTION LOCAL  DEFAULT    3 
+     4: 00000000     0 SECTION LOCAL  DEFAULT    4 
+     5: 00000000     0 SECTION LOCAL  DEFAULT    5 
+     6: 00000000     0 SECTION LOCAL  DEFAULT    6 
+     7: 00000000     0 SECTION LOCAL  DEFAULT    7 
+     8: 00000000     0 SECTION LOCAL  DEFAULT    8 
+     9: 00000000     0 SECTION LOCAL  DEFAULT    9 
+    10: 00000000     0 SECTION LOCAL  DEFAULT   10 
+    11: 00000000     0 SECTION LOCAL  DEFAULT   11 
+    12: 00000000     0 SECTION LOCAL  DEFAULT   12 
+    13: 00000000     0 SECTION LOCAL  DEFAULT   13 
+    14: 00000000     0 FILE    LOCAL  DEFAULT  ABS system/Start.asm
+    15: 00000028     0 NOTYPE  LOCAL  DEFAULT  ABS STACKSIZE
+    16: 00000001     0 NOTYPE  LOCAL  DEFAULT  ABS MBOOT_PAGE_ALIGN
+    17: 00000002     0 NOTYPE  LOCAL  DEFAULT  ABS MBOOT_MEM_INFO
+    18: 1badb002     0 NOTYPE  LOCAL  DEFAULT  ABS MBOOT_HEADER_MAGIC
+    19: 00000003     0 NOTYPE  LOCAL  DEFAULT  ABS MBOOT_HEADER_FLAGS
+    20: e4524ffb     0 NOTYPE  LOCAL  DEFAULT  ABS MBOOT_CHECKSUM
+    21: 00107008     4 OBJECT  LOCAL  DEFAULT    2 saveEax
+    22: 0010700c     4 OBJECT  LOCAL  DEFAULT    2 saveEbx
+    23: 00108090     1 OBJECT  LOCAL  DEFAULT    3 stackStart
+    24: 001080b8     0 NOTYPE  LOCAL  DEFAULT    3 stackEnd
+    25: 00000000     0 FILE    LOCAL  DEFAULT  ABS DathxMain.cpp
+    26: 00108080     4 OBJECT  LOCAL  DEFAULT    3 _ZL14multiboot_Info
+    27: 0010807c     4 OBJECT  LOCAL  DEFAULT    3 _ZL10magic_code
+    28: 00108088     4 OBJECT  LOCAL  DEFAULT    3 _ZL16Kernel_Stack_END
+    29: 00108084     4 OBJECT  LOCAL  DEFAULT    3 _ZL18Kernel_Stack_START
+    30: 00108068     4 OBJECT  LOCAL  DEFAULT    3 _ZL21kernel_Page_Director
+    31: 0010806c    16 OBJECT  LOCAL  DEFAULT    3 _ZL10cpuFeature
+    32: 00108064     4 OBJECT  LOCAL  DEFAULT    3 _ZZ4mainE3var
+    33: 00000000     0 FILE    LOCAL  DEFAULT  ABS system/Interrupts.asm
+    34: 00107000     4 OBJECT  LOCAL  DEFAULT    2 SavedErrorCode
+    35: 00107004     4 OBJECT  LOCAL  DEFAULT    2 SavedPageDir
+    36: 00000000     0 FILE    LOCAL  DEFAULT  ABS Drivers.cpp
+    37: 00000000     0 FILE    LOCAL  DEFAULT  ABS Syscalls.cpp
+    38: 00000000     0 FILE    LOCAL  DEFAULT  ABS Cmos.cpp
+    39: 00000000     0 FILE    LOCAL  DEFAULT  ABS ElfLoader.cpp
+    40: 00000000     0 FILE    LOCAL  DEFAULT  ABS IRQHandler.cpp
+    41: 00000000     0 FILE    LOCAL  DEFAULT  ABS Tasks.cpp
+    42: 00000000     0 FILE    LOCAL  DEFAULT  ABS autoCheck.cpp
+    43: 00000000     0 FILE    LOCAL  DEFAULT  ABS APIC.cpp
+    44: 00000000     0 FILE    LOCAL  DEFAULT  ABS Chip8259.cpp
+    45: 00000000     0 FILE    LOCAL  DEFAULT  ABS HardDriveDriver.cpp
+    46: 00000000     0 FILE    LOCAL  DEFAULT  ABS HardwareIO.cpp
+    47: 00000000     0 FILE    LOCAL  DEFAULT  ABS FAT32.cpp
+    48: 00000000     0 FILE    LOCAL  DEFAULT  ABS File.cpp
+    49: 00000000     0 FILE    LOCAL  DEFAULT  ABS MBR.cpp
+    50: 00000000     0 FILE    LOCAL  DEFAULT  ABS Memory.cpp
+    51: 00000000     0 FILE    LOCAL  DEFAULT  ABS Paging.cpp
+    52: 00000000     0 FILE    LOCAL  DEFAULT  ABS pageManagment.cpp
+    53: 00000000     0 FILE    LOCAL  DEFAULT  ABS Console.cpp
+    54: 00000000     0 FILE    LOCAL  DEFAULT  ABS processor.cpp
+    55: 00103777     0 NOTYPE  LOCAL  DEFAULT    1 flush
+    56: 00103a89     0 NOTYPE  LOCAL  DEFAULT    1 flushp
+    57: 00119308     4 OBJECT  LOCAL  DEFAULT    3 _ZL10pageFaults
+    58: 00000000     0 FILE    LOCAL  DEFAULT  ABS util.cpp
+    59: 00100000     0 NOTYPE  GLOBAL DEFAULT  ABS phys
+    60: 00100640    33 FUNC    GLOBAL DEFAULT    1 _ZN4CmosC2Ev
+    61: 0010050b     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt02
+    62: 0010141c     2 FUNC    GLOBAL DEFAULT    1 _ZN4APICC1Ev
+    63: 00103acc    10 FUNC    GLOBAL DEFAULT    1 _ZN9processor8Set_TrapEv
+    64: 00104097   354 FUNC    GLOBAL DEFAULT    1 Pagefault
+    65: 00103064     2 FUNC    GLOBAL DEFAULT    1 _ZN7Console13update_curso
+    66: 001029da    19 FUNC    GLOBAL DEFAULT    1 _ZN6Paging9allocPageEjt
+    67: 00101794    61 FUNC    GLOBAL DEFAULT    1 _ZN8Chip825914AnableRTCIn
+    68: 0010051b     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt04
+    69: 00119228     4 OBJECT  GLOBAL DEFAULT    3 _ZN9processor10IDTCounter
+    70: 00100020    17 FUNC    GLOBAL DEFAULT    1 _Z4testv
+    71: 00100da0    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ05
+    72: 00100bc6     2 FUNC    GLOBAL DEFAULT    1 _ZN10IRQHandlerC2Ev
+    73: 001009d2   310 FUNC    GLOBAL DEFAULT    1 _ZN9ElfLoader8openFileEPK
+    74: 00100e6b    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ12
+    75: 00100e4e    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ11
+    76: 00102652    38 FUNC    GLOBAL DEFAULT    1 _ZN3FAT11readClusterEjP4u
+    77: 00100708   160 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos7GetDateEv
+    78: 00100bc8    93 FUNC    GLOBAL DEFAULT    1 _ZN10IRQHandler5setupEv
+    79: 00104236    75 FUNC    GLOBAL DEFAULT    1 Coprecessorerror
+    80: 00101fa8    24 FUNC    GLOBAL DEFAULT    1 _ZN3FAT9getSectorEj
+    81: 00102d04    85 FUNC    GLOBAL DEFAULT    1 _ZN13pageManagment7setFre
+    82: 00103a8a     4 FUNC    GLOBAL DEFAULT    1 _ZN9processor7getPDBREv
+    83: 00100328     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt09
+    84: 00100318     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt07
+    85: 00101ec6   217 FUNC    GLOBAL DEFAULT    1 _ZN3FAT21findNextLongName
+    86: 00109164     2 OBJECT  GLOBAL DEFAULT    3 _ZN7Console9PosxInputE
+    87: 0010920c     4 OBJECT  GLOBAL DEFAULT    3 _ZN9processor8PointIDTE
+    88: 00100ee0   860 FUNC    GLOBAL DEFAULT    1 _ZN5Tasks17interruptRecei
+    89: 00107001     0 NOTYPE  GLOBAL DEFAULT  ABS Kernel_Data_Start
+    90: 00101d82   323 FUNC    GLOBAL DEFAULT    1 _ZN3FAT21isThereShortName
+    91: 00109210     4 OBJECT  GLOBAL DEFAULT    3 _ZN9processor8PointGDTE
+    92: 00109150     4 OBJECT  GLOBAL DEFAULT    3 _ZN13pageManagment17bitMa
+    93: 00101bc4    10 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIO4outbEth
+    94: 00103114   315 FUNC    GLOBAL DEFAULT    1 _ZN7Console8writeHexEhhtt
+    95: 0010801c     4 OBJECT  GLOBAL DEFAULT    3 eflags
+    96: 00119224     4 OBJECT  GLOBAL DEFAULT    3 _ZN9processor10LDTCounter
+    97: 001002f0     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt02
+    98: 001007ee    73 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos15DisableRTCIntrs
+    99: 00100664    38 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos11IsRegsReadyEc
+   100: 00108002     2 OBJECT  GLOBAL DEFAULT    3 fsReg
+   101: 0010808c     4 OBJECT  GLOBAL DEFAULT    3 _ZN10IRQHandler8handlersE
+   102: 00104309    61 FUNC    GLOBAL DEFAULT    1 reserved2
+   103: 00100585     0 NOTYPE  GLOBAL DEFAULT    1 enablePageasm
+   104: 00100543     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt09
+   105: 0010123c    17 FUNC    GLOBAL DEFAULT    1 IntsReturnTaskSwitch
+   106: 00102a90   219 FUNC    GLOBAL DEFAULT    1 _ZN6Paging8mapRangeEjjPNS
+   107: 00109148     4 OBJECT  GLOBAL DEFAULT    3 _ZN13pageManagment18total
+   108: 001003ae     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt22
+   109: 00100330     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt10
+   110: 00103e3b    62 FUNC    GLOBAL DEFAULT    1 Doublefault
+   111: 0010057b     0 NOTYPE  GLOBAL DEFAULT    1 Syscall0x80
+   112: 00108008     2 OBJECT  GLOBAL DEFAULT    3 ssReg
+   113: 00103eff    77 FUNC    GLOBAL DEFAULT    1 Segmentnotpresent
+   114: 00108010     4 OBJECT  GLOBAL DEFAULT    3 cr3Reg
+   115: 00108034     4 OBJECT  GLOBAL DEFAULT    3 edxReg
+   116: 001017f4   110 FUNC    GLOBAL DEFAULT    1 _ZN15HardDriveDriver12wri
+   117: 00102bdc   158 FUNC    GLOBAL DEFAULT    1 _ZN6Paging7dirCopyEPNS_8P
+   118: 00108006     2 OBJECT  GLOBAL DEFAULT    3 dsReg
+   119: 001086c0     4 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT19FATTAbleStartSec
+   120: 00100d83    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ04
+   121: 00108024     4 OBJECT  GLOBAL DEFAULT    3 esiReg
+   122: 00104281    67 FUNC    GLOBAL DEFAULT    1 SystemError
+   123: 00102678    12 FUNC    GLOBAL DEFAULT    1 _ZN4FileC1Ev
+   124: 001084a0   516 OBJECT  GLOBAL DEFAULT    3 _ZN15HardDriveDriver6conf
+   125: 00108004     2 OBJECT  GLOBAL DEFAULT    3 esReg
+   126: 00100308     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt05
+   127: 00100b08   190 FUNC    GLOBAL DEFAULT    1 _ZN9ElfLoader11loadProgra
+   128: 001008ac    69 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos17WhichDisketteTy
+   129: 001003ee     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt30
+   130: 00103a68     8 FUNC    GLOBAL DEFAULT    1 _ZN9processor8loadPDBREPN
+   131: 001013e4    56 FUNC    GLOBAL DEFAULT    1 _ZN5Tasks7getTaskEj
+   132: 001086c4     4 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT15CountofClustersE
+   133: 00109162     2 OBJECT  GLOBAL DEFAULT    3 _ZN7Console9PosyInputE
+   134: 001003d6     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt27
+   135: 00103ce4    66 FUNC    GLOBAL DEFAULT    1 Breakpoint
+   136: 00103648    30 FUNC    GLOBAL DEFAULT    1 _ZN9processor13getNewCode
+   137: 001003c6     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt25
+   138: 00100d2c    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ01
+   139: 00103a8e     4 FUNC    GLOBAL DEFAULT    1 _ZN9processor6getCR2Ev
+   140: 0010351c     2 FUNC    GLOBAL DEFAULT    1 _ZN9processor8setupLDTEv
+   141: 00103d26    59 FUNC    GLOBAL DEFAULT    1 Overflow
+   142: 00102268    97 FUNC    GLOBAL DEFAULT    1 _ZN3FAT7readFATEj
+   143: 00108464     8 OBJECT  GLOBAL DEFAULT    3 _ZN4APIC16modelSpecificRe
+   144: 00100594   156 FUNC    GLOBAL DEFAULT    1 _ZN8Syscalls17interruptRe
+   145: 00100cb4   106 FUNC    GLOBAL DEFAULT    1 _ZN10IRQHandler8dispatchE
+   146: 00109220 65536 OBJECT  GLOBAL DEFAULT    3 _ZN9processor3LDTE
+   147: 00102baa    49 FUNC    GLOBAL DEFAULT    1 _ZN6Paging12getPhysAddrsE
+   148: 001035a8     6 FUNC    GLOBAL DEFAULT    1 _ZN9processor15getGDTFree
+   149: 00101862   757 FUNC    GLOBAL DEFAULT    1 _ZN15HardDriveDriver4read
+   150: 001034ea    17 FUNC    GLOBAL DEFAULT    1 _ZN7Console5printEPKcS1_
+   151: 0010052b     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt06
+   152: 00102cd0    52 FUNC    GLOBAL DEFAULT    1 _ZN13pageManagment12setRa
+   153: 00100c26   142 FUNC    GLOBAL DEFAULT    1 _ZN10IRQHandler3addEjPFvv
+   154: 0010039e     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt20
+   155: 001086d4     4 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT14RootDirSectorsE
+   156: 00100ea5    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ14
+   157: 001037dc   652 FUNC    GLOBAL DEFAULT    1 _ZN9processor8setupIDTEv
+   158: 001029ee   162 FUNC    GLOBAL DEFAULT    1 _ZN6Paging8mapRangeEjjj
+   159: 00103a70    26 FUNC    GLOBAL DEFAULT    1 _ZN9processor12enablePagi
+   160: 00108ae0   512 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT8FAT12_16E
+   161: 00108484     8 OBJECT  GLOBAL DEFAULT    3 _ZN15HardDriveDriver13Har
+   162: 00109168     2 OBJECT  GLOBAL DEFAULT    3 _ZN7Console4PosxE
+   163: 00103b24    94 FUNC    GLOBAL DEFAULT    1 _ZN9processor17getCPUBran
+   164: 00103584    35 FUNC    GLOBAL DEFAULT    1 _ZN9processor12makeSelect
+   165: 00103b04    31 FUNC    GLOBAL DEFAULT    1 _ZN9processor14getCPUFeat
+   166: 00103f96   257 FUNC    GLOBAL DEFAULT    1 Generalprotection
+   167: 00103570    20 FUNC    GLOBAL DEFAULT    1 _ZN9processor11STRGDTInde
+   168: 00100503     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt01
+   169: 00100592     2 FUNC    GLOBAL DEFAULT    1 _ZN7DriversC1Ev
+   170: 00109144     4 OBJECT  GLOBAL DEFAULT    3 _ZN13pageManagment17lastP
+   171: 00119300     6 OBJECT  GLOBAL DEFAULT    3 _ZN9processor11GDTInitDes
+   172: 00102872   119 FUNC    GLOBAL DEFAULT    1 _ZN3MBR5setupEv
+   173: 001080c8     4 OBJECT  GLOBAL DEFAULT    3 _ZN5Tasks7lastTssE
+   174: 00100300     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt04
+   175: 00103ad6    10 FUNC    GLOBAL DEFAULT    1 _ZN9processor8Clear_NTEv
+   176: 001015d2    92 FUNC    GLOBAL DEFAULT    1 _ZN4APIC10startTimerEj
+   177: 00101b58    92 FUNC    GLOBAL DEFAULT    1 _ZN15HardDriveDriver5setu
+   178: 00103aa2    16 FUNC    GLOBAL DEFAULT    1 _ZN9processor7getSGDTEv
+   179: 00101bbc     7 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIO3inwEt
+   180: 0010053b     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt08
+   181: 00108001     0 NOTYPE  GLOBAL DEFAULT  ABS Kernel_BSS_Start
+   182: 00109160     2 OBJECT  GLOBAL DEFAULT    3 _ZN7Console10inputCountE
+   183: 0010296a     2 FUNC    GLOBAL DEFAULT    1 _ZN6PagingC2Ev
+   184: 00102f32    58 FUNC    GLOBAL DEFAULT    1 _ZN7Console5clearEv
+   185: 0010351a     2 FUNC    GLOBAL DEFAULT    1 _ZN9processorC1Ev
+   186: 0010001e     2 FUNC    GLOBAL DEFAULT    1 _Z5test2v
+   187: 001017f2     2 FUNC    GLOBAL DEFAULT    1 _ZN15HardDriveDriver5writ
+   188: 001003b6     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt23
+   189: 00103c91    83 FUNC    GLOBAL DEFAULT    1 Nonmaskableinterrupt
+   190: 0010164a     2 FUNC    GLOBAL DEFAULT    1 _ZN8Chip8259C1Ev
+   191: 00119240   192 OBJECT  GLOBAL DEFAULT    3 _ZN9processor11IDTInitDes
+   192: 0010097e    67 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos12MaskCmosIntsEv
+   193: 0010164c    37 FUNC    GLOBAL DEFAULT    1 _ZN8Chip82594MaskEv
+   194: 0010846c     4 OBJECT  GLOBAL DEFAULT    3 _ZN4APIC13apicRegistersE
+   195: 001003de     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt28
+   196: 001003ce     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt26
+   197: 00100340     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt12
+   198: 0010055b     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt12
+   199: 00109180   100 OBJECT  GLOBAL DEFAULT    3 _ZN7Console11inputStringE
+   200: 001009c2    16 FUNC    GLOBAL DEFAULT    1 _ZN9ElfLoaderC1Ev
+   201: 0010141e   351 FUNC    GLOBAL DEFAULT    1 _ZN4APIC5setupEPN9process
+   202: 0010335a   309 FUNC    GLOBAL DEFAULT    1 _ZN7Console5printEttPKcj
+   203: 00103eb6    73 FUNC    GLOBAL DEFAULT    1 InvalidTSS
+   204: 00100553     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt11
+   205: 0010141c     2 FUNC    GLOBAL DEFAULT    1 _ZN4APICC2Ev
+   206: 00108038     4 OBJECT  GLOBAL DEFAULT    3 ecxReg
+   207: 00100e88    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ13
+   208: 00100dbd    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ06
+   209: 00101bce    11 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIO4outwEtt
+   210: 0010093e    64 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos15IsntalledMemory
+   211: 001086e0   512 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT8DirEntryE
+   212: 00101bb4     2 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIOC2Ev
+   213: 00108040     4 OBJECT  GLOBAL DEFAULT    3 baseMemoryPointer
+   214: 00101fa0     7 FUNC    GLOBAL DEFAULT    1 _ZN3FAT22findNextShortNam
+   215: 00103066    25 FUNC    GLOBAL DEFAULT    1 _ZN7Console13readCharacte
+   216: 0010056b     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt14
+   217: 00100860    37 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos16WasItaAlarmIntr
+   218: 0010351e    33 FUNC    GLOBAL DEFAULT    1 _ZN9processor4LGDTEPNS_6G
+   219: 0010068a   126 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos7GetTimeEv
+   220: 001080e0   900 OBJECT  GLOBAL DEFAULT    3 _ZN5Tasks9TasksListE
+   221: 0010038e     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt18
+   222: 00108030     4 OBJECT  GLOBAL DEFAULT    3 ebxReg
+   223: 00108000     2 OBJECT  GLOBAL DEFAULT    3 gsReg
+   224: 0010157e    42 FUNC    GLOBAL DEFAULT    1 _ZN4APIC10enableAPICEv
+   225: 001030b8    92 FUNC    GLOBAL DEFAULT    1 _ZN7Console5printEttPKc
+   226: 001002e0     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt00
+   227: 00103f4c    74 FUNC    GLOBAL DEFAULT    1 Stackexception
+   228: 0010803c     4 OBJECT  GLOBAL DEFAULT    3 eaxReg
+   229: 00103b82    60 FUNC    GLOBAL DEFAULT    1 _ZN9processor10getTypeStr
+   230: 00100338     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt11
+   231: 001009c2    16 FUNC    GLOBAL DEFAULT    1 _ZN9ElfLoaderC2Ev
+   232: 00100000     0 NOTYPE  GLOBAL DEFAULT    1 Kernel_Code_Start
+   233: 00103028    54 FUNC    GLOBAL DEFAULT    1 _ZN7Console10clearInputEv
+   234: 0010802c     4 OBJECT  GLOBAL DEFAULT    3 espReg
+   235: 00101bb4     2 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIOC1Ev
+   236: 001007a8    70 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos14AnableRTCIntrsE
+   237: 00102d5a    27 FUNC    GLOBAL DEFAULT    1 _ZN13pageManagment9clearP
+   238: 00109100    68 OBJECT  GLOBAL DEFAULT    3 _ZN3MBR7mbrPartE
+   239: 00108044     4 OBJECT  GLOBAL DEFAULT    3 totalMemoryAdress
+   240: 00101bda   423 FUNC    GLOBAL DEFAULT    1 _ZN3FAT5setupEv
+   241: 00102f6c    71 FUNC    GLOBAL DEFAULT    1 _ZN7Console6scrollEv
+   242: 0010800c     4 OBJECT  GLOBAL DEFAULT    3 kerPageDir
+   243: 00100320     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt08
+   244: 00100e14    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ09
+   245: 00100df7    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ08
+   246: 001034fc    29 FUNC    GLOBAL DEFAULT    1 _ZN7Console5printEttPKcS1
+   247: 00101fc0    27 FUNC    GLOBAL DEFAULT    1 _ZN3FAT11getCheckSumEPh
+   248: 00100662     2 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos14IRQCMOSHandlerE
+   249: 00103bbe    38 FUNC    GLOBAL DEFAULT    1 _ZN9processor19getModelSp
+   250: 001041f9    61 FUNC    GLOBAL DEFAULT    1 reserved1
+   251: 0010163a    16 FUNC    GLOBAL DEFAULT    1 _ZN4APIC8issueEOIEv
+   252: 00108028     4 OBJECT  GLOBAL DEFAULT    3 ebpReg
+   253: 00100376     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt15
+   254: 0010162e    12 FUNC    GLOBAL DEFAULT    1 _ZN4APIC15getCurrentCount
+   255: 00103d9f    69 FUNC    GLOBAL DEFAULT    1 Invalidopcode
+   256: 0010362a    30 FUNC    GLOBAL DEFAULT    1 _ZN9processor13getNewData
+   257: 00100d49    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ02
+   258: 00100563     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt13
+   259: 0010378c    79 FUNC    GLOBAL DEFAULT    1 _ZN9processor10addIDTDesc
+   260: 001036d2   185 FUNC    GLOBAL DEFAULT    1 _ZN9processor8setupGDTEv
+   261: 00102dec   326 FUNC    GLOBAL DEFAULT    1 _ZN13pageManagment7getFre
+   262: 00100031   680 FUNC    GLOBAL DEFAULT    1 main
+   263: 0010296a     2 FUNC    GLOBAL DEFAULT    1 _ZN6PagingC1Ev
+   264: 00101fdc   651 FUNC    GLOBAL DEFAULT    1 _ZN3FAT20isThereLongNameE
+   265: 00102b6c    61 FUNC    GLOBAL DEFAULT    1 _ZN6Paging8mapRangeEjPNS_
+   266: 00108020     4 OBJECT  GLOBAL DEFAULT    3 ediReg
+   267: 001034da    15 FUNC    GLOBAL DEFAULT    1 _ZN7Console5printEPKc
+   268: 0010037e     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt16
+   269: 0011a000     0 NOTYPE  GLOBAL DEFAULT    3 Kernel_BSS_End
+   270: 00100e31    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ10
+   271: 0010260a    71 FUNC    GLOBAL DEFAULT    1 _ZN3FAT11readClusterEPNS_
+   272: 00100ec2    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ15
+   273: 00108058    12 OBJECT  GLOBAL DEFAULT    3 time
+   274: 00107000     0 NOTYPE  GLOBAL DEFAULT    1 Kernel_Code_End
+   275: 00109200    10 OBJECT  GLOBAL DEFAULT    3 _ZN9processor8PointLDTE
+   276: 00109214     4 OBJECT  GLOBAL DEFAULT    3 _ZN9processor3GDTE
+   277: 001086d0     4 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT15DataRegionStartE
+   278: 0010914c     4 OBJECT  GLOBAL DEFAULT    3 _ZN13pageManagment10total
+   279: 0010164a     2 FUNC    GLOBAL DEFAULT    1 _ZN8Chip8259C2Ev
+   280: 00108f00   512 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT12FSInfoSectorE
+   281: 00102926    61 FUNC    GLOBAL DEFAULT    1 _Zna
+   282: 00103540    22 FUNC    GLOBAL DEFAULT    1 _ZN9processor4LIDTEPNS_6I
+   283: 00104346    54 FUNC    GLOBAL DEFAULT    1 strcmp
+   284: 00103080    56 FUNC    GLOBAL DEFAULT    1 _ZN7Console14writeCharact
+   285: 00102963     6 FUNC    GLOBAL DEFAULT    1 getUsedMemory
+   286: 00102d76   118 FUNC    GLOBAL DEFAULT    1 _ZN13pageManagment5setupE
+   287: 00103e79    61 FUNC    GLOBAL DEFAULT    1 reserved0
+   288: 0010054b     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt10
+   289: 00100592     2 FUNC    GLOBAL DEFAULT    1 _ZN7DriversC2Ev
+   290: 00103c4d    68 FUNC    GLOBAL DEFAULT    1 Debugexceptions
+   291: 001002e8     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt01
+   292: 001002d9     0 NOTYPE  GLOBAL DEFAULT    1 intsStart
+   293: 00103ac2    10 FUNC    GLOBAL DEFAULT    1 _ZN9processor6Set_NTEv
+   294: 001035ae   123 FUNC    GLOBAL DEFAULT    1 _ZN9processor10addGDTDesc
+   295: 00103ae0    35 FUNC    GLOBAL DEFAULT    1 _ZN9processor12getCPUStri
+   296: 0010351a     2 FUNC    GLOBAL DEFAULT    1 _ZN9processorC2Ev
+   297: 001003f6     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt31
+   298: 00103490    74 FUNC    GLOBAL DEFAULT    1 _ZN7Console5printEPKcj
+   299: 00100bc6     2 FUNC    GLOBAL DEFAULT    1 _ZN10IRQHandlerC1Ev
+   300: 001003a6     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt21
+   301: 00100d66    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ03
+   302: 0010034f     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt14
+   303: 00108ce0   513 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT3BPBE
+   304: 001088e0   512 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT8FATEntryE
+   305: 001003be     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt24
+   306: 001086cc     4 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT19RootDirSectorsCo
+   307: 00102fcc    91 FUNC    GLOBAL DEFAULT    1 _ZN7Console5inputEc
+   308: 00102684   227 FUNC    GLOBAL DEFAULT    1 _ZN4File4openEPKc
+   309: 00100838    40 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos16WasItUpdateEnde
+   310: 001008f2    75 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos11VideoOPModeEv
+   311: 00101692   257 FUNC    GLOBAL DEFAULT    1 _ZN8Chip82595remapEh
+   312: 001003fe     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt00
+   313: 00103de4    87 FUNC    GLOBAL DEFAULT    1 Coprocessornotavailable
+   314: 00100630    16 FUNC    GLOBAL DEFAULT    1 SyscallsDelivery
+   315: 001015a8    42 FUNC    GLOBAL DEFAULT    1 _ZN4APIC11disableAPICEv
+   316: 00108048    16 OBJECT  GLOBAL DEFAULT    3 date
+   317: 00119220     4 OBJECT  GLOBAL DEFAULT    3 _ZN9processor3IDTE
+   318: 0010355e    17 FUNC    GLOBAL DEFAULT    1 _ZN9processor3STREv
+   319: 001028e9    61 FUNC    GLOBAL DEFAULT    1 _Znw
+   320: 001017d2    31 FUNC    GLOBAL DEFAULT    1 _ZN8Chip825917interruptRe
+   321: 00102c7a    85 FUNC    GLOBAL DEFAULT    1 _ZN13pageManagment7setBus
+   322: 00102678    12 FUNC    GLOBAL DEFAULT    1 _ZN4FileC2Ev
+   323: 001086c8     4 OBJECT  GLOBAL DEFAULT    3 _ZN3FAT7DataSecE
+   324: 00100573     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt15
+   325: 00103ab2    16 FUNC    GLOBAL DEFAULT    1 _ZN9processor7getSLDTEv
+   326: 00103d61    62 FUNC    GLOBAL DEFAULT    1 Boundscheck
+   327: 00103be4    38 FUNC    GLOBAL DEFAULT    1 _ZN9processor19setModelSp
+   328: 00100523     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt05
+   329: 0010305e     6 FUNC    GLOBAL DEFAULT    1 _ZN7Console8getInputEv
+   330: 00103250   265 FUNC    GLOBAL DEFAULT    1 _ZN7Console8writeIntEhhtt
+   331: 001003e6     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt29
+   332: 0010000c     0 NOTYPE  GLOBAL DEFAULT    1 Start
+   333: 001012fc   232 FUNC    GLOBAL DEFAULT    1 _ZN5Tasks13createProcessE
+   334: 00100dda    29 FUNC    GLOBAL DEFAULT    1 HandlerIRQ07
+   335: 001080c0     4 OBJECT  GLOBAL DEFAULT    3 _ZN5Tasks9TaskCountE
+   336: 0010124e   174 FUNC    GLOBAL DEFAULT    1 _ZN5Tasks7NewTaskEPKcjPN6
+   337: 00108014     4 OBJECT  GLOBAL DEFAULT    3 csReg
+   338: 00102fb4    24 FUNC    GLOBAL DEFAULT    1 _ZN7Console5paintEh
+   339: 00109166     2 OBJECT  GLOBAL DEFAULT    3 _ZN7Console4PosyE
+   340: 00103666   107 FUNC    GLOBAL DEFAULT    1 _ZN9processor10addGDTDesc
+   341: 0010298e    75 FUNC    GLOBAL DEFAULT    1 _ZN6Paging9getNewDirEv
+   342: 00100348     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt13
+   343: 00108000     0 NOTYPE  GLOBAL DEFAULT    2 Kernel_Data_End
+   344: 00101bb6     6 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIO3inbEt
+   345: 00103c0a    67 FUNC    GLOBAL DEFAULT    1 Divideerror
+   346: 00100d1e    14 FUNC    GLOBAL DEFAULT    1 HandlerIRQ00
+   347: 0011922c     4 OBJECT  GLOBAL DEFAULT    3 _ZN9processor10GDTCounter
+   348: 00100592     0 NOTYPE  GLOBAL DEFAULT    1 intsEnd
+   349: 00100886    37 FUNC    GLOBAL DEFAULT    1 _ZN4Cmos19IsDisketteInsta
+   350: 001022ca   831 FUNC    GLOBAL DEFAULT    1 _ZN3FAT4findEPKc
+   351: 00100000     0 NOTYPE  GLOBAL DEFAULT    1 Multiboot
+   352: 00100640    33 FUNC    GLOBAL DEFAULT    1 _ZN4CmosC1Ev
+   353: 00103556     8 FUNC    GLOBAL DEFAULT    1 _ZN9processor3LTREt
+   354: 00108480     1 OBJECT  GLOBAL DEFAULT    3 _ZN15HardDriveDriver11Dri
+   355: 001002f8     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt03
+   356: 00102768   265 FUNC    GLOBAL DEFAULT    1 _ZN4File4readEjjPh
+   357: 00108018     4 OBJECT  GLOBAL DEFAULT    3 eipReg
+   358: 00103a92    16 FUNC    GLOBAL DEFAULT    1 _ZN9processor7getSIDTEv
+   359: 00100513     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt03
+   360: 0010296c    33 FUNC    GLOBAL DEFAULT    1 _ZN6Paging10getNewPageEv
+   361: 00101672    31 FUNC    GLOBAL DEFAULT    1 _ZN8Chip82596UnMaskEv
+   362: 001042c4    69 FUNC    GLOBAL DEFAULT    1 CoprecessorSegOverrun
+   363: 001080c4     4 OBJECT  GLOBAL DEFAULT    3 _ZN5Tasks11runningTaskE
+   364: 00100396     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt19
+   365: 00100386     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt17
+   366: 00100533     0 NOTYPE  GLOBAL DEFAULT    1 ExternalInterrupt07
+   367: 00100310     0 NOTYPE  GLOBAL DEFAULT    1 InternalInterrupt06
+
+No version information found in this file.

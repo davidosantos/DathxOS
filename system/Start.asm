@@ -3,10 +3,12 @@ STACKSIZE           equ 40
 
 MBOOT_PAGE_ALIGN    equ 1 << 0   ; Load kernel and modules on a page boundary
 MBOOT_MEM_INFO      equ 1 << 1   ; Provide the kernel with memory info
-LOAD_ADDRESS        equ 1 << 16  ; Specify load address
+;Not need for elf file, bacause elf contais headers with the same info
+;MBOOT_MEM_MAP       equ 1 << 1   ; Provide the kernel with memory map info
+;LOAD_ADDRESS        equ 1 << 16  ; Specify load address
 
 MBOOT_HEADER_MAGIC  equ 0x1BADB002    ; Multiboot Magic value
-MBOOT_HEADER_FLAGS  equ MBOOT_PAGE_ALIGN | MBOOT_MEM_INFO  | LOAD_ADDRESS 
+MBOOT_HEADER_FLAGS  equ MBOOT_PAGE_ALIGN | MBOOT_MEM_INFO  ;| MBOOT_MEM_MAP  |LOAD_ADDRESS 
 MBOOT_CHECKSUM      equ -(MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
 
 [BITS 32]                     ; Tell NASM to output 32-bit code
@@ -26,12 +28,13 @@ Multiboot:
                              ; on each 4-byte boundary in the ELF file
   dd  MBOOT_HEADER_FLAGS
   dd  MBOOT_CHECKSUM         ; Ensures that the above values are correct
-   
-  dd  Multiboot              ; Location of this section
-  dd  Kernel_Code_Start                   ; Start of kernel '.text' (code) section
-  dd  Kernel_BSS_Start                   ; End of kernel '.data' section
-  dd  Kernel_BSS_End                    ; End of kernel
-  dd  Start                    ; Kernel entry point (initial EIP)
+  
+;Not need for elf file, bacause elf contais headers with the same info
+  ;dd  Multiboot              ; Location of this section
+  ;dd  Kernel_Code_Start                   ; Start of kernel '.text' (code) section
+  ;dd  Kernel_BSS_Start                   ; End of kernel '.data' section
+  ;dd  Kernel_BSS_End                    ; End of kernel
+  ;dd  Start                    ; Kernel entry point (initial EIP)
 
 Start:
     cli                       ; Disable interrupts.

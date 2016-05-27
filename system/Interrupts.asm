@@ -405,19 +405,19 @@ iretd
 ExternalInterrupt00:
 cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
-call HandlerIRQ00
 mov     dword   eax,[kerPageDir]
 mov     dword   cr3,eax                     ;hangle task switch in kernel page dir
 call IntsReturnTaskSwitch
+;call HandlerIRQ00
 restoreTaskState
 iretd
 
 
 
 ExternalInterrupt01:
-saveALL
+saveTaskState
 call HandlerIRQ01
-restoreALL
+restoreTaskState
 iretd
 ExternalInterrupt02:
 saveALL

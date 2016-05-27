@@ -26,13 +26,10 @@ Tasks::Task Tasks::TasksList[50];
 //Tasks::~Tasks() {
 //}
 
-
-
-void IntsReturnTaskSwitch(){
+void IntsReturnTaskSwitch() {
     Tasks::interruptReceiver();
     APIC::issueEOI();
 }
-
 
 /**
  * Cause a task switch to a internal task to save the current task
@@ -55,32 +52,32 @@ void Tasks::interruptReceiver() {
     }
 
 
-//        debug->print(18, 0, "Task %1", runningTask);
-//        debug->print(19, 0, "Task %i", runningTask+1);
-//        debug->print(20, 0, "Task 1 eflags %h", (u32) TasksList[runningTask].taskState->eflags);
-//        debug->print(22, 0, "Task 1 addres %h", (u32) TasksList[runningTask].Addrs);
-//        debug->print(24, 0, "Task 1 eip %h", (u32) TasksList[runningTask].taskState->eip);
-//        debug->print(26, 0, "Task 1 esp %h", (u32) TasksList[runningTask].taskState->esp);
-//      
-//        debug->print(30, 0, "Task 1 eax %h", (u32) TasksList[runningTask].taskState->eax);
-//        debug->print(32, 0, "Task 1 ecx %h", (u32) TasksList[runningTask].taskState->ecx);
-//        debug->print(34, 0, "Task 1 ebx %h", (u32) TasksList[runningTask].taskState->ebx);
-//        debug->print(36, 0, "Task 1 esi %h", (u32) TasksList[runningTask].taskState->esi);
-//        debug->print(38, 0, "Task 1 edi %h", (u32) TasksList[runningTask].taskState->edi);
-//        debug->print(40, 0, "Task 1 ebp %h", (u32) TasksList[runningTask].taskState->ebp);
-//        debug->print(42, 0, "Task 1 ss %h", (u32) TasksList[runningTask].taskState->ss);
-//    
-//        debug->print(21, 0, "Task 2 eflags %h", (u32) TasksList[runningTask+1].taskState->eflags);
-//        debug->print(23, 0, "Task 2 addres %h", (u32) TasksList[runningTask+1].Addrs);
-//        debug->print(25, 0, "Task 2 eip %h", (u32) TasksList[runningTask+1].taskState->eip);
-//        debug->print(27, 0, "Task 2 esp %h", (u32) TasksList[runningTask+1].taskState->esp);
-//        debug->print(31, 0, "Task 2 eax %h", (u32) TasksList[runningTask+1].taskState->eax);
-//        debug->print(33, 0, "Task 2 ecx %h", (u32) TasksList[runningTask+1].taskState->ecx);
-//        debug->print(35, 0, "Task 2 ebx %h", (u32) TasksList[runningTask+1].taskState->ebx);
-//        debug->print(37, 0, "Task 2 esi %h", (u32) TasksList[runningTask+1].taskState->esi);
-//        debug->print(39, 0, "Task 2 edi %h", (u32) TasksList[runningTask+1].taskState->edi);
-//        debug->print(41, 0, "Task 2 ebp %h", (u32) TasksList[runningTask+1].taskState->ebp);
-//        debug->print(43, 0, "Task 2 ss %h", (u32) TasksList[runningTask+1].taskState->ss);
+    //        debug->print(18, 0, "Task %1", runningTask);
+    //        debug->print(19, 0, "Task %i", runningTask+1);
+    //        debug->print(20, 0, "Task 1 eflags %h", (u32) TasksList[runningTask].taskState->eflags);
+    //        debug->print(22, 0, "Task 1 addres %h", (u32) TasksList[runningTask].Addrs);
+    //        debug->print(24, 0, "Task 1 eip %h", (u32) TasksList[runningTask].taskState->eip);
+    //        debug->print(26, 0, "Task 1 esp %h", (u32) TasksList[runningTask].taskState->esp);
+    //      
+    //        debug->print(30, 0, "Task 1 eax %h", (u32) TasksList[runningTask].taskState->eax);
+    //        debug->print(32, 0, "Task 1 ecx %h", (u32) TasksList[runningTask].taskState->ecx);
+    //        debug->print(34, 0, "Task 1 ebx %h", (u32) TasksList[runningTask].taskState->ebx);
+    //        debug->print(36, 0, "Task 1 esi %h", (u32) TasksList[runningTask].taskState->esi);
+    //        debug->print(38, 0, "Task 1 edi %h", (u32) TasksList[runningTask].taskState->edi);
+    //        debug->print(40, 0, "Task 1 ebp %h", (u32) TasksList[runningTask].taskState->ebp);
+    //        debug->print(42, 0, "Task 1 ss %h", (u32) TasksList[runningTask].taskState->ss);
+    //    
+    //        debug->print(21, 0, "Task 2 eflags %h", (u32) TasksList[runningTask+1].taskState->eflags);
+    //        debug->print(23, 0, "Task 2 addres %h", (u32) TasksList[runningTask+1].Addrs);
+    //        debug->print(25, 0, "Task 2 eip %h", (u32) TasksList[runningTask+1].taskState->eip);
+    //        debug->print(27, 0, "Task 2 esp %h", (u32) TasksList[runningTask+1].taskState->esp);
+    //        debug->print(31, 0, "Task 2 eax %h", (u32) TasksList[runningTask+1].taskState->eax);
+    //        debug->print(33, 0, "Task 2 ecx %h", (u32) TasksList[runningTask+1].taskState->ecx);
+    //        debug->print(35, 0, "Task 2 ebx %h", (u32) TasksList[runningTask+1].taskState->ebx);
+    //        debug->print(37, 0, "Task 2 esi %h", (u32) TasksList[runningTask+1].taskState->esi);
+    //        debug->print(39, 0, "Task 2 edi %h", (u32) TasksList[runningTask+1].taskState->edi);
+    //        debug->print(41, 0, "Task 2 ebp %h", (u32) TasksList[runningTask+1].taskState->ebp);
+    //        debug->print(43, 0, "Task 2 ss %h", (u32) TasksList[runningTask+1].taskState->ss);
 
     //    CPU::GDTEntry GDTEntry = CPUAddress->GDT[CPUAddress->STRGDTIndex()];
     //    lastTss = (Tss_32*) ((u32) ((GDTEntry.base_31_24 << 24) | (GDTEntry.base_23_16 << 16) | (GDTEntry.base)));
@@ -181,21 +178,45 @@ u32 Tasks::TaskCount = 0;
 //    // return Sel;
 //}
 
-void Tasks::NewTask(const s8 *name, u32 Addrs, Paging::PagesDir *pageDir, u32 *stack, u32 stackSize) {
+void Tasks::createProcess(const s8 *file) {
+
+    ElfLoader *exec = new ElfLoader();
+    Paging::PagesDir *pageDir;
+    u8 *loadAddrs; // = (u32*) Paging::getNewPage();
+
+    if (exec->openFile(file) == OK) {
+        pageDir = Paging::getNewDir();
+        loadAddrs = new u8 [exec->pHeader[0].p_memsz];
+        Paging::mapRange(0, 0x800000, pageDir, 0);
+        Paging::mapRange(exec->pHeader[0].p_vaddr, (exec->pHeader[0].p_vaddr +
+                exec->pHeader[0].p_memsz), pageDir, (u32*) loadAddrs);
+        if (exec->loadProgram(pageDir) == Error) {
+            Console::print("%cttELF Loader: Error Loading file %s",file);
+        } else {
+            u32 *stack = new u32 [100];
+            Tasks::NewTask(file, exec->Header->e_entry, pageDir, stack, 100);
+            Console::print("%ctuELF Loader: File loaded %s",file);
+        }
+    } else {
+        Console::print("%cttELF Loader: File open error %s",file);
+    }
+}
+
+void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDir, u32 *stack, u32 stackSize) {
 
     TaskCount++;
     TasksList[TaskCount].Name = name;
     TasksList[TaskCount].PID = TaskCount;
-    TasksList[TaskCount].Addrs =  Addrs;
+    TasksList[TaskCount].Addrs = function;
     TasksList[TaskCount].taskState = new TSS();
 
-  
 
-    u16 sel_data = 0x10;//CPUAddress->getNewDataSeg(0, 0xffffffff);
-    u16 sel_code = 0x08;//CPUAddress->getNewCodeSeg(0, 0xffffffff);
+
+    u16 sel_data = 0x10; //CPUAddress->getNewDataSeg(0, 0xffffffff);
+    u16 sel_code = 0x08; //CPUAddress->getNewCodeSeg(0, 0xffffffff);
 
     TasksList[TaskCount].taskState->eflags = 0x202;
-    TasksList[TaskCount].taskState->eip = Addrs;
+    TasksList[TaskCount].taskState->eip = (u32) function;
     TasksList[TaskCount].taskState->eax = 0;
     TasksList[TaskCount].taskState->ebx = 0;
     TasksList[TaskCount].taskState->ecx = 0;
@@ -208,8 +229,8 @@ void Tasks::NewTask(const s8 *name, u32 Addrs, Paging::PagesDir *pageDir, u32 *s
     TasksList[TaskCount].taskState->fs = sel_data;
     TasksList[TaskCount].taskState->gs = sel_data;
     TasksList[TaskCount].taskState->cs = sel_code;
-    TasksList[TaskCount].taskState->esp = (u32)stack + stackSize;
-    TasksList[TaskCount].taskState->ebp = (u32)stack;
+    TasksList[TaskCount].taskState->esp = (u32) stack + stackSize;
+    TasksList[TaskCount].taskState->ebp = (u32) stack;
     TasksList[TaskCount].taskState->PageDir = pageDir; //test
 
     //

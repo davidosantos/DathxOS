@@ -6,13 +6,20 @@
  */
 
 #ifndef VIDEO_H
-#define	VIDEO_H
+#define VIDEO_H
 
 #include "Console.h"
 #include "../../util/util.h"
 //#include "../IO/HardwareIO.h"
 
 class Console {
+
+    struct R80x25 {
+        struct {
+        u8 X[160];
+        }lines[25];
+    }__attribute__((packed));
+
 public:
     //  Video();
     //    Video(const Video& orig);
@@ -34,6 +41,8 @@ public:
 
     static void clear();
 
+    static void scroll();
+
     static void paint(u8 color);
 
     static void input(s8 caracter);
@@ -46,7 +55,8 @@ public:
      * by Dark Fiber
      */
     static void update_cursor(int row, int col);
-
+    static u16 Posx;
+    static u16 Posy;
 private:
 
     static void writeCharacter(s8 c, u8 backColour,
@@ -59,8 +69,7 @@ private:
 
     static int writeInt(u8 backColour,
             u8 textColour, u16 x, u16 y, u32 integer);
-    static u16 Posx;
-    static u16 Posy;
+   
 
     static u16 PosxInput;
     static u16 PosyInput;
@@ -71,5 +80,5 @@ private:
 
 };
 
-#endif	/* VIDEO_H */
+#endif /* VIDEO_H */
 

@@ -107,8 +107,8 @@ void FAT::setup() {
     DataRegionStart = (MBR::mbrPart.partions[0].entries.startingAt +
             BPB.structure.RsvdSecCnt)+
             ((BPB.structure.NumFATs * FATSz) + RootDirSectors);
-    
-    if (BPB.structure.SectPerCluster > 1){
+
+    if (BPB.structure.SectPerCluster > 1) {
         Console::print("FS Error: Cluster greater than 512 bytes is not yet supported!");
     }
 
@@ -145,7 +145,7 @@ FAT::shortNameEntry FAT::find(const s8 *dirFileName) {
     shortNameEntry shortNameEnt;
     shortNameEntry longNameEnt;
     HardDriveDriver::read((DataRegionStart + nextCluster), Read_Cmd, &cluster.data);
-    int teste = 0;
+
     for (int i = 0;; i++) {
         if (dirFileName[nameIndex + i] != slash) {
             string[i] = dirFileName[nameIndex + i];
@@ -212,9 +212,6 @@ FAT::shortNameEntry FAT::find(const s8 *dirFileName) {
             }
         }
 
-
-
-        teste++;
         if (shortNameFound == false && longNameFound == false) {
             if (nextCluster < BPB.structure.ExtSectorFAT32.RootCluster) {
                 nextCluster++;
@@ -248,7 +245,7 @@ FAT::shortNameEntry FAT::isThereShortNameEntry(_Cluster *data, const s8 *name) {
     shortNameEntry shortNameEnt;
 
     for (u32 entryIndex = 0; entryIndex < (BPB.structure.BytesPerSector / 32 * BPB.structure.SectPerCluster); entryIndex++) {
-
+        charIndexShortNames =0;
         if (data->shortName[entryIndex].Entry != IsDeleted &&
                 data->shortName[entryIndex].Entry != IsFree &&
                 data->shortName[entryIndex].Attrib != IsLongName) {
@@ -267,13 +264,18 @@ FAT::shortNameEntry FAT::isThereShortNameEntry(_Cluster *data, const s8 *name) {
 
                 }
             }
-
+            
+            if(name[charIndexShortNames] == dot){
+                charIndexShortNames++; //skip the dot
+            }
+           
             for (int j = 0; j < 3; j++) {
 
                 if (data->shortName[entryIndex].extention[j] != space) {
                     //to lower case
                     if ((data->shortName[entryIndex].extention[j] ^ 0x20) != name[charIndexShortNames]) {
                         foundShortName = false;
+                    
                         break;
                     } else {
                         foundShortName = true;
@@ -284,6 +286,7 @@ FAT::shortNameEntry FAT::isThereShortNameEntry(_Cluster *data, const s8 *name) {
             }
 
             if (foundShortName) {
+                
                 return data->shortName[entryIndex];
             }
 

@@ -30,6 +30,7 @@ void APIC::setup(processor::CPUFeatures *features, Paging::PagesDir *kernelPageD
 
         if (modelSpecificReg.ApicEnabled == 1) {
             Console::print("ApicEnabled is ON, Base Address: %h",apicBaseAddress);
+            
         } else {
             Console::print("ApicEnabled is OFF");
         }
@@ -44,6 +45,7 @@ void APIC::setup(processor::CPUFeatures *features, Paging::PagesDir *kernelPageD
         LINT0Reg lInt0 = apicRegisters->LINT0Register;
         LINT1Reg lInt1 = apicRegisters->LINT1Register;
         TaskPriorityReg taskPrior = apicRegisters->TaskPriorityRegister;
+        LocalAPICVersionReg version = apicRegisters->LocalAPICVersionRegister;
 
         logicalDestReg.DestinationLogicalAPICID = 0x1; //logical id = 1
         destFomatReg.DestinationFormat = 0xFF; //flat
@@ -67,7 +69,7 @@ void APIC::setup(processor::CPUFeatures *features, Paging::PagesDir *kernelPageD
         apicRegisters->LINT0Register = lInt0;
         apicRegisters->LINT1Register = lInt1;
         apicRegisters->TaskPriorityRegister = taskPrior;
-
+        Console::print("Local APIC Version: %i",version.version);
     } else {
         Console::print("CPU Does not support MSR");
     }

@@ -98,7 +98,7 @@ public:
         Elf32_Half e_type;
         Elf32_Half e_machine;
         Elf32_Word e_version;
-        Elf32_Addr e_entry ; //This member gives the virtual address to which the system first transfers control, thus starting the process. If the file has no associated entry point, this member holds zero.
+        void (*e_entry )() ; //This member gives the virtual address to which the system first transfers control, thus starting the process. If the file has no associated entry point, this member holds zero.
         Elf32_Off e_phoff;
         Elf32_Off e_shoff;
         Elf32_Word e_flags;
@@ -148,7 +148,7 @@ public:
 
     returnCode openFile(const s8 *fileName);
 
-    returnCode loadProgram();
+    returnCode loadProgram(Paging::PagesDir *pageDir);
 
 
     ElfLoader();
