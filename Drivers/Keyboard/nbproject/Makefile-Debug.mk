@@ -52,11 +52,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=../../library/DathxLib/dist/Release/GNU-Linux/libdathxlib.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/keyboard
+
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/keyboard: ../../library/DathxLib/dist/Release/GNU-Linux/libdathxlib.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/keyboard: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -69,6 +71,7 @@ ${OBJECTDIR}/Keys.o: Keys.cpp
 
 # Subprojects
 .build-subprojects:
+	cd ../../library/DathxLib && ${MAKE}  -f Makefile CONF=Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -77,6 +80,7 @@ ${OBJECTDIR}/Keys.o: Keys.cpp
 
 # Subprojects
 .clean-subprojects:
+	cd ../../library/DathxLib && ${MAKE}  -f Makefile CONF=Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

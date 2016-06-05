@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="DathxLib" displayName="DathxLib" projectFiles="true">
+      <logicalFolder name="dist" displayName="dist" projectFiles="true">
+        <logicalFolder name="Debug" displayName="Debug" projectFiles="true">
+          <logicalFolder name="GNU-Linux" displayName="GNU-Linux" projectFiles="true">
+          </logicalFolder>
+        </logicalFolder>
+      </logicalFolder>
+      <itemPath>library/DathxLib/.dep.inc</itemPath>
+      <itemPath>library/DathxLib/Drivers.cpp</itemPath>
+      <itemPath>library/DathxLib/Drivers.h</itemPath>
+      <itemPath>library/DathxLib/Makefile</itemPath>
+      <itemPath>library/DathxLib/Syscalls.h</itemPath>
+    </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
@@ -9,7 +22,6 @@
       <itemPath>system/Cmos.h</itemPath>
       <itemPath>system/monitor/Console.h</itemPath>
       <itemPath>system/drivers/DriverLoader.h</itemPath>
-      <itemPath>DathxLib/Drivers.h</itemPath>
       <itemPath>system/RunTime/ElfLoader.h</itemPath>
       <itemPath>system/fs/FAT32.h</itemPath>
       <itemPath>system/fs/File.h</itemPath>
@@ -42,7 +54,6 @@
       <itemPath>system/monitor/Console.cpp</itemPath>
       <itemPath>system/DathxMain.cpp</itemPath>
       <itemPath>system/drivers/DriverLoader.cpp</itemPath>
-      <itemPath>DathxLib/Drivers.cpp</itemPath>
       <itemPath>system/RunTime/ElfLoader.cpp</itemPath>
       <itemPath>system/fs/FAT32.cpp</itemPath>
       <itemPath>system/fs/File.cpp</itemPath>
@@ -74,6 +85,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>library/DathxLib</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -98,9 +112,15 @@
           <commandLine>-T ./scripts/link.ld -o "./bin/DathxKernel.bin"</commandLine>
         </linkerTool>
       </compileType>
-      <item path="DathxLib/Drivers.cpp" ex="false" tool="1" flavor2="0">
+      <item path="library/DathxLib/.dep.inc" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="DathxLib/Drivers.h" ex="false" tool="3" flavor2="0">
+      <item path="library/DathxLib/Drivers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="library/DathxLib/Drivers.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="library/DathxLib/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="library/DathxLib/Syscalls.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/Cmos.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -217,9 +237,15 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="DathxLib/Drivers.cpp" ex="false" tool="1" flavor2="0">
+      <item path="library/DathxLib/.dep.inc" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="DathxLib/Drivers.h" ex="false" tool="3" flavor2="0">
+      <item path="library/DathxLib/Drivers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="library/DathxLib/Drivers.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="library/DathxLib/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="library/DathxLib/Syscalls.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/Cmos.cpp" ex="false" tool="1" flavor2="0">
       </item>

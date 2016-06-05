@@ -40,6 +40,20 @@
         </ccTool>
         <linkerTool>
           <commandlineTool>ld</commandlineTool>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../library/DathxLib"
+                            CT="3"
+                            CN="Release"
+                            AC="true"
+                            BL="true"
+                            WD="../../library/DathxLib"
+                            BC="${MAKE}  -f Makefile CONF=Release"
+                            CC="${MAKE}  -f Makefile CONF=Release clean"
+                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libdathxlib.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+          </linkerLibItems>
           <commandLine>-T ./scripts/link.ld -o "./bin/keyboard.dri"</commandLine>
         </linkerTool>
       </compileType>

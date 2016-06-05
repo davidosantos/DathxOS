@@ -35,7 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/Syscalls.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/util.o
 
@@ -54,20 +53,17 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=../../library/DathxLib/dist/Release/GNU-Linux/libdathxlib.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/app
 
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/app: ../../library/DathxLib/dist/Release/GNU-Linux/libdathxlib.a
+
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/app: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	ld -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/app ${OBJECTFILES} ${LDLIBSOPTIONS} -T ./scripts/link.ld -o "./bin/apptorunonkernel.bin"
-
-${OBJECTDIR}/Syscalls.o: Syscalls.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Syscalls.o Syscalls.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -81,6 +77,7 @@ ${OBJECTDIR}/util.o: util.cpp
 
 # Subprojects
 .build-subprojects:
+	cd ../../library/DathxLib && ${MAKE}  -f Makefile CONF=Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -89,6 +86,7 @@ ${OBJECTDIR}/util.o: util.cpp
 
 # Subprojects
 .clean-subprojects:
+	cd ../../library/DathxLib && ${MAKE}  -f Makefile CONF=Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

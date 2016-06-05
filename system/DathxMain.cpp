@@ -138,11 +138,10 @@ int main() {
 
     //--------------------------Hardware config ------------------------
     IRQHandler::setup();
-   // IRQHandler::add(0, test2);
+   //IRQHandler::add(0, test2);
 
     if (cpuFeature.APIC == ON) {
         Chip8259::remap(32); // remap to 32
-        //Chip8259::Mask();
         APIC::setup(&cpuFeature, kernel_Page_Directory);
         APIC::startTimer(100000);
         APIC::enableAPIC();
@@ -162,9 +161,8 @@ int main() {
     FAT::setup();
     Tasks::createProcess("bin/apptorunonkernel.bin");
 
-    //Tasks::createProcess("bin/integrit_checker");
+   Tasks::createProcess("bin/integrit_checker");
 
-  //  DriverLoader::loadDriver("drivers/keyboardfordathxos.dri");
    DriverLoader::loadDriver("drivers/keyboard.dri");
   
 #endif
@@ -220,7 +218,7 @@ int main() {
     
     
     
-    //--------------------------- Kernal load Finished -------------------------
+    //--------------------------- Kernel load Finished -------------------------
     asm("ljmp $0x33,$0"); // jmp to the first task, ring 3
     
     /**

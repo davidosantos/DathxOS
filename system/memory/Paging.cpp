@@ -173,7 +173,7 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
             pageDir->dir[pdIndex].phys = ((u32) pTable >> 12);
             pageDir->dir[pdIndex].Present = 1;
             pageDir->dir[pdIndex].unused = 0;
-           // if (user)
+            if (user)
                 pageDir->dir[pdIndex].User = 1;
                 pageDir->dir[pdIndex].Read = 1;
         }
@@ -184,7 +184,7 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
         for (ptIndex = 0; ptIndex <= End; ptIndex++) {
             pTable->page[ptIndex].phys = physIndex;
             pTable->page[ptIndex].Present = 1;
-           // if (user)
+           if (user)
                 pTable->page[ptIndex].User = 1;
                 pTable->page[ptIndex].Read = 1;
             physIndex++;

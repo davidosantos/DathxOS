@@ -35,7 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/DathxLib/Drivers.o \
+	${OBJECTDIR}/library/DathxLib/Drivers.o \
 	${OBJECTDIR}/system/Cmos.o \
 	${OBJECTDIR}/system/DathxMain.o \
 	${OBJECTDIR}/system/Interrupts.o \
@@ -86,10 +86,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dathx_os: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dathx_os ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/DathxLib/Drivers.o: DathxLib/Drivers.cpp 
-	${MKDIR} -p ${OBJECTDIR}/DathxLib
+${OBJECTDIR}/library/DathxLib/Drivers.o: library/DathxLib/Drivers.cpp 
+	${MKDIR} -p ${OBJECTDIR}/library/DathxLib
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/DathxLib/Drivers.o DathxLib/Drivers.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/library/DathxLib/Drivers.o library/DathxLib/Drivers.cpp
 
 ${OBJECTDIR}/system/Cmos.o: system/Cmos.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system

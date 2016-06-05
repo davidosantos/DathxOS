@@ -42,9 +42,8 @@ void Tasks::interruptReceiver() {
 
 
     if (runningTask >= TaskCount) {
-        runningTask = 1;
         saveTask(runningTask);
-
+        runningTask = 1;
         loadTask(runningTask);
     } else {
         saveTask(runningTask);
@@ -266,7 +265,7 @@ void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDi
 
     u32 espKernel = 0;
     asm("movl %%esp,%0\n" : "=m" (espKernel) ::);
-    processor::TSSrng3->ss0 = 0x10; 
+    processor::TSSrng3->ss0 = 0x10;
     processor::TSSrng3->esp0 = espKernel;
     processor::TSS->prev_tss = 0x38;
 
@@ -332,9 +331,9 @@ void inline Tasks::loadTask(u32 task_Id) {
     processor::TSSrng3->gs = gsReg;
     processor::TSSrng3->cr3 = cr3Reg;
 
-//    processor::TSSrng3->ss0 = processor::TSS->ss;
-//    processor::TSSrng3->esp0 = processor::TSS->esp0;
-//    processor::TSS->prev_tss = 0x40;
+    //    processor::TSSrng3->ss0 = processor::TSS->ss;
+    //    processor::TSSrng3->esp0 = processor::TSS->esp0;
+    //    processor::TSS->prev_tss = 0x40;
     // asm("cli");
     //asm("hlt");
     //processor::Set_NT();

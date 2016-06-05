@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -14,7 +14,6 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>Syscalls.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>util.cpp</itemPath>
     </logicalFolder>
@@ -44,11 +43,23 @@
         </ccTool>
         <linkerTool>
           <commandlineTool>ld</commandlineTool>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../library/DathxLib"
+                            CT="3"
+                            CN="Release"
+                            AC="true"
+                            BL="true"
+                            WD="../../library/DathxLib"
+                            BC="${MAKE}  -f Makefile CONF=Release"
+                            CC="${MAKE}  -f Makefile CONF=Release clean"
+                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libdathxlib.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+          </linkerLibItems>
           <commandLine>-T ./scripts/link.ld -o "./bin/apptorunonkernel.bin"</commandLine>
         </linkerTool>
       </compileType>
-      <item path="Syscalls.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="Syscalls.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
@@ -78,8 +89,6 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="Syscalls.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="Syscalls.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">

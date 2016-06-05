@@ -12,38 +12,54 @@
 //}
 
 extern "C" void SyscallsDelivery(u32 parameter) {
-    Syscalls::interruptReceiver(parameter);
+    SysCallHandler::interruptReceiver(parameter);
 }
 
-void Syscalls::interruptReceiver(u32 function) {
+void SysCallHandler::interruptReceiver(u32 function) {
     if (function > 10) {
 
         CallsDirectives *directive = (CallsDirectives*) function;
 
         switch (directive->Function) {
             case Print: //Print Text
+            {
                 switch (directive->Subfunction) {
-                    case 1:
+                    case Print:
+                        Console::print(directive->String);
+                        break;
+                    case PrintatXY:
                         Console::print(directive->y, directive->x, directive->String);
                         break;
 
-                    case 2:
+                    case PrintatXYwArgs:
                         Console::print(directive->y, directive->x, directive->String, directive->Value);
                         break;
-                    case 3:
-                        Console::print(directive->y, directive->x, directive->String);
+                    
+                    default:
+                        Console::print("SysCallHandler: no such Sub-function of Print: %i", directive->Function);
                         break;
                 }
-
+            }
                 break;
             case 2:
+            {
                 Console::clear();
-                break;
+            }
+            break;
             case IRQinstall:
+            {
                 Drivers::IRQHandlerAddrs *irqHandlerAddrs = (Drivers::IRQHandlerAddrs*) directive->Value;
                 IRQHandler::add(irqHandlerAddrs->IRQid, irqHandlerAddrs->listener);
+            }
                 break;
+            default:
+            {
+                Console::print("SysCallHandler: no such function: %i", directive->Function);
+            }
+                break;
+
         }
+
     } else {
 
         if (function == 3) {

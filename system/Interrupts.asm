@@ -418,83 +418,95 @@ call IntsReturnTaskSwitch
 call HandlerIRQ00
 restoreTaskState 
 iretd
-
-
-
 ExternalInterrupt01:
+cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ01
 restoreTaskState
 iretd
 ExternalInterrupt02:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ02
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt03:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ03
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt04:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ04
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt05:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ05
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt06:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ06
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt07:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ07
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt08:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ08
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt09:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ09
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt10:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ10
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt11:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ11
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt12:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ12
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt13:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ13
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt14:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ14
-restoreALL
+restoreTaskState 
 iretd
 ExternalInterrupt15:
-saveALL
+cli  ;CPU Eflags will be restorned when iret executes
+saveTaskState
 call HandlerIRQ15
-restoreALL
+restoreTaskState 
 iretd
 
 [global Syscall0x80]
