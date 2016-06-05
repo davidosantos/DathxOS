@@ -400,10 +400,6 @@ FAT::longNameEntry FAT::findNextLongNameEntry(_Cluster *data, u8 checksum, u8 se
     return entries.longName[0];
 }
 
-FAT::shortNameEntry FAT::findNextShortNameEntry(_Cluster *data) {
-
-}
-
 u32 FAT::getSector(u32 Cluster) {
     //FirstSectorofCluster = ((N – 2) * BPB_SecPerClus) + FirstDataSector;
     return ((Cluster - 2) * BPB.structure.SectPerCluster + DataRegionStart);

@@ -130,9 +130,9 @@ returnCode HardDriveDriver::read(u32 LBA, u8 cmd, u512 *to) {
     return OK;
 }
 
-returnCode HardDriveDriver::write(u512 sect, u32 to) {
-
-}
+//returnCode HardDriveDriver::write(u512 sect, u32 to) {
+//
+//}
 
 returnCode HardDriveDriver::writeCommand(u8 cmd) {
     HardDriveRegs.statusReg_Command.getStatus();

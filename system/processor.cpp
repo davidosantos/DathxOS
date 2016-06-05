@@ -24,6 +24,8 @@ int processor::GDTCounter;
 int processor::IDTCounter;
 int processor::LDTCounter;
 
+processor::TSSEntry *processor::TSS;
+processor::TSSEntry *processor::TSSrng3;
 processor::IDTEntry *processor::IDT;
 processor::LDTEntry processor::LDT[8192];
 processor::GDTEntry *processor::GDT;
@@ -36,13 +38,14 @@ void processor::setupGDT() {
     PointGDT = new GDTPtr();
     GDT = new GDTEntry [8192];
 
-    GDTInitDesc[1] = prsnt_rng0_code_er_naccssd;
+    GDTInitDesc[1] = prsnt_rng0_code_eo_naccssd;
     GDTInitDesc[2] = prsnt_rng0_data_rw_naccssd;
-    GDTInitDesc[3] = prsnt_rng0_data_rw_naccssd;
-    GDTInitDesc[4] = prsnt_rng0_data_rw_naccssd;
-    GDTInitDesc[5] = prsnt_rng0_data_rw_naccssd;
+    GDTInitDesc[3] = prsnt_rng3_code_er_naccssd;
+    GDTInitDesc[4] = prsnt_rng3_data_rw_naccssd;
+    GDTInitDesc[5] = prsnt_rng0_code_eo_naccssd; //for interrupts
 
-    for (u8 i = 1; i < 6; i++) {
+
+    for (u8 i = 1; i < 7; i++) {
         addGDTDesc(i, 0xFFFFFFFF, 0, GDTInitDesc[i], Flags_Granu_Big);
         GDTCounter++;
     }
@@ -83,7 +86,7 @@ void processor::setupIDT() {
     for (u32 i = 0; i < 256; i++) {
         //add for security reasons, some application may cause invalid interrupt
         //and crash the whole system.
-        addIDTDesc((u32) & Syscall0x80, 0x08, intrrgt_rng0, i);
+        addIDTDesc((u32) & Syscall0x80, 0x8, intrrgt_rng0, i);
 
 
     }
@@ -140,12 +143,12 @@ void processor::setupIDT() {
 
     for (u32 i = 0; i < 47; i++) {
 
-        addIDTDesc(IDTInitDesc[i], 0x08, intrrgt_rng0, i);
+        addIDTDesc(IDTInitDesc[i], 0x28, intrrgt_rng0, i);
 
 
     }
     //adds system calls
-    addIDTDesc((u32) & Syscall0x80, 0x08, intrrgt_rng0, 0x80);
+    addIDTDesc((u32) & Syscall0x80, 0x8, intrrgt_rng3, 0x80);
 
     PointIDT->size = 255 * 8;
     LIDT(PointIDT);
@@ -153,6 +156,20 @@ void processor::setupIDT() {
 
 void processor::setupLDT() {
 
+}
+
+void processor::setupTR() {
+    TSS = new TSSEntry();
+    TSSrng3 = new TSSEntry();
+
+    u16 selr3 = addGDTDesc(sizeof (TSSEntry), (u32) TSSrng3, tss_p_rng3, Flags_Granu_Big);
+    u16 sel = addGDTDesc(sizeof (TSSEntry), (u32) TSS, tss_p_rng0, Flags_Granu_Big);
+    u32 callate = getGDTFreeEntry();
+    addGDTDesc(callate, 0, makeSelector(selr3, false, 0), 0x85, 0); //call gate
+    //link both
+    TSS->prev_tss = makeSelector(selr3, false, 0) + 3;
+    TSSrng3->prev_tss = makeSelector(sel, false, 0);
+    LTR(makeSelector(sel, false, 0));
 }
 
 void processor::LGDT(GDTPtr *gdt) {
@@ -219,7 +236,7 @@ u16 processor::getNewDataSeg(u32 base, u32 limit) {
 
 u16 processor::getNewCodeSeg(u32 base, u32 limit) {
     return makeSelector(
-            addGDTDesc(limit, base, prsnt_rng0_code_e0_naccssd, Flags_Granu_Big),
+            addGDTDesc(limit, base, prsnt_rng0_code_eo_naccssd, Flags_Granu_Big),
             false,
             false);
 }
@@ -231,9 +248,7 @@ u16 processor::getNewCodeSeg(u32 base, u32 limit) {
  * @return Return index of free entry to be used with makeselector
  */
 u16 processor::getGDTFreeEntry() {
-    for (u32 i = 1; i < sizeof GDT / 8; i++)
-
-
+    for (u32 i = 1; i < 8192; i++)
         if (GDT[i].type == 0) {
             GDTCounter++;
             return i;
@@ -329,6 +344,22 @@ u32 processor::getSLDT() {
     u32 value = 0;
     asm ("sldt %0 " : "=m" (value));
     return value;
+}
+
+u16 processor::getRng0Code() {
+    return makeSelector(1, false, 0);
+}
+
+u16 processor::getRng0Data() {
+    return makeSelector(2, false, 0);
+}
+
+u16 processor::getRng3Code() {
+    return makeSelector(3, false, 3);
+}
+
+u16 processor::getRng3Data() {
+    return makeSelector(4, false, 3);
 }
 
 void processor::cli() {
@@ -624,21 +655,34 @@ Begin:
     goto Begin;
 }
 
-extern "C" void InvalidTSS() {
+extern "C" void InvalidTSS(processor::ErroCode errorCode, u32 oldEIP, u32 oldCS, u32 oldEFLAGS, u32 oldEIP2, u32 oldCS2, u32 oldEFLAGS2) {
 Begin:
     ;
-    const u8 msg[] = {"InvalidTSS"};
 
-    u8* videoPtr = (u8*) 0xB8000;
-
-    for (u32 i = 0; i < sizeof msg; i++) {
-
-        *videoPtr++ = msg[i];
-        *videoPtr++ = 15;
+    Console::print("InvalidTSS, Event was: %s", errorCode.External == 1 ? "External" : "Internal");
+    if (errorCode.InterruptTable == 1) {
+        Console::print("Gate of IDT: %i", errorCode.Index);
+    } else {
+        if (errorCode.GDTorLDT == 0) {
+            Console::print("Gate of GDT: %i", errorCode.Index);
+            Console::print("Gate of GDT: %h", errorCode.Index * 8);
+        } else {
+            Console::print("Gate of LDT: %i", errorCode.Index);
+        }
     }
 
-    //GDT[7].type = tss_p_rng0;
-    asm("lcall $56,$0");
+    Console::print("InvalidTSS oldEIP %h", oldEIP);
+    Console::print("InvalidTSS oldCS %h", oldCS);
+    Console::print("InvalidTSS oldEFLAGS %h", oldEFLAGS);
+    Console::print("InvalidTSS oldEIP2 %h", oldEIP2);
+    Console::print("InvalidTSS oldCS2 %h", oldCS2);
+    Console::print("InvalidTSS oldEFLAGS2 %h", oldEFLAGS2);
+
+
+
+
+    //    GDT[40].type = tss_p_rng0;
+    asm("hlt");
     goto Begin;
 }
 
@@ -676,10 +720,12 @@ Begin:
     goto Begin;
 }
 
-extern "C" void Generalprotection(processor::ErroCode errorCode, u32 oldEIP, u32 oldCS, u32 oldEFLAGS, u32 oldEIP2, u32 oldCS2, u32 oldEFLAGS2) {
+extern "C" void Generalprotection(processor::ErroCode errorCode, u32 oldEIP, u32 oldCS, u32 oldEFLAGS, u32 oldESP, u32 oldSS ) {
     //    autoCheck::runCheck();
-Begin:
+//Begin:
     ;
+
+
 
     Console::print("General Protection, Event was: %s", errorCode.External == 1 ? "External" : "Internal");
     if (errorCode.InterruptTable == 1) {
@@ -687,26 +733,28 @@ Begin:
     } else {
         if (errorCode.GDTorLDT == 0) {
             Console::print("Gate of GDT: %i", errorCode.Index);
+            Console::print("Gate of GDT: %h", errorCode.Index * 8);
         } else {
             Console::print("Gate of LDT: %i", errorCode.Index);
         }
     }
 
+    Console::print("General Protection errorCode %h", errorCode.cause);
     Console::print("General Protection oldEIP %h", oldEIP);
     Console::print("General Protection oldCS %h", oldCS);
     Console::print("General Protection oldEFLAGS %h", oldEFLAGS);
-    Console::print("General Protection oldEIP2 %h", oldEIP2);
-    Console::print("General Protection oldCS2 %h", oldCS2);
-    Console::print("General Protection oldEFLAGS2 %h", oldEFLAGS2);
+    Console::print("General Protection oldESP %h", oldESP);
+    Console::print("General Protection oldSS %h", oldSS);
 
-
-
-
-    //    GDT[40].type = tss_p_rng0;
-    asm("hlt");
+    asm("cli");
+    
+    while(true){}
+    
+    //asm("hlt");
+    //asm("hlt");
     //GDT[7].type = tss_p_rng0;
     //asm("lcall $56,$0");
-    goto Begin;
+    //goto Begin;
 }
 
 #include "memory/Paging.h"
@@ -738,7 +786,7 @@ extern "C" void Pagefault(processor::PageFaultErroCode *pageFault, Paging::Pages
 
 
     Paging::mapRange(faultAdress, faultAdress,
-            ppageDir,physAddress );
+            ppageDir, physAddress, false);
 
 
     //

@@ -20,6 +20,7 @@
 #include "drivers/APIC.h"
 #include "RunTime/IRQHandler.h"
 #include "drivers/DriverLoader.h"
+#include "Providers/InputProvider.h"
 
 #define KernelStackSize 0x1000
 #define initFs yes
@@ -46,7 +47,7 @@ u32 *baseMemoryPointer;
 #ifndef Regs
 #define Regs
 //Changed via nasm in InterruptsDel... external int one
-u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg, kerPageDir;
+u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg, kerPageDir, oldespReg, oldssReg;
 u16 ssReg, dsReg, esReg, fsReg, gsReg;
 #endif
 
@@ -69,9 +70,6 @@ void test() {
     Console::print("My Handler");
 }
 
-void test2() {
-    /// Console::print("My Handler2");
-}
 
 /*
  * 
@@ -116,9 +114,10 @@ int main() {
     processor::setupGDT();
     processor::setupIDT();
     //processor::setupLDT();
+    processor::setupTR();
 
     kerPageDir = (u32) kernel_Page_Directory;
-    Paging::mapRange(0, totalMemoryAdress, kernel_Page_Directory, 0);
+    Paging::mapRange(0, totalMemoryAdress, kernel_Page_Directory, 0,false);
     processor::loadPDBR(kernel_Page_Directory);
     processor::enablePaging();
 
@@ -162,10 +161,11 @@ int main() {
     MBR::setup();
     FAT::setup();
     Tasks::createProcess("bin/apptorunonkernel.bin");
+
     //Tasks::createProcess("bin/integrit_checker");
 
   //  DriverLoader::loadDriver("drivers/keyboardfordathxos.dri");
-    DriverLoader::loadDriver("drivers/keyboard.dri");
+   DriverLoader::loadDriver("drivers/keyboard.dri");
   
 #endif
 #ifdef showMultiboot
@@ -212,8 +212,24 @@ int main() {
     Console::print("%ct\12Machine Memory: %i pages", totalMemoryInKB * 1024 / 4096);
 
 #endif
-
-    asm("sti");
+    
+    //--------------------------- System Resources -------------------------
+    
+    InputProvider::setup();
+    
+    
+    
+    
+    //--------------------------- Kernal load Finished -------------------------
+    asm("ljmp $0x33,$0"); // jmp to the first task, ring 3
+    
+    /**
+     * Kernel loading is done, from now on, no code will execute in ring 0,
+     * except for interrupts 
+     * @return 
+     */
+    
+   
     while (true) {
         static u32 var = 0;
 

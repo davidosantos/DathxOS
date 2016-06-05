@@ -13,7 +13,7 @@
 #include "../drivers/APIC.h"
 #include "../RunTime/ElfLoader.h"
 
-
+//Changed via nasm in InterruptsDel... external int one
 extern u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg;
 extern u16 ssReg, dsReg, esReg, fsReg, gsReg;
 
@@ -29,7 +29,7 @@ public:
     
     static void createProcess(const s8 *file);
     
-    static void NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDir, u32 *stack, u32 stackSize);
+    static void NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDir, u32 *stack, u32 stackSize,u8 ring);
 
     static void NewInternalTask(u16 entry, const s8 *name, bool loadTaskReg, void (*Addrs)());
 
@@ -45,10 +45,13 @@ public:
     static u32 runningTask;
 
     static u32 TaskCount;
+    
+    static u8 CurrPrevLevel;
 
 private:
 
     typedef struct Tss_32 {
+        u8 taskPrevLevel;
         Paging::PagesDir *PageDir;
         u32 eip;
         u32 eflags;
@@ -68,7 +71,7 @@ private:
         u16 gs;
         u16 ldt_selector;
 
-    } TSS;
+    } TaskState;
 
 
 public:
@@ -79,7 +82,7 @@ public:
         u16 Selector; //>> by 3 to get the gdt entry
         u32 PID;
         void (*Addrs)();
-        TSS* taskState;
+        TaskState* taskState;
     } __attribute__((packed));
 
     static Task TasksList[50];

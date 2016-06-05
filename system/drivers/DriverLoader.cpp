@@ -35,10 +35,10 @@ void DriverLoader::loadDriver(const s8 *file) {
 
         loadAddrs = new u8 [exec->pHeader[0].p_memsz];
 
-        Paging::mapRange(0, 0x800000, pageDir, 0);
+        Paging::mapRange(0, 0x800000, pageDir, 0,false);
 
         Paging::mapRange(exec->pHeader[0].p_vaddr, (exec->pHeader[0].p_vaddr +
-                exec->pHeader[0].p_memsz), pageDir, (u32*) loadAddrs);
+                exec->pHeader[0].p_memsz), pageDir, (u32*) loadAddrs,false);
 
         if (exec->loadProgram(pageDir) == Error) {
             Console::print("%cttDriverLoader: Error Loading file %s", file);

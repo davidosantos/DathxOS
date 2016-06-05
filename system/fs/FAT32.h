@@ -411,7 +411,6 @@ private:
     static u8 getCheckSum(u8 *pFcbName);
 
     static FAT::longNameEntry findNextLongNameEntry(_Cluster *data, u8 checksum, u8 sequece);
-    static FAT::shortNameEntry findNextShortNameEntry(_Cluster *data);
     
     static FAT::shortNameEntry isThereShortNameEntry(_Cluster *data, const s8 *name);
     static FAT::shortNameEntry isThereLongNameEntry(_Cluster *data, const s8 *name);

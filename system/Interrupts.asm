@@ -23,6 +23,8 @@ align 4
 [EXTERN gsReg]
 [EXTERN cr3Reg]
 [EXTERN kerPageDir]
+[EXTERN oldespReg]
+[EXTERN oldssReg]
 
 [EXTERN SyscallsDelivery]
 
@@ -119,17 +121,8 @@ mov dword esp,[espReg]
 mov dword ebp,[ebpReg]
 mov dword esi,[esiReg]
 mov dword edi,[ediReg]
-
-mov dword eax,[eflags]
-push eax ; out eflags
-mov eax,[csReg]
-push eax ; code segment
-mov dword eax,[eipReg]
-push eax ; retun adress
-mov word ax,[ssReg]
-mov word ss,ax
-mov word ax,[ssReg]
-mov word ss,ax
+;mov word ax,[ssReg]  ; restored automatically
+;mov word ss,ax
 mov word ax,[dsReg]
 mov word ds,ax
 mov word ax,[esReg]
@@ -138,6 +131,16 @@ mov word ax,[fsReg]
 mov word fs,ax
 mov word ax,[gsReg]
 mov word gs,ax
+mov dword eax,[oldssReg]
+push eax        ; oldSS
+mov dword eax,[oldespReg]
+push eax        ; oldESP
+mov dword eax,[eflags]
+push eax        ; out eflags
+mov eax,[csReg]
+push eax        ; code segment
+mov dword eax,[eipReg]
+push eax        ; retun adress
 mov dword eax,[cr3Reg]
 mov dword cr3,eax
 mov dword eax,[eaxReg]
@@ -156,12 +159,16 @@ mov word ax,fs
 mov word [fsReg],ax
 mov word ax,gs
 mov word [gsReg],ax
-pop eax, ;save return address
+pop eax,                ;save return address
 mov dword [eipReg],eax
-pop eax ; code segment
+pop eax                 ; code segment
 mov dword [csReg],eax
-pop eax ;eflags
+pop eax                 ;eflags
 mov dword [eflags],eax
+pop eax                 ;remove oldESP 
+mov dword [oldespReg],eax
+pop eax                 ;remove oldSS from stack 
+mov dword [oldssReg],eax
 mov dword [ecxReg],ecx
 mov dword [edxReg],edx
 mov dword [ebxReg],ebx
@@ -408,8 +415,8 @@ saveTaskState
 mov     dword   eax,[kerPageDir]
 mov     dword   cr3,eax                     ;hangle task switch in kernel page dir
 call IntsReturnTaskSwitch
-;call HandlerIRQ00
-restoreTaskState
+call HandlerIRQ00
+restoreTaskState 
 iretd
 
 

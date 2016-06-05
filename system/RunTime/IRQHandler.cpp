@@ -39,7 +39,7 @@ void IRQHandler::add(u32 id, void (* funtion)()) {
     if (id < maxIRQ) {
         u32 base = id * 64;
         for (u32 i = base; i < (base + 64); i++) {
-            if (handlers->functions[i] == 0) { // if empty
+            if (handlers->functions[i] == 0 || handlers->asInt[i] == msgDisplayed) { // if empty
                 handlers->functions[i] = funtion;
                 pageDirs[i] = (Paging::PagesDir*) processor::getPDBR();
                 Console::print("IRQ: added handler for IRQ %i.", id);
@@ -62,13 +62,15 @@ void IRQHandler::dispatch(u32 id) {
     if (id < maxIRQ) {
         u32 base = id * 64;
         for (u32 i = base; i < (base + 64); i++) {
-            if (*handlers->functions[i]) {
+            if (*handlers->functions[i] && handlers->asInt[i] != msgDisplayed) {
                  processor::loadPDBR(pageDirs[i]);
                 (*handlers->functions[i])();
                 dispached = true;
             } else {
-                if (!dispached)
+                if (!dispached && handlers->asInt[i] != msgDisplayed){
                     Console::print("IRQ dispatch: No handler for IRQ %i", id);
+                }
+                handlers->asInt[i] = msgDisplayed;
                 break;
             }
         }

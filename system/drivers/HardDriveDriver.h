@@ -459,7 +459,7 @@ class HardDriveDriver {
 public: 
     static returnCode read(u32 LBA, u8 cmd, u512 *to);
 
-    static returnCode write(u512 sect, u32 to);
+   // static returnCode write(u512 sect, u32 to);
 
     static returnCode writeCommand(u8 cmd);
 

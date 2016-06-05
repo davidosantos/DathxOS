@@ -6,7 +6,7 @@
  */
 
 #ifndef PROCESSOR_H
-#define	PROCESSOR_H
+#define PROCESSOR_H
 #include "../util/util.h"
 #include "monitor/Console.h"
 #include "memory/Paging.h"
@@ -14,18 +14,24 @@
 #include "autoCheck.h"
 #include "../system/drivers/msr.h"
 
-#define prsnt_rng0_data_r0_naccssd 0x90	//present, ring 0, data, read only, not accessed. generate this binary 	10010000
-#define prsnt_rng0_data_rw_naccssd 0x92	//;present, ring 0, data, read/wright, not accessed. generate this binary 	10010010
-#define prsnt_rng0_stck_r0_naccssd 0x94	//;present, ring 0, stack, read only, not accessed. generate this binary 	10010100
-#define prsnt_rng0_stck_rw_naccssd 0x96	//;present, ring 0, stack, read/wright, not accessed. generate this binary 10010110
-#define prsnt_rng0_code_e0_naccssd 0x98	//;present, ring 0, code, exec only, not accessed. generate this binary 	10011000
-#define prsnt_rng0_code_er_naccssd 0x9a	//;present, ring 0, code, exec read, not accessed. generate this binary 	10011010
-#define prsnt_rng0_code_e0_naccssd_c 0x9c	//;present, ring 0, code, exec only, not accessed, conforming.  			10011100
-#define prsnt_rng0_code_er_naccssd_c 0x9e	//;present, ring 0, code, exec read, not accessed, conforming.  			10011110
+#define prsnt_rng0_data_r0_naccssd 0x90 //present, ring 0, data, read only, not accessed. generate this binary 	10010000
+#define prsnt_rng0_data_rw_naccssd 0x92 //;present, ring 0, data, read/wright, not accessed. generate this binary 	10010010
+#define prsnt_rng3_data_rw_naccssd 0xf2 //;present, ring 3, data, read/wright, not accessed. generate this binary 	11110010
+#define prsnt_rng0_stck_r0_naccssd 0x94 //;present, ring 0, stack, read only, not accessed. generate this binary 	10010100
+#define prsnt_rng0_stck_rw_naccssd 0x96 //;present, ring 0, stack, read/wright, not accessed. generate this binary 10010110
+#define prsnt_rng0_code_eo_naccssd 0x98 //;present, ring 0, code, exec only, not accessed. generate this binary 	10011000
+#define prsnt_rng0_code_er_naccssd 0x9a //;present, ring 0, code, exec read, not accessed. generate this binary 	10011010
+#define prsnt_rng3_code_er_naccssd 0xfa //;present, ring 3, code, exec read, not accessed. generate this binary 	11111010
+#define prsnt_rng0_code_e0_naccssd_c 0x9c //;present, ring 0, code, exec only, not accessed, conforming.  			10011100
+#define prsnt_rng0_code_er_naccssd_c 0x9e //;present, ring 0, code, exec read, not accessed, conforming.  			10011110
 #define intrrgt_rng0 0x8e
-#define tss_p_rng0 0x89			  //;tss ring 0//////////
-#define tskgt_rng0 0x85				//;task gate ring 0
-#define tskgt_rng0 0x85				//;task gate ring 0
+#define intrrgt_rng3 0xee
+#define tss_p_rng0 0x89     //;tss ring 0//////////
+#define tss_p_rng0b 0x8b     //;tss ring 0//////////
+#define tss_p_rng3 0xe9     //;tss ring 3//////////
+#define tss_p_rng3b 0xeb     //;tss ring 3//////////
+#define tskgt_rng0 0x85    //;task gate ring 0
+#define tskgt_rng0 0x85    //;task gate ring 0
 #define Flags_Granu_Big 0xc0
 
 extern "C" void InternalInterrupt00();
@@ -96,6 +102,11 @@ public:
     static u32 getSIDT();
     static u32 getSGDT();
     static u32 getSLDT();
+    
+    static u16 getRng0Code();
+    static u16 getRng0Data();
+    static u16 getRng3Code();
+    static u16 getRng3Data();
 
     static void Set_NT();
 
@@ -110,6 +121,7 @@ public:
     static void setupGDT();
     static void setupIDT();
     static void setupLDT();
+    static void setupTR();
 
     static void inline cli();
 
@@ -171,18 +183,50 @@ public:
 
     static void LLDT(LDTPtr *ldt);
 
+    struct TSSEntry {
+        u32 prev_tss; // The previous TSS - if we used hardware task switching this would form a linked list.
+        u32 esp0; // The stack pointer to load when we change to kernel mode.
+        u32 ss0; // The stack segment to load when we change to kernel mode.
+        u32 esp1; // everything below here is unusued now.. 
+        u32 ss1;
+        u32 esp2;
+        u32 ss2;
+        u32 cr3;
+        u32 eip;
+        u32 eflags;
+        u32 eax;
+        u32 ecx;
+        u32 edx;
+        u32 ebx;
+        u32 esp;
+        u32 ebp;
+        u32 esi;
+        u32 edi;
+        u32 es;
+        u32 cs;
+        u32 ss;
+        u32 ds;
+        u32 fs;
+        u32 gs;
+        u32 ldt;
+        u16 trap;
+        u16 iomap_base;
+    } __attribute__((packed));
+
     static void LTR(u16 Sel);
 
-    u16 STR();
+    static u16 STR();
 
-    u16 STRGDTIndex();
+    static u16 STRGDTIndex();
 
 
+    static TSSEntry *TSS;
+    static TSSEntry *TSSrng3;
     static IDTEntry *IDT;
     static LDTEntry LDT[8192];
     static GDTEntry *GDT;
 
-    static const GDTEntry *getGDTEntry();
+    static GDTEntry *getGDTEntry();
 
     IDTEntry getIDT();
 
@@ -221,17 +265,18 @@ public:
             };
         };
     } __attribute__((packed));
-    
+
     struct ErroCode {
 
         union {
             u32 cause;
+
             struct {
                 u32 External : 1,
                 InterruptTable : 1,
                 GDTorLDT : 1,
                 Index : 14,
-                 : 15;
+                : 15;
             };
         };
     } __attribute__((packed));
@@ -260,8 +305,8 @@ public:
                 u32 EDX;
                 u32 ECX;
                 u32 EAX;
-            }__attribute__((packed));
-        }__attribute__((packed));
+            } __attribute__((packed));
+        } __attribute__((packed));
     } __attribute__((packed));
 
     struct CPUBrandString {
@@ -275,7 +320,7 @@ public:
                 u32 ECX;
                 u32 EDX;
             } regs[3];
-        }__attribute__((packed));
+        } __attribute__((packed));
     } __attribute__((packed));
 
     struct CPUFeatures {
@@ -287,7 +332,7 @@ public:
                 u32 EBX;
                 u32 ECX;
                 u32 EDX;
-            }__attribute__((packed));
+            } __attribute__((packed));
 
             struct {
 
@@ -300,14 +345,14 @@ public:
                     ExtendedModel : 4,
                     ExtendedFamily : 8,
                     : 4;
-                }__attribute__((packed));
+                } __attribute__((packed));
 
                 struct {
                     u32 BrandId : 8,
                     CLFLUSH : 8,
                     Count : 8,
                     ApicID : 8;
-                }__attribute__((packed));
+                } __attribute__((packed));
 
                 struct {
                     u32 SSE3 : 1,
@@ -342,7 +387,7 @@ public:
                     F16C : 1,
                     RDRAND : 1,
                     : 1;
-                }__attribute__((packed));
+                } __attribute__((packed));
 
                 struct {
                     u32
@@ -378,9 +423,9 @@ public:
                     TM : 1,
                     : 1,
                     PBE : 1;
-                }__attribute__((packed));
-            }__attribute__((packed));
-        }__attribute__((packed));
+                } __attribute__((packed));
+            } __attribute__((packed));
+        } __attribute__((packed));
     } __attribute__((packed));
 
     struct MSR {
@@ -405,7 +450,7 @@ u32:
             struct { //MAXPHYADDR (Reserved)
 u32:
                 32;
-            }__attribute__((packed));
+            } __attribute__((packed));
         } __attribute__((packed));
     } __attribute__((packed));
 
@@ -416,10 +461,10 @@ u32:
     static CPUBrandString getCPUBrandString(CPUFeatures *features);
     scs8 *getTypeStr(s8 type);
     static bool getModelSpecificReg(CPUFeatures *features, MSR *to, u32 base);
-    
+
     static bool setModelSpecificReg(CPUFeatures *features, MSR *to, u32 base);
 
 };
 
-#endif	/* PROCESSOR_H */
+#endif /* PROCESSOR_H */
 

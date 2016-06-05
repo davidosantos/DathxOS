@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/system/Cmos.o \
 	${OBJECTDIR}/system/DathxMain.o \
 	${OBJECTDIR}/system/Interrupts.o \
+	${OBJECTDIR}/system/Providers/InputProvider.o \
 	${OBJECTDIR}/system/RunTime/ElfLoader.o \
 	${OBJECTDIR}/system/RunTime/IRQHandler.o \
 	${OBJECTDIR}/system/RunTime/SysCallHandler.o \
@@ -103,6 +104,11 @@ ${OBJECTDIR}/system/DathxMain.o: system/DathxMain.cpp
 ${OBJECTDIR}/system/Interrupts.o: system/Interrupts.asm 
 	${MKDIR} -p ${OBJECTDIR}/system
 	$(AS) $(ASFLAGS) -g -o ${OBJECTDIR}/system/Interrupts.o system/Interrupts.asm
+
+${OBJECTDIR}/system/Providers/InputProvider.o: system/Providers/InputProvider.cpp 
+	${MKDIR} -p ${OBJECTDIR}/system/Providers
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/Providers/InputProvider.o system/Providers/InputProvider.cpp
 
 ${OBJECTDIR}/system/RunTime/ElfLoader.o: system/RunTime/ElfLoader.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/RunTime

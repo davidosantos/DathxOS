@@ -150,7 +150,7 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, u32 physStart) {
  * @param virtStart - start of virtual address
  * @param virtEnd - this is where virtual address end.
  */
-void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32 *physStart) {
+void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32 *physStart, bool user) {
 
     // Make sure that both addresses are page-aligned.
     u32 pdIndex = ((u32) virtStart >> 22);
@@ -173,6 +173,9 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
             pageDir->dir[pdIndex].phys = ((u32) pTable >> 12);
             pageDir->dir[pdIndex].Present = 1;
             pageDir->dir[pdIndex].unused = 0;
+           // if (user)
+                pageDir->dir[pdIndex].User = 1;
+                pageDir->dir[pdIndex].Read = 1;
         }
         //check whether is is the last directory to allocate, if it is
         //then the End will be ptIndexEnd which might be less than _1kb
@@ -181,6 +184,9 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
         for (ptIndex = 0; ptIndex <= End; ptIndex++) {
             pTable->page[ptIndex].phys = physIndex;
             pTable->page[ptIndex].Present = 1;
+           // if (user)
+                pTable->page[ptIndex].User = 1;
+                pTable->page[ptIndex].Read = 1;
             physIndex++;
         }
         ptIndex = 0;
@@ -193,35 +199,35 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
  * the start address will always be at virtual address 0.
  * @param virtEnd
  */
-void Paging::mapRange(u32 virtEnd, Paging::PagesDir *pageDir) {
-
-    // Make sure that both addresses are page-aligned.
-
-    u32 pdIndexEnd = ((u32) virtEnd >> 22); // & 0x03FF;
-
-    u32 ptIndexEnd = (u32) virtEnd >> 12 & PageEntry_10Bits;
-
-    for (u32 pdIndex = 0; pdIndex <= pdIndexEnd; pdIndex++) {
-        //get page table and convert to physical address
-        //   PagesTable *mountTable = (PagesTable*) getNewPage();
-        //   ppageTable = mountTable; //get address
-
-        //   ppageDir->dir.pageDir[pdIndex].phys = ((u32) ppageTable >> 12);
-
-        // ppageDir->dir.pageDir[pdIndex].Present = 1;
-        //  ppageDir->dir.pageDir[pdIndex].unused = 0;
-        //check whether is is the last page to allocate, if it is
-        //then the End will be pdIndexEnd whick might be less than _1kb
-        u32 End = (pdIndex == pdIndexEnd) ? ptIndexEnd : _1kb;
-
-        for (u32 ptIndex = 0; ptIndex <= End; ptIndex++) {
-            //       ppageTable->page[ptIndex].phys = getNewPage();
-
-            //      ppageTable->page[ptIndex].Present = 1;
-            //      ppageTable->page[ptIndex].unused = 0;
-        }
-    }
-}
+//void Paging::mapRange(u32 virtEnd, Paging::PagesDir *pageDir) {
+//
+//    // Make sure that both addresses are page-aligned.
+//
+//    u32 pdIndexEnd = ((u32) virtEnd >> 22); // & 0x03FF;
+//
+//    u32 ptIndexEnd = (u32) virtEnd >> 12 & PageEntry_10Bits;
+//
+//    for (u32 pdIndex = 0; pdIndex <= pdIndexEnd; pdIndex++) {
+//        //get page table and convert to physical address
+//        //   PagesTable *mountTable = (PagesTable*) getNewPage();
+//        //   ppageTable = mountTable; //get address
+//
+//        //   ppageDir->dir.pageDir[pdIndex].phys = ((u32) ppageTable >> 12);
+//
+//        // ppageDir->dir.pageDir[pdIndex].Present = 1;
+//        //  ppageDir->dir.pageDir[pdIndex].unused = 0;
+//        //check whether is is the last page to allocate, if it is
+//        //then the End will be pdIndexEnd whick might be less than _1kb
+//        u32 End = (pdIndex == pdIndexEnd) ? ptIndexEnd : _1kb;
+//
+//        for (u32 ptIndex = 0; ptIndex <= End; ptIndex++) {
+//            //       ppageTable->page[ptIndex].phys = getNewPage();
+//
+//            //      ppageTable->page[ptIndex].Present = 1;
+//            //      ppageTable->page[ptIndex].unused = 0;
+//        }
+//    }
+//}
 
 u32 *Paging::getPhysAddrs(u32 *Addrs, PagesDir *pageDir) {
     u32 pdIndex = ((u32) Addrs >> 22);

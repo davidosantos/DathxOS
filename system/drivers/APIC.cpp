@@ -26,7 +26,7 @@ void APIC::setup(processor::CPUFeatures *features, Paging::PagesDir *kernelPageD
         apicRegisters = (Registers*) apicBaseAddress;
 
         Paging::mapRange(apicBaseAddress, apicBaseAddress,
-                kernelPageDir, (u32*) apicBaseAddress);
+                kernelPageDir, (u32*) apicBaseAddress,false);
 
         if (modelSpecificReg.ApicEnabled == 1) {
             Console::print("ApicEnabled is ON, Base Address: %h",apicBaseAddress);

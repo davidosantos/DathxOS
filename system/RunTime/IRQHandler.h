@@ -20,11 +20,17 @@
 
 #define maxFunction 1024
 #define maxIRQ 16
+#define msgDisplayed 0xffffffff
 
 class IRQHandler {
-    struct Irq{
-        void (* functions[maxFunction])();
-    }__attribute((packed));
+
+    struct Irq {
+
+        union {
+            void (* functions[maxFunction])();
+            u32 asInt[maxFunction];
+        };
+    } __attribute((packed));
     static Irq *handlers;
     static Paging::PagesDir *pageDirs[maxFunction];
 public:
@@ -32,8 +38,8 @@ public:
     static void add(u32 id, void (* funtion)());
     static void dispatch(u32 id);
     IRQHandler();
-//    IRQHandler(const IRQHandler& orig);
-//    virtual ~IRQHandler();
+    //    IRQHandler(const IRQHandler& orig);
+    //    virtual ~IRQHandler();
 private:
 
 };
