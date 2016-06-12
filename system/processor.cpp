@@ -24,8 +24,13 @@ int processor::GDTCounter;
 int processor::IDTCounter;
 int processor::LDTCounter;
 
-processor::TSSEntry *processor::TSS;
+u16 processor::TssSelRng0;
+u16 processor::TssSelRng3;
+u16 processor::TssSelInts;
+
+processor::TSSEntry *processor::TSSrng0;
 processor::TSSEntry *processor::TSSrng3;
+processor::TSSEntry *processor::TSSInts;
 processor::IDTEntry *processor::IDT;
 processor::LDTEntry processor::LDT[8192];
 processor::GDTEntry *processor::GDT;
@@ -38,6 +43,7 @@ void processor::setupGDT() {
     PointGDT = new GDTPtr();
     GDT = new GDTEntry [8192];
 
+
     GDTInitDesc[1] = prsnt_rng0_code_eo_naccssd;
     GDTInitDesc[2] = prsnt_rng0_data_rw_naccssd;
     GDTInitDesc[3] = prsnt_rng3_code_er_naccssd;
@@ -49,7 +55,6 @@ void processor::setupGDT() {
         addGDTDesc(i, 0xFFFFFFFF, 0, GDTInitDesc[i], Flags_Granu_Big);
         GDTCounter++;
     }
-
 
 
     LGDT(PointGDT);
@@ -148,7 +153,7 @@ void processor::setupIDT() {
 
     }
     //adds system calls
-    addIDTDesc((u32) & Syscall0x80, 0x8, intrrgt_rng3, 0x80);
+    addIDTDesc((u32) & Syscall0x80, 0x28, intrrgt_rng3, 0x80);
 
     PointIDT->size = 255 * 8;
     LIDT(PointIDT);
@@ -159,17 +164,23 @@ void processor::setupLDT() {
 }
 
 void processor::setupTR() {
-    TSS = new TSSEntry();
+    TSSrng0 = new TSSEntry();
     TSSrng3 = new TSSEntry();
+    TSSInts = new TSSEntry;
 
-    u16 selr3 = addGDTDesc(sizeof (TSSEntry), (u32) TSSrng3, tss_p_rng3, Flags_Granu_Big);
-    u16 sel = addGDTDesc(sizeof (TSSEntry), (u32) TSS, tss_p_rng0, Flags_Granu_Big);
-    u32 callate = getGDTFreeEntry();
-    addGDTDesc(callate, 0, makeSelector(selr3, false, 0), 0x85, 0); //call gate
+    TSSrng0->cr3 = processor::getPDBR();
+    TssSelRng3 = addGDTDesc(sizeof (TSSEntry), (u32) TSSrng3, tss_p_rng3, Flags_Granu_Big);
+    TssSelRng0 = addGDTDesc(sizeof (TSSEntry), (u32) TSSrng0, tss_p_rng0, Flags_Granu_Big);
+
+    //add entry for task switching for drivers, this can be called only by
+    //kernel, and/or interrupts
+    TssSelInts = addGDTDesc(sizeof (TSSEntry), (u32) TSSInts, tss_p_rng0, Flags_Granu_Big);
+    
+    //addGDTDesc(getGDTFreeEntry(), 0, makeSelector(TssSelInts, false, 0), tskgt_rng0, 0); //call gate
     //link both
-    TSS->prev_tss = makeSelector(selr3, false, 0) + 3;
-    TSSrng3->prev_tss = makeSelector(sel, false, 0);
-    LTR(makeSelector(sel, false, 0));
+    //TSSrng0->prev_tss = makeSelector(TssSelRng3, false, 0) + 3;
+    //TSSrng3->prev_tss = makeSelector(TssSelRng0, false, 0);
+    LTR(makeSelector(TssSelRng0, false, 0));
 }
 
 void processor::LGDT(GDTPtr *gdt) {
@@ -720,9 +731,9 @@ Begin:
     goto Begin;
 }
 
-extern "C" void Generalprotection(processor::ErroCode errorCode, u32 oldEIP, u32 oldCS, u32 oldEFLAGS, u32 oldESP, u32 oldSS ) {
+extern "C" void Generalprotection(processor::ErroCode errorCode, u32 oldEIP, u32 oldCS, u32 oldEFLAGS, u32 oldESP, u32 oldSS) {
     //    autoCheck::runCheck();
-//Begin:
+    //Begin:
     ;
 
 
@@ -747,9 +758,10 @@ extern "C" void Generalprotection(processor::ErroCode errorCode, u32 oldEIP, u32
     Console::print("General Protection oldSS %h", oldSS);
 
     asm("cli");
-    
-    while(true){}
-    
+
+    while (true) {
+    }
+
     //asm("hlt");
     //asm("hlt");
     //GDT[7].type = tss_p_rng0;

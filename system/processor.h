@@ -31,7 +31,6 @@
 #define tss_p_rng3 0xe9     //;tss ring 3//////////
 #define tss_p_rng3b 0xeb     //;tss ring 3//////////
 #define tskgt_rng0 0x85    //;task gate ring 0
-#define tskgt_rng0 0x85    //;task gate ring 0
 #define Flags_Granu_Big 0xc0
 
 extern "C" void InternalInterrupt00();
@@ -220,8 +219,9 @@ public:
     static u16 STRGDTIndex();
 
 
-    static TSSEntry *TSS;
+    static TSSEntry *TSSrng0;
     static TSSEntry *TSSrng3;
+    static TSSEntry *TSSInts;
     static IDTEntry *IDT;
     static LDTEntry LDT[8192];
     static GDTEntry *GDT;
@@ -233,6 +233,11 @@ public:
     static int GDTCounter;
     static int IDTCounter;
     static int LDTCounter;
+
+    static u16 TssSelRng0;
+    static u16 TssSelRng3;
+    static u16 TssSelInts;
+
 
     static u16 makeSelector(u32 selnumb, bool table, bool ring);
 

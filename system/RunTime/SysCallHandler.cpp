@@ -61,10 +61,34 @@ void SysCallHandler::interruptReceiver(u32 function) {
         }
 
     } else {
-
-        if (function == 3) {
-            Console::print(45, 0, "Integrity check error");
+        static u32 count = 0;
+        if (function == 1) {
+            Console::print(45, 0, "Integrity check error eax %i",count);
         }
+        if (function == 2) {
+            Console::print(45, 0, "Integrity check error ebx %i",count);
+        }
+        if (function == 3) {
+            Console::print(45, 0, "Integrity check error ecx %i",count);
+        }
+        if (function == 4) {
+            Console::print(45, 0, "Integrity check error edx %i",count);
+        }
+        if (function == 5) {
+            Console::print(45, 0, "Integrity check error ebp %i",count);
+        }
+        if (function == 6) {
+            Console::print(45, 0, "Integrity check error esp %i",count);
+        }
+        if (function == 7) {
+            Console::print(45, 0, "Integrity check error esi %i",count);
+        }
+        if (function == 8) {
+            Console::print(45, 0, "Integrity check error edi %i",count);
+        }
+        
+        count++;
+        
     }
 
 }

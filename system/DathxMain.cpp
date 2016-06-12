@@ -21,6 +21,7 @@
 #include "RunTime/IRQHandler.h"
 #include "drivers/DriverLoader.h"
 #include "Providers/InputProvider.h"
+#include "drivers/driverManager.h"
 
 #define KernelStackSize 0x1000
 #define initFs yes
@@ -29,7 +30,7 @@
 
 
 Time time;
-Date date;
+
 
 extern "C" u32 Kernel_Code_Start;
 extern "C" u32 Kernel_Code_End;
@@ -47,7 +48,7 @@ u32 *baseMemoryPointer;
 #ifndef Regs
 #define Regs
 //Changed via nasm in InterruptsDel... external int one
-u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg, kerPageDir, oldespReg, oldssReg;
+u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg, kerPageDir;
 u16 ssReg, dsReg, esReg, fsReg, gsReg;
 #endif
 
@@ -62,7 +63,7 @@ static u32 magic_code;
 static processor::CPUString cpustr;
 static processor::CPUFeatures cpuFeature;
 
-static Paging::PagesDir *kernel_Page_Directory;
+Paging::PagesDir *kernel_Page_Directory;
 
 extern "C" void ExternalInterrupt00();
 
@@ -114,13 +115,14 @@ int main() {
     processor::setupGDT();
     processor::setupIDT();
     //processor::setupLDT();
-    processor::setupTR();
+    
 
     kerPageDir = (u32) kernel_Page_Directory;
     Paging::mapRange(0, totalMemoryAdress, kernel_Page_Directory, 0,false);
     processor::loadPDBR(kernel_Page_Directory);
     processor::enablePaging();
-
+    processor::setupTR();
+    
     cpustr = processor::getCPUString();
     cpuFeature = processor::getCPUFeatures();
     //    Console::print("CPU: %s", cpustr.String);
@@ -133,17 +135,18 @@ int main() {
     //    Console::print("CPU Processor Type: %s", processor::getTypeStr(cpuFeature.ProcessorType));
 
 
-    Console::print("%ct9Welcome to Dathx OS RUTH E DAVID");
+    Console::print("%ct9Welcome to Dathx OS RUTH and DAVID %i",Cmos::GetDate().Month.i);
     Console::print("CPU Brand Name  %s", processor::getCPUBrandString(&cpuFeature).String);
 
     //--------------------------Hardware config ------------------------
+    driverManager::setup();
     IRQHandler::setup();
    //IRQHandler::add(0, test2);
 
     if (cpuFeature.APIC == ON) {
         Chip8259::remap(32); // remap to 32
         APIC::setup(&cpuFeature, kernel_Page_Directory);
-        APIC::startTimer(100000);
+        APIC::startTimer(100);
         APIC::enableAPIC();
     } else {
         Chip8259::remap(32); // remap to 32
@@ -160,6 +163,12 @@ int main() {
     MBR::setup();
     FAT::setup();
     Tasks::createProcess("bin/apptorunonkernel.bin");
+    Tasks::createProcess("bin/apptorunonkernel.bin");
+    Tasks::createProcess("bin/apptorunonkernel.bin");
+   
+
+
+
 
    Tasks::createProcess("bin/integrit_checker");
 

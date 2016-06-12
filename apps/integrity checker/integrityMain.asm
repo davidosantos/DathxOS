@@ -3,6 +3,14 @@
 section .text
 global StartProgram:function
 Start:
+    mov dword eax,255
+    mov dword ebx,255
+    mov dword ecx,255
+    mov dword edx,255
+    mov dword ebp,255
+    mov dword esp,255
+    mov dword esi,255
+    mov dword edi,255
     mov dword [eaxReg],eax
     mov dword [ebxReg],ebx
     mov dword [ecxReg],ecx
@@ -13,27 +21,48 @@ Start:
     mov dword [ediReg],edi
     continue:
     cmp eax,[eaxReg]
-    jne callToint
+    jne callTointeax
     cmp ebx,[ebxReg]
-    jne callToint
+    jne callTointebx
     cmp ecx,[ecxReg]
-    jne callToint
+    jne callTointecx
     cmp edx,[edxReg]
-    jne callToint
+    jne callTointedx
     cmp ebp,[ebpReg]
-    jne callToint
+    jne callTointebp
     cmp esp,[espReg]
-    jne callToint
+    jne callTointesp
     cmp esi,[esiReg]
-    jne callToint
+    jne callTointesi
     cmp edi,[ediReg]
-    jne callToint
+    jne callTointedi
     jmp continue
 
 
-    callToint:
+    callTointeax:
+    mov dword eax,0x01    ;funcion number
+    int 0x80
+    callTointebx:
+    mov dword eax,0x02    ;funcion number
+    int 0x80
+    callTointecx:
     mov dword eax,0x03    ;funcion number
     int 0x80
+    callTointedx:
+    mov dword eax,0x04    ;funcion number
+    int 0x80
+    callTointebp:
+    mov dword eax,0x05    ;funcion number
+    int 0x80
+    callTointesp:
+    mov dword eax,0x06    ;funcion number
+    int 0x80
+    callTointesi:
+    mov dword eax,0x07    ;funcion number
+    int 0x80
+    callTointedi:
+    mov dword eax,0x08    ;funcion number
+    
     
     jmp Start
 

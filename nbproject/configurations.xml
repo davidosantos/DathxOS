@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <logicalFolder name="DathxLib" displayName="DathxLib" projectFiles="true">
-      <logicalFolder name="dist" displayName="dist" projectFiles="true">
-        <logicalFolder name="Debug" displayName="Debug" projectFiles="true">
-          <logicalFolder name="GNU-Linux" displayName="GNU-Linux" projectFiles="true">
-          </logicalFolder>
-        </logicalFolder>
-      </logicalFolder>
-      <itemPath>library/DathxLib/.dep.inc</itemPath>
-      <itemPath>library/DathxLib/Drivers.cpp</itemPath>
-      <itemPath>library/DathxLib/Drivers.h</itemPath>
-      <itemPath>library/DathxLib/Makefile</itemPath>
-      <itemPath>library/DathxLib/Syscalls.h</itemPath>
-    </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
@@ -35,6 +22,7 @@
       <itemPath>system/RunTime/SysCallHandler.h</itemPath>
       <itemPath>system/Tasks/Tasks.h</itemPath>
       <itemPath>system/autoCheck.h</itemPath>
+      <itemPath>system/drivers/driverManager.h</itemPath>
       <itemPath>system/drivers/msr.h</itemPath>
       <itemPath>system/multiboot.h</itemPath>
       <itemPath>system/memory/pageManagment.h</itemPath>
@@ -69,6 +57,7 @@
       <itemPath>system/RunTime/SysCallHandler.cpp</itemPath>
       <itemPath>system/Tasks/Tasks.cpp</itemPath>
       <itemPath>system/autoCheck.cpp</itemPath>
+      <itemPath>system/drivers/driverManager.cpp</itemPath>
       <itemPath>system/memory/pageManagment.cpp</itemPath>
       <itemPath>system/processor.cpp</itemPath>
       <itemPath>util/util.cpp</itemPath>
@@ -85,9 +74,6 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <sourceRootList>
-    <Elem>library/DathxLib</Elem>
-  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -112,16 +98,6 @@
           <commandLine>-T ./scripts/link.ld -o "./bin/DathxKernel.bin"</commandLine>
         </linkerTool>
       </compileType>
-      <item path="library/DathxLib/.dep.inc" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Drivers.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Drivers.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Makefile" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Syscalls.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="system/Cmos.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/Cmos.h" ex="false" tool="3" flavor2="0">
@@ -175,6 +151,10 @@
       <item path="system/drivers/HardwareIO.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/drivers/HardwareIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/driverManager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/driverManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/drivers/msr.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -237,16 +217,6 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="library/DathxLib/.dep.inc" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Drivers.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Drivers.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Makefile" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="library/DathxLib/Syscalls.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="system/Cmos.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/Cmos.h" ex="false" tool="3" flavor2="0">
@@ -300,6 +270,10 @@
       <item path="system/drivers/HardwareIO.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/drivers/HardwareIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/drivers/driverManager.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/drivers/driverManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/drivers/msr.h" ex="false" tool="3" flavor2="0">
       </item>

@@ -22,6 +22,7 @@ extern "C" {
 #define s8 char
 #define cs8 const char
 #define scs8 static const char
+    
 
      enum returnCode {
         Error = -1,
@@ -90,7 +91,7 @@ extern "C" {
         HMSValue DayOfWeek;
 
         const s8 *getValue() {
-            s8 value[7];
+            static s8 value[7];
             value[0] = Day.ch;
             value[1] = '/';
             value[2] = Month.ch;
@@ -99,8 +100,7 @@ extern "C" {
             value[5] = ':';
             value[6] = DayOfWeek.ch;
             value[7] = '\0';
-            s8 *p = value;
-            return p;
+            return value;;
         }
     } Date;
     

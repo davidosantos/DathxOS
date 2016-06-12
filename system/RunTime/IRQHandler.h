@@ -17,12 +17,18 @@
 #include "../../util/util.h"
 #include "../memory/Memory.h"
 #include "../processor.h"
+#include "../drivers/driverManager.h"
 
 #define maxFunction 1024
 #define maxIRQ 16
 #define msgDisplayed 0xffffffff
 
+ extern Paging::PagesDir *kernel_Page_Directory;
+ 
+ extern void callDriver();
+
 class IRQHandler {
+   
 
     struct Irq {
 

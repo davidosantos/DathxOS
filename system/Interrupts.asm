@@ -23,8 +23,7 @@ align 4
 [EXTERN gsReg]
 [EXTERN cr3Reg]
 [EXTERN kerPageDir]
-[EXTERN oldespReg]
-[EXTERN oldssReg]
+
 
 [EXTERN SyscallsDelivery]
 
@@ -113,14 +112,14 @@ popad
 
 
 %macro restoreTaskState 0
-cld
 mov dword ecx,[ecxReg]
 mov dword edx,[edxReg]
 mov dword ebx,[ebxReg]
-mov dword esp,[espReg]
+;mov dword esp,[espReg]
 mov dword ebp,[ebpReg]
 mov dword esi,[esiReg]
 mov dword edi,[ediReg]
+
 ;mov word ax,[ssReg]  ; restored automatically
 ;mov word ss,ax
 mov word ax,[dsReg]
@@ -131,9 +130,11 @@ mov word ax,[fsReg]
 mov word fs,ax
 mov word ax,[gsReg]
 mov word gs,ax
-mov dword eax,[oldssReg]
+
+mov dword eax,0
+mov word ax,[ssReg]
 push eax        ; oldSS
-mov dword eax,[oldespReg]
+mov dword eax,[espReg]
 push eax        ; oldESP
 mov dword eax,[eflags]
 push eax        ; out eflags
@@ -147,10 +148,17 @@ mov dword eax,[eaxReg]
 %endmacro
 
 %macro saveTaskState 0
-cld
 mov dword [eaxReg],eax
-mov word ax,ss
-mov word [ssReg],ax
+mov dword [ebxReg],ebx
+mov dword [ecxReg],ecx
+mov dword [edxReg],edx
+;mov dword [espReg],esp
+mov dword [ebpReg],ebp
+mov dword [esiReg],esi
+mov dword [ediReg],edi
+
+;mov word ax,ss
+;mov word [ssReg],ax
 mov word ax,ds
 mov word [dsReg],ax
 mov word ax,es
@@ -159,6 +167,7 @@ mov word ax,fs
 mov word [fsReg],ax
 mov word ax,gs
 mov word [gsReg],ax
+
 pop eax,                ;save return address
 mov dword [eipReg],eax
 pop eax                 ; code segment
@@ -166,16 +175,9 @@ mov dword [csReg],eax
 pop eax                 ;eflags
 mov dword [eflags],eax
 pop eax                 ;remove oldESP 
-mov dword [oldespReg],eax
+mov dword [espReg],eax
 pop eax                 ;remove oldSS from stack 
-mov dword [oldssReg],eax
-mov dword [ecxReg],ecx
-mov dword [edxReg],edx
-mov dword [ebxReg],ebx
-mov dword [espReg],esp
-mov dword [ebpReg],ebp
-mov dword [esiReg],esi
-mov dword [ediReg],edi
+mov word [ssReg],ax
 mov dword eax,cr3
 mov dword [cr3Reg],eax
 %endmacro
@@ -416,94 +418,96 @@ mov     dword   eax,[kerPageDir]
 mov     dword   cr3,eax                     ;hangle task switch in kernel page dir
 call IntsReturnTaskSwitch
 call HandlerIRQ00
-restoreTaskState 
+restoreTaskState
 iretd
+
 ExternalInterrupt01:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ01
 restoreTaskState
+;push 11
+;call Generalprotection
 iretd
+
 ExternalInterrupt02:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ02
 restoreTaskState 
 iretd
+
 ExternalInterrupt03:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ03
 restoreTaskState 
 iretd
+
 ExternalInterrupt04:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ04
 restoreTaskState 
 iretd
+
 ExternalInterrupt05:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ05
 restoreTaskState 
 iretd
+
 ExternalInterrupt06:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ06
 restoreTaskState 
 iretd
+
 ExternalInterrupt07:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ07
 restoreTaskState 
 iretd
+
 ExternalInterrupt08:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ08
 restoreTaskState 
 iretd
+
 ExternalInterrupt09:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ09
 restoreTaskState 
 iretd
+
 ExternalInterrupt10:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ10
 restoreTaskState 
 iretd
+
 ExternalInterrupt11:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ11
 restoreTaskState 
 iretd
+
 ExternalInterrupt12:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ12
 restoreTaskState 
 iretd
+
 ExternalInterrupt13:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ13
 restoreTaskState 
 iretd
+
 ExternalInterrupt14:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ14
 restoreTaskState 
 iretd
+
 ExternalInterrupt15:
-cli  ;CPU Eflags will be restorned when iret executes
 saveTaskState
 call HandlerIRQ15
 restoreTaskState 
@@ -511,8 +515,9 @@ iretd
 
 [global Syscall0x80]
 Syscall0x80:
+mov dword [SavedSyscalParameter],eax ;paramater address of struct, not taking out might be problem
 saveALL
-push dword eax ;paramater address of struct, not taking out might be problem
+push dword [SavedSyscalParameter]
 call SyscallsDelivery
 pop dword eax
 restoreALL
@@ -528,80 +533,32 @@ mov  dword cr3,eax
 pop dword eax
 ret
 
-;
-;ExternalInterrupt17:
-;saveALL
-;call HandlerIRQ18
-;restoreALL
-;iretd
-;ExternalInterrupt18:
-;saveALL
-;call HandlerIRQ19
-;restoreALL
-;iretd
-;ExternalInterrupt19:
-;saveALL
-;call HandlerIRQ20
-;restoreALL
-;iretd
-;ExternalInterrupt20:
-;saveALL
-;call HandlerIRQ21
-;restoreALL
-;iretd
-;ExternalInterrupt21:
-;saveALL
-;call HandlerIRQ22
-;restoreALL
-;iretd
-;ExternalInterrupt22:
-;saveALL
-;call HandlerIRQ23
-;restoreALL
-;iretd
-;ExternalInterrupt23:
-;saveALL
-;call HandlerIRQ24
-;restoreALL
-;iretd
-;ExternalInterrupt24:
-;saveALL
-;call HandlerIRQ25
-;restoreALL
-;iretd
-;ExternalInterrupt25:
-;saveALL
-;call HandlerIRQ26
-;restoreALL
-;iretd
-;ExternalInterrupt26:
-;saveALL
-;call HandlerIRQ27
-;restoreALL
-;iretd
-;ExternalInterrupt27:
-;saveALL
-;call HandlerIRQ28
-;restoreALL
-;iretd
-;ExternalInterrupt28:
-;saveALL
-;call HandlerIRQ29
-;restoreALL
-;iretd
-;ExternalInterrupt29:
-;saveALL
-;call HandlerIRQ30
-;restoreALL
-;iretd
-;ExternalInterrupt30:
-;saveALL
-;call HandlerIRQ31
-;restoreALL
-;iretd
+;[global callDriver]
+;callDriver:
+;mov     dword      [SavedEax],eax
+;mov     dword      eax,cr3
+;mov     dword      [SavedCr3],eax
+;mov     dword      cr3,ebx
+;call    dword      [SavedEax]
+;mov     dword      eax,[SavedCr3]
+;mov     dword      cr3,eax
+;mov     dword      esp,[SavedEsp]
+;ret
 
 section .data
 align 4
 
 SavedErrorCode dd 0
 SavedPageDir dd 0
+SavedSyscalParameter dd 0
+SavedCr3 dd 0
+SavedEax dd 0
+
+IntsEax dd 0
+IntsEbx dd 0
+IntsEcx dd 0
+IntsEdx dd 0
+IntsEbp dd 0
+IntsEsp dd 0
+IntsEsi dd 0
+IntsEdi dd 0

@@ -11,8 +11,8 @@
 #include "../../util/util.h"
 #include "../../system/monitor/Console.h"
 #include "../../system/RunTime/IRQHandler.h"
-#include "../../library/DathxLib/Drivers.h"
-#include "../../library/DathxLib/Syscalls.h"
+#include "../../../library/DathxLib/Drivers.h"
+#include "../../../library/DathxLib/Syscalls.h"
 
 
 extern "C" void SyscallsDelivery(u32 parameter);

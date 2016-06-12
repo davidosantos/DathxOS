@@ -73,7 +73,7 @@ Tstorage& Cmos::GetTime() //remember this Tstorage&
 Dstorage& Cmos::GetDate() {
     // Returns a ref to a arrey of unsigned char Containing Day,month,year and day of week in hex
 
-
+    static Date date;
     for (;;) {
 
         if (IsRegsReady(StatusRegA)) {
@@ -132,7 +132,7 @@ Dstorage& Cmos::GetDate() {
     return date;
 }
 
- bool Cmos::IsRegsReady(s8 Reg) {
+bool Cmos::IsRegsReady(s8 Reg) {
 
     unsigned char localtmp;
 

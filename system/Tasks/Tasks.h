@@ -45,8 +45,6 @@ public:
     static u32 runningTask;
 
     static u32 TaskCount;
-    
-    static u8 CurrPrevLevel;
 
 private:
 

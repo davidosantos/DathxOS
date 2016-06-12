@@ -118,7 +118,7 @@ Tasks::Tss_32* Tasks::lastTss;
 
 u32 Tasks::runningTask = 0;
 u32 Tasks::TaskCount = 0;
-u8 Tasks::CurrPrevLevel = 0;
+
 
 //Tasks::TaskList Tasks::TasksList[50];
 
@@ -267,7 +267,7 @@ void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDi
     asm("movl %%esp,%0\n" : "=m" (espKernel) ::);
     processor::TSSrng3->ss0 = 0x10;
     processor::TSSrng3->esp0 = espKernel;
-    processor::TSS->prev_tss = 0x38;
+    processor::TSSrng0->prev_tss = 0x38;
 
 }
 
@@ -313,23 +313,23 @@ void inline Tasks::loadTask(u32 task_Id) {
     gsReg = TasksList[task_Id].taskState->gs;
     cr3Reg = (u32) TasksList[task_Id].taskState->PageDir;
 
-    processor::TSSrng3->eip = eipReg;
-    processor::TSSrng3->eax = eaxReg;
-    processor::TSSrng3->ebx = ebxReg;
-    processor::TSSrng3->ecx = ecxReg;
-    processor::TSSrng3->edx = edxReg;
-    processor::TSSrng3->esp = espReg;
-    processor::TSSrng3->ebp = ebpReg;
-    processor::TSSrng3->esi = esiReg;
-    processor::TSSrng3->edi = ediReg;
-    processor::TSSrng3->eflags = eflags;
-    processor::TSSrng3->ss = ssReg;
-    processor::TSSrng3->cs = csReg;
-    processor::TSSrng3->ds = dsReg;
-    processor::TSSrng3->es = esReg;
-    processor::TSSrng3->fs = fsReg;
-    processor::TSSrng3->gs = gsReg;
-    processor::TSSrng3->cr3 = cr3Reg;
+//    processor::TSSrng3->eip = eipReg;
+//    processor::TSSrng3->eax = eaxReg;
+//    processor::TSSrng3->ebx = ebxReg;
+//    processor::TSSrng3->ecx = ecxReg;
+//    processor::TSSrng3->edx = edxReg;
+//    processor::TSSrng3->esp = espReg;
+//    processor::TSSrng3->ebp = ebpReg;
+//    processor::TSSrng3->esi = esiReg;
+//    processor::TSSrng3->edi = ediReg;
+//    processor::TSSrng3->eflags = eflags;
+//    processor::TSSrng3->ss = ssReg;
+//    processor::TSSrng3->cs = csReg;
+//    processor::TSSrng3->ds = dsReg;
+//    processor::TSSrng3->es = esReg;
+//    processor::TSSrng3->fs = fsReg;
+//    processor::TSSrng3->gs = gsReg;
+//    processor::TSSrng3->cr3 = cr3Reg;
 
     //    processor::TSSrng3->ss0 = processor::TSS->ss;
     //    processor::TSSrng3->esp0 = processor::TSS->esp0;

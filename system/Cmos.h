@@ -80,7 +80,7 @@ public:
      * // Returns a ref to a array of s8 Containing Day,month,year for alarm
      * @return 
      */
-    Dstorage &GetDate();
+    static Dstorage &GetDate();
 
     /**
      * //Used to set date

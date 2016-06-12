@@ -35,7 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/library/DathxLib/Drivers.o \
 	${OBJECTDIR}/system/Cmos.o \
 	${OBJECTDIR}/system/DathxMain.o \
 	${OBJECTDIR}/system/Interrupts.o \
@@ -51,6 +50,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/system/drivers/DriverLoader.o \
 	${OBJECTDIR}/system/drivers/HardDriveDriver.o \
 	${OBJECTDIR}/system/drivers/HardwareIO.o \
+	${OBJECTDIR}/system/drivers/driverManager.o \
 	${OBJECTDIR}/system/fs/FAT32.o \
 	${OBJECTDIR}/system/fs/File.o \
 	${OBJECTDIR}/system/fs/MBR.o \
@@ -85,11 +85,6 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dathx_os: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dathx_os ${OBJECTFILES} ${LDLIBSOPTIONS}
-
-${OBJECTDIR}/library/DathxLib/Drivers.o: library/DathxLib/Drivers.cpp 
-	${MKDIR} -p ${OBJECTDIR}/library/DathxLib
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/library/DathxLib/Drivers.o library/DathxLib/Drivers.cpp
 
 ${OBJECTDIR}/system/Cmos.o: system/Cmos.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system
@@ -163,6 +158,11 @@ ${OBJECTDIR}/system/drivers/HardwareIO.o: system/drivers/HardwareIO.cpp
 	${MKDIR} -p ${OBJECTDIR}/system/drivers
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/drivers/HardwareIO.o system/drivers/HardwareIO.cpp
+
+${OBJECTDIR}/system/drivers/driverManager.o: system/drivers/driverManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/system/drivers
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/drivers/driverManager.o system/drivers/driverManager.cpp
 
 ${OBJECTDIR}/system/fs/FAT32.o: system/fs/FAT32.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/fs

@@ -43,7 +43,7 @@ void IRQHandler::add(u32 id, void (* funtion)()) {
                 handlers->functions[i] = funtion;
                 pageDirs[i] = (Paging::PagesDir*) processor::getPDBR();
                 Console::print("IRQ: added handler for IRQ %i.", id);
-                Console::print("IRQ: handler address is %h.", (u32)Paging::getPhysAddrs((u32*)handlers->functions[i],pageDirs[i]));
+                Console::print("IRQ: handler address is %h.", (u32) Paging::getPhysAddrs((u32*) handlers->functions[i], pageDirs[i]));
                 added = true;
                 break;
             }
@@ -63,11 +63,12 @@ void IRQHandler::dispatch(u32 id) {
         u32 base = id * 64;
         for (u32 i = base; i < (base + 64); i++) {
             if (*handlers->functions[i] && handlers->asInt[i] != msgDisplayed) {
-                 processor::loadPDBR(pageDirs[i]);
-                (*handlers->functions[i])();
+              
+                driverManager::drvManager[0].drvTss->eip = handlers->asInt[i];
+                driverManager::callDriverByIRQ(1);
                 dispached = true;
             } else {
-                if (!dispached && handlers->asInt[i] != msgDisplayed){
+                if (!dispached && handlers->asInt[i] != msgDisplayed) {
                     Console::print("IRQ dispatch: No handler for IRQ %i", id);
                 }
                 handlers->asInt[i] = msgDisplayed;
@@ -87,7 +88,7 @@ extern "C" void HandlerIRQ00() {
 }
 
 extern "C" void HandlerIRQ01() {
-    
+
     IRQHandler::dispatch(1);
 }
 
