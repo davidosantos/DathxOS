@@ -14,6 +14,7 @@
 #include "fs/MBR.h"
 #include "fs/FAT32.h"
 #include "fs/File.h"
+#include "Providers/Messaging.h"
 #include "RunTime/ElfLoader.h"
 #include "Cmos.h"
 #include "drivers/Chip8259.h"
@@ -63,7 +64,7 @@ static u32 magic_code;
 static processor::CPUString cpustr;
 static processor::CPUFeatures cpuFeature;
 
-Paging::PagesDir *kernel_Page_Directory;
+Paging::PageDirectory *kernel_Page_Directory;
 
 extern "C" void ExternalInterrupt00();
 
@@ -146,7 +147,7 @@ int main() {
     if (cpuFeature.APIC == ON) {
         Chip8259::remap(32); // remap to 32
         APIC::setup(&cpuFeature, kernel_Page_Directory);
-        APIC::startTimer(100);
+        APIC::startTimer(0xFFFFFFFF);
         APIC::enableAPIC();
     } else {
         Chip8259::remap(32); // remap to 32
@@ -162,9 +163,9 @@ int main() {
     HardDriveDriver::setup(0);
     MBR::setup();
     FAT::setup();
-    Tasks::createProcess("bin/apptorunonkernel.bin");
-    Tasks::createProcess("bin/apptorunonkernel.bin");
-    Tasks::createProcess("bin/apptorunonkernel.bin");
+    Tasks::createProcess("bin/systemapp");
+    Tasks::createProcess("bin/systemapp");
+    Tasks::createProcess("bin/systemapp");
    
 
 
@@ -173,6 +174,9 @@ int main() {
    Tasks::createProcess("bin/integrit_checker");
 
    DriverLoader::loadDriver("drivers/keyboard.dri");
+   //DriverLoader::loadDriver("drivers/mouse.dri");
+
+ 
   
 #endif
 #ifdef showMultiboot

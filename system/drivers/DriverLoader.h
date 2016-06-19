@@ -17,6 +17,9 @@
 #include "../../util/util.h"
 #include "../RunTime/ElfLoader.h"
 
+extern "C" u32 intsStart;
+extern "C" u32 intsEnd;
+
 class DriverLoader {
 public:
     

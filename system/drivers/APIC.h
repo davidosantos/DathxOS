@@ -24,7 +24,7 @@
 class APIC {
 public:
 
-    static void setup(processor::CPUFeatures *features, Paging::PagesDir *kernelPageDir);
+    static void setup(processor::CPUFeatures *features, Paging::PageDirectory *kernelPageDir);
 
     static void enableAPIC();
     static void disableAPIC();

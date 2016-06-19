@@ -6,7 +6,7 @@
  */
 
 #ifndef PAGING_H
-#define	PAGING_H
+#define PAGING_H
 #include "../../util/util.h"
 #include "../monitor/Console.h"
 
@@ -72,48 +72,56 @@ private:
     } __attribute__((aligned(4), packed));
 
     struct PageDirEntry {
-        u32 Present : 1,
-        Read : 1,
-        User : 1,
-        Accessed : 1,
-        Dirty : 1,
-        unused : 7,
-        phys : 20;
+
+        union {
+
+            struct {
+                u32 Present : 1,
+                Read : 1,
+                User : 1,
+                Accessed : 1,
+                Dirty : 1,
+                unused : 7,
+                phys : 20;
+            };
+            u32 all;
+        };
     } __attribute__((aligned(4), packed));
 
-//    struct PageDir {
-//        PageDirEntry dirs [1024];
-//    } __attribute__((packed));
-//
-//    struct PagePage {
-//        PageTableEntry pages [1024];
-//    } __attribute__((packed));
+    //    struct PageDir {
+    //        PageDirEntry dirs [1024];
+    //    } __attribute__((packed));
+    //
+    //    struct PagePage {
+    //        PageTableEntry pages [1024];
+    //    } __attribute__((packed));
 public:
 
-    struct PagesDir {
+    struct PageDirectory {
         PageDirEntry dir[1024];
-    } __attribute__((aligned(4096),packed));
+    } __attribute__((aligned(4096), packed));
 
-    struct PagesTable {
+    struct PageTable {
         PageTableEntry page[1024];
-    } __attribute__((aligned(4096),packed));
+    } __attribute__((aligned(4096), packed));
 
 
 
     static void mapRange(u32 virtStart, u32 virtEnd, u32 physStart);
 
-    static void mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32 *physStart, bool user);
+    static void mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user);
+    static void mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user,u32 teste);
 
     //static void mapRange(u32 virtEnd, Paging::PagesDir *pageDir);
 
-    static u32 *getPhysAddrs(u32 *Addrs, PagesDir *pageDir);
-    
-    static void dirCopy(PagesDir *from, PagesDir *to);
+    static u32 *getPhysAddrs(u32 *Addrs, PageDirectory *pageDir);
 
-    static PagesDir *getNewDir();
+    static void dirCopy(PageDirectory *from, PageDirectory *to);
+
+    static PageDirectory *getNewDir();
     static u32 *getNewPage();
 
 };
 
-#endif	/* PAGING_H */
+#endif /* PAGING_H */
 

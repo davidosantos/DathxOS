@@ -148,7 +148,7 @@ public:
 
     returnCode openFile(const s8 *fileName);
 
-    returnCode loadProgram(Paging::PagesDir *pageDir);
+    returnCode loadProgram(Paging::PageDirectory *pageDir);
 
 
     ElfLoader();

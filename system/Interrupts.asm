@@ -100,16 +100,30 @@ align 4
 [EXTERN HandlerIRQ15]
 
 %macro saveALL 0
-;cli
 pushad
+mov     dword   eax,cr3
+mov     dword   [SavedPageDirInts],eax
+mov     dword   eax,[kerPageDir]
+mov     dword   cr3,eax 
+%endmacro
 
+%macro toKernelPage 0
+mov     dword   eax,cr3
+mov     dword   [SavedPageDirInts],eax
+mov     dword   eax,[kerPageDir]
+mov     dword   cr3,eax 
 %endmacro
 
 %macro restoreALL 0
+mov     dword   eax,[SavedPageDirInts]
+mov     dword   cr3,eax
 popad
-;sti
 %endmacro
 
+%macro backFromKernelPage 0
+mov     dword   eax,[SavedPageDirInts]
+mov     dword   cr3,eax
+%endmacro
 
 %macro restoreTaskState 0
 mov dword ecx,[ecxReg]
@@ -307,7 +321,6 @@ call Generalprotection
 ;restoreALL
 iretd
 InternalInterrupt14:
-cli
 mov     dword   [SavedErrorCode],esp  ;get error code address
 saveALL
 cld
@@ -423,105 +436,142 @@ iretd
 
 ExternalInterrupt01:
 saveTaskState
+toKernelPage
 call HandlerIRQ01
+backFromKernelPage
 restoreTaskState
-;push 11
-;call Generalprotection
 iretd
 
 ExternalInterrupt02:
 saveTaskState
+toKernelPage
 call HandlerIRQ02
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt03:
 saveTaskState
+toKernelPage
 call HandlerIRQ03
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt04:
 saveTaskState
+toKernelPage
 call HandlerIRQ04
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt05:
 saveTaskState
+toKernelPage
 call HandlerIRQ05
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt06:
 saveTaskState
+toKernelPage
 call HandlerIRQ06
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt07:
 saveTaskState
+toKernelPage
 call HandlerIRQ07
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt08:
 saveTaskState
+toKernelPage
 call HandlerIRQ08
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt09:
 saveTaskState
+toKernelPage
 call HandlerIRQ09
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt10:
 saveTaskState
+toKernelPage
 call HandlerIRQ10
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt11:
 saveTaskState
+toKernelPage
 call HandlerIRQ11
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt12:
 saveTaskState
+toKernelPage
 call HandlerIRQ12
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt13:
 saveTaskState
+toKernelPage
 call HandlerIRQ13
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt14:
 saveTaskState
+toKernelPage
 call HandlerIRQ14
+backFromKernelPage
 restoreTaskState 
 iretd
 
 ExternalInterrupt15:
 saveTaskState
+toKernelPage
 call HandlerIRQ15
+backFromKernelPage
 restoreTaskState 
 iretd
 
 [global Syscall0x80]
 Syscall0x80:
-mov dword [SavedSyscalParameter],eax ;paramater address of struct, not taking out might be problem
-saveALL
+mov dword [SavedSyscalParameter],eax 
+pushad
+mov     dword   eax,cr3
+mov     dword   [SavedPageDirSysCall],eax
+mov     dword   eax,[kerPageDir]
+mov     dword   cr3,eax                     ;hangle system call in kernel page dir
+push dword [SavedPageDirSysCall]
 push dword [SavedSyscalParameter]
 call SyscallsDelivery
 pop dword eax
-restoreALL
+pop dword eax
+mov     dword   eax,[SavedPageDirSysCall]
+mov     dword   cr3,eax
+popad
 iretd
+
 
 [global enablePageasm]
 enablePageasm:
@@ -550,6 +600,8 @@ align 4
 
 SavedErrorCode dd 0
 SavedPageDir dd 0
+SavedPageDirSysCall dd 0
+SavedPageDirInts dd 0
 SavedSyscalParameter dd 0
 SavedCr3 dd 0
 SavedEax dd 0

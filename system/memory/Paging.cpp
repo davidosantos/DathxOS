@@ -32,37 +32,11 @@ u32 *Paging::getNewPage() {
     return Address;
 }
 
-Paging::PagesDir *Paging::getNewDir() {
-    PagesDir *MountDir = new PagesDir();
-    // PagesTable *MountTable;
-
-    //    for (u32 i = 0; i<1024; i++) {
-    //        MountTable = new PagesTable();
-    //        MountDir->dir[i].phys = ((u32) MountTable >> 12);
-    //        MountDir->dir[i].Present = 1;
-    //        for (u32 j = 0; j < 1024; j++) {
-    //            MountTable->page[j].Present = 1;
-    //        }
-
-    //    PagesDir *newDir = (PagesDir*) getNewPage();
-    //    u32 *from = (u32*) ppageDir;
-    //    u32 *to = (u32*) newDir;
-    //
+Paging::PageDirectory *Paging::getNewDir() {
+    PageDirectory *MountDir = new PageDirectory();
     for (u16 i = 0; i < 1024; i++) {
-        MountDir->dir[i].Accessed = 0;
-        MountDir->dir[i].Dirty = 0;
-        MountDir->dir[i].Present = 0;
-        MountDir->dir[i].Read = 0;
-        MountDir->dir[i].User = 0;
-        MountDir->dir[i].phys = 0;
-        MountDir->dir[i].unused = 0;
+        MountDir->dir[i].all = 0;
     }
-
-    //mapRange(virtStart,virtEnd);
-    //   Console::print("Ret: %h",(u32)newDir);
-    //   Console::print("to: %h",(u32)to);
-    //   Console::print("from: %h",(u32)from);
-
     return MountDir;
 }
 
@@ -150,7 +124,7 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, u32 physStart) {
  * @param virtStart - start of virtual address
  * @param virtEnd - this is where virtual address end.
  */
-void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32 *physStart, bool user) {
+void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user) {
 
     // Make sure that both addresses are page-aligned.
     u32 pdIndex = ((u32) virtStart >> 22);
@@ -162,36 +136,89 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
     u32 physIndex = (u32) physStart >> 12;
 
     for (; pdIndex <= pdIndexEnd; pdIndex++) {
-        PagesTable *pTable;
+        PageTable *pTable;
         //if the page table pointed by pdIndex is already present, the use the same
         if (pageDir->dir[pdIndex].phys && pageDir->dir[pdIndex].Present) {
-            pTable = (PagesTable*) (pageDir->dir[pdIndex].phys << 12);
+            pTable = (PageTable*) (pageDir->dir[pdIndex].phys << 12);
         } else {
             //get page table physical address and convert to logical
-            pTable = (PagesTable*) getNewPage();
+            pTable = (PageTable*) getNewPage();
             //Console::print("pTable %h", (u32)pTable);
             pageDir->dir[pdIndex].phys = ((u32) pTable >> 12);
             pageDir->dir[pdIndex].Present = 1;
             pageDir->dir[pdIndex].unused = 0;
-            if (user)
+            if (user) {
                 pageDir->dir[pdIndex].User = 1;
                 pageDir->dir[pdIndex].Read = 1;
+            }
         }
         //check whether is is the last directory to allocate, if it is
         //then the End will be ptIndexEnd which might be less than _1kb
         u32 End = (pdIndex == pdIndexEnd) ? ptIndexEnd : _1kb;
 
-        for (ptIndex = 0; ptIndex <= End; ptIndex++) {
+        for (; ptIndex < End; ptIndex++, physIndex++) { //verificar
             pTable->page[ptIndex].phys = physIndex;
             pTable->page[ptIndex].Present = 1;
-           if (user)
+            if (user) {
                 pTable->page[ptIndex].User = 1;
                 pTable->page[ptIndex].Read = 1;
+            }
+        }
+        ptIndex = 0;
+    }
+}
+
+void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user, u32 teste) {
+
+    // Make sure that both addresses are page-aligned.
+    u32 pdIndex = ((u32) virtStart >> 22);
+
+    u32 pdIndexEnd = ((u32) virtEnd >> 22); // & 0x03FF;
+
+    u32 ptIndex = (u32) virtStart >> 12 & PageEntry_10Bits;
+    u32 ptIndexEnd = (u32) virtEnd >> 12 & PageEntry_10Bits;
+    u32 physIndex = (u32) physStart >> 12;
+
+    for (; pdIndex <= pdIndexEnd; pdIndex++) {
+        PageTable *pTable;
+        //if the page table pointed by pdIndex is already present, the use the same
+        if (pageDir->dir[pdIndex].phys && pageDir->dir[pdIndex].Present) {
+            pTable = (PageTable*) (pageDir->dir[pdIndex].phys << 12);
+        } else {
+            //get page table physical address and convert to logical
+            pTable = (PageTable*) getNewPage();
+            //Console::print("pTable %h", (u32)pTable);
+            pageDir->dir[pdIndex].phys = ((u32) pTable >> 12);
+            pageDir->dir[pdIndex].Present = 1;
+            pageDir->dir[pdIndex].unused = 0;
+            if (user) {
+                pageDir->dir[pdIndex].User = 1;
+                pageDir->dir[pdIndex].Read = 1;
+            }
+            if(teste ==1){
+                pageDir->dir[pdIndex].Present = 0;
+            }
+        }
+        //check whether is is the last directory to allocate, if it is
+        //then the End will be ptIndexEnd which might be less than _1kb
+        u32 End = (pdIndex == pdIndexEnd) ? ptIndexEnd : _1kb;
+
+        for (; ptIndex <= End; ptIndex++) {
+            pTable->page[ptIndex].phys = physIndex;
+            pTable->page[ptIndex].Present = 1;
+            if (user) {
+                pTable->page[ptIndex].User = 1;
+                pTable->page[ptIndex].Read = 1;
+            }
+            if(teste ==1){
+                pTable->page[ptIndex].Present = 0;
+            }
             physIndex++;
         }
         ptIndex = 0;
     }
 }
+
 
 /**
  * This function is designed to map virtual address into physical address
@@ -229,20 +256,18 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PagesDir *pageDir, u32
 //    }
 //}
 
-u32 *Paging::getPhysAddrs(u32 *Addrs, PagesDir *pageDir) {
-    u32 pdIndex = ((u32) Addrs >> 22);
-    u32 ptIndex = (u32) Addrs >> 12 & PageEntry_10Bits;
-    u32 offset = (u32) Addrs & PageOffset_12Bits;
+u32 *Paging::getPhysAddrs(u32 *PhysAddrs, PageDirectory *pageDir) {
+    u32 pdIndex = ((u32) PhysAddrs >> 22);
+    u32 ptIndex = (u32) PhysAddrs >> 12 & PageEntry_10Bits;
+    u32 offset = (u32) PhysAddrs & PageOffset_12Bits;
 
-    PagesTable *pTable = (PagesTable*) (pageDir->dir[pdIndex].phys * pageSize);
+    PageTable *pTable = (PageTable*) (pageDir->dir[pdIndex].phys * pageSize);
     u32 *physPage = (u32*) (pTable->page[ptIndex].phys * pageSize);
-
-
-
-    //physPage = offset & PageOffset_12Bits;
 
     return (u32*) ((u32) physPage | (offset & PageOffset_12Bits));
 }
+
+
 
 //void *Paging::get_physaddr(void * virtualaddr) {
 //    unsigned long pdindex = (unsigned long) virtualaddr >> 22;
@@ -263,7 +288,7 @@ u32 *Paging::getPhysAddrs(u32 *Addrs, PagesDir *pageDir) {
 //Paging::~Paging() {
 //}
 
-void Paging::dirCopy(PagesDir *from, PagesDir *to) {
+void Paging::dirCopy(PageDirectory *from, PageDirectory *to) {
     for (u32 i = 0; i < 1024; i++) {
 
         to->dir[i].phys = from->dir[i].phys;

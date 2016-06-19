@@ -23,25 +23,17 @@
 #define maxIRQ 16
 #define msgDisplayed 0xffffffff
 
- extern Paging::PagesDir *kernel_Page_Directory;
- 
- extern void callDriver();
 
 class IRQHandler {
-   
-
     struct Irq {
-
-        union {
-            void (* functions[maxFunction])();
-            u32 asInt[maxFunction];
-        };
+        u32 irqId [maxFunction];
+        u32 driverId [maxFunction];
     } __attribute((packed));
     static Irq *handlers;
-    static Paging::PagesDir *pageDirs[maxFunction];
+   
 public:
     static void setup();
-    static void add(u32 id, void (* funtion)());
+    static void add(u32 id, void (* funtion)(), u32 driverId);
     static void dispatch(u32 id);
     IRQHandler();
     //    IRQHandler(const IRQHandler& orig);

@@ -11,30 +11,31 @@
 //
 //}
 
-extern "C" void SyscallsDelivery(u32 parameter) {
-    SysCallHandler::interruptReceiver(parameter);
+extern "C" void SyscallsDelivery(u32 parameter, Paging::PageDirectory *pageDir) {
+    SysCallHandler::interruptReceiver(parameter, pageDir);
 }
 
-void SysCallHandler::interruptReceiver(u32 function) {
+void SysCallHandler::interruptReceiver(u32 function, Paging::PageDirectory *pageDir) {
     if (function > 10) {
 
-        CallsDirectives *directive = (CallsDirectives*) function;
+        CallsDirectives *directive = (CallsDirectives*) Paging::getPhysAddrs((u32*) function, pageDir);
 
         switch (directive->Function) {
             case Print: //Print Text
             {
                 switch (directive->Subfunction) {
                     case Print:
-                        Console::print(directive->String);
+                        Console::print((const s8*) Paging::getPhysAddrs((u32*) directive->String, pageDir));
                         break;
                     case PrintatXY:
-                        Console::print(directive->y, directive->x, directive->String);
+                        Console::print(directive->y, directive->x, (const s8*) Paging::getPhysAddrs((u32*) directive->String, pageDir));
                         break;
 
                     case PrintatXYwArgs:
-                        Console::print(directive->y, directive->x, directive->String, directive->Value);
+                        Console::print(directive->y, directive->x,
+                                (const s8*) Paging::getPhysAddrs((u32*) directive->String, pageDir), directive->Value);
                         break;
-                    
+
                     default:
                         Console::print("SysCallHandler: no such Sub-function of Print: %i", directive->Function);
                         break;
@@ -45,11 +46,21 @@ void SysCallHandler::interruptReceiver(u32 function) {
             {
                 Console::clear();
             }
-            break;
+                break;
             case IRQinstall:
             {
-                Drivers::IRQHandlerAddrs *irqHandlerAddrs = (Drivers::IRQHandlerAddrs*) directive->Value;
-                IRQHandler::add(irqHandlerAddrs->IRQid, irqHandlerAddrs->listener);
+                Drivers::IRQHandlerAddrs *irqHandlerAddrs =
+                        (Drivers::IRQHandlerAddrs*) Paging::getPhysAddrs((u32*)
+                        directive->Value, pageDir);
+                IRQHandler::add(irqHandlerAddrs->IRQid, irqHandlerAddrs->listener, irqHandlerAddrs->driverId);
+            }
+                break;
+            case BroadCastMessage:
+            {
+                Messaging::message *messageAddrs = (Messaging::message*)
+                        Paging::getPhysAddrs((u32*) directive->Value, pageDir);
+                Messaging::broadcastMessage(messageAddrs);
+    
             }
                 break;
             default:
@@ -60,35 +71,37 @@ void SysCallHandler::interruptReceiver(u32 function) {
 
         }
 
+
+
     } else {
         static u32 count = 0;
         if (function == 1) {
-            Console::print(45, 0, "Integrity check error eax %i",count);
+            Console::print(45, 0, "Integrity check error eax %i", count);
         }
         if (function == 2) {
-            Console::print(45, 0, "Integrity check error ebx %i",count);
+            Console::print(45, 0, "Integrity check error ebx %i", count);
         }
         if (function == 3) {
-            Console::print(45, 0, "Integrity check error ecx %i",count);
+            Console::print(45, 0, "Integrity check error ecx %i", count);
         }
         if (function == 4) {
-            Console::print(45, 0, "Integrity check error edx %i",count);
+            Console::print(45, 0, "Integrity check error edx %i", count);
         }
         if (function == 5) {
-            Console::print(45, 0, "Integrity check error ebp %i",count);
+            Console::print(45, 0, "Integrity check error ebp %i", count);
         }
         if (function == 6) {
-            Console::print(45, 0, "Integrity check error esp %i",count);
+            Console::print(45, 0, "Integrity check error esp %i", count);
         }
         if (function == 7) {
-            Console::print(45, 0, "Integrity check error esi %i",count);
+            Console::print(45, 0, "Integrity check error esi %i", count);
         }
         if (function == 8) {
-            Console::print(45, 0, "Integrity check error edi %i",count);
+            Console::print(45, 0, "Integrity check error edi %i", count);
         }
-        
+
         count++;
-        
+
     }
 
 }

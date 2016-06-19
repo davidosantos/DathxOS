@@ -18,21 +18,21 @@ APIC::APIC() {
 APIC::Registers *APIC::apicRegisters;
 processor::MSR APIC::modelSpecificReg;
 
-void APIC::setup(processor::CPUFeatures *features, Paging::PagesDir *kernelPageDir) {
+void APIC::setup(processor::CPUFeatures *features, Paging::PageDirectory *kernelPageDir) {
     //pageManagment::setRangeBusy(0, baseMemoryPointer);
     if (processor::getModelSpecificReg(features, &modelSpecificReg, IA32_APIC_BASE)) {
         u32 apicBaseAddress = (modelSpecificReg.ApicBase << 12);
 
         apicRegisters = (Registers*) apicBaseAddress;
 
-        Paging::mapRange(apicBaseAddress, apicBaseAddress,
+        Paging::mapRange(apicBaseAddress, apicBaseAddress ,
                 kernelPageDir, (u32*) apicBaseAddress,false);
 
         if (modelSpecificReg.ApicEnabled == 1) {
             Console::print("ApicEnabled is ON, Base Address: %h",apicBaseAddress);
             
         } else {
-            Console::print("ApicEnabled is OFF");
+            Console::print("ApicEnabled is OFF %i");
         }
 
         LogicalDestinationReg logicalDestReg = apicRegisters->LogicalDestinationRegister;

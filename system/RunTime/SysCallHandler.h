@@ -11,11 +11,12 @@
 #include "../../util/util.h"
 #include "../../system/monitor/Console.h"
 #include "../../system/RunTime/IRQHandler.h"
-#include "../../../library/DathxLib/Drivers.h"
-#include "../../../library/DathxLib/Syscalls.h"
+#include "../../DathxLib/Drivers.h"
+#include "../../DathxLib/Syscalls.h"
+#include "../Providers/Messaging.h"
 
 
-extern "C" void SyscallsDelivery(u32 parameter);
+extern "C" void SyscallsDelivery(u32 parameter, Paging::PageDirectory *pageDir);
 
 
 
@@ -27,7 +28,7 @@ class SysCallHandler {
 
 public:
 
-    static void interruptReceiver(u32 function);
+    static void interruptReceiver(u32 function, Paging::PageDirectory *pageDir);
 
     //Syscalls(CPU *cpu);
     // Syscalls(const Syscalls& orig);

@@ -6,30 +6,34 @@
  */
 
 #ifndef TASKS_H
-#define	TASKS_H
+#define TASKS_H
 #include "../../util/util.h"
 #include "../../system/memory/Paging.h"
 #include "../../system/memory/Memory.h"
 #include "../drivers/APIC.h"
 #include "../RunTime/ElfLoader.h"
+#include "../Providers/Messaging.h"
+
 
 //Changed via nasm in InterruptsDel... external int one
 extern u32 eaxReg, ecxReg, edxReg, ebxReg, espReg, ebpReg, esiReg, ediReg, eflags, eipReg, csReg, cr3Reg;
 extern u16 ssReg, dsReg, esReg, fsReg, gsReg;
+extern "C" u32 intsStart;
+extern "C" u32 intsEnd;
 
 
 extern "C" void IntsReturnTaskSwitch();
 
 class Tasks {
 public:
- 
+
     static void interruptReceiver();
 
     //void NewTask(const s8 *name, u32 Addrs);
-    
+
     static void createProcess(const s8 *file);
-    
-    static void NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDir, u32 *stack, u32 stackSize,u8 ring);
+
+    static void NewTask(const s8 *name, void (*function)(), Paging::PageDirectory *pageDir, u32 *stack, u32 stackSize, u8 ring);
 
     static void NewInternalTask(u16 entry, const s8 *name, bool loadTaskReg, void (*Addrs)());
 
@@ -50,7 +54,7 @@ private:
 
     typedef struct Tss_32 {
         u8 taskPrevLevel;
-        Paging::PagesDir *PageDir;
+        Paging::PageDirectory *PageDir;
         u32 eip;
         u32 eflags;
         u32 eax;
@@ -81,13 +85,15 @@ public:
         u32 PID;
         void (*Addrs)();
         TaskState* taskState;
+        Messaging::inbox inboxAddrss;
+        bool MessageListener;
     } __attribute__((packed));
 
     static Task TasksList[50];
 public:
-    Task getTask(u32 index);
+    static Task getTask(u32 index);
 
 };
 
-#endif	/* TASKS_H */
+#endif /* TASKS_H */
 

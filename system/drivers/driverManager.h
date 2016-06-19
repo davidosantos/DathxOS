@@ -22,25 +22,28 @@ public:
 
     struct Drivers {
         const s8 *name;
-        u32 *address;
-        u32 driverID;
-        u32 irqID;
+        void (* irqListener)();
+        u32 driverId;
         processor::TSSEntry *drvTss;
     } __attribute__((packed));
 
-    static Drivers *drvManager;
-    static u16 maxDrivers;
-    static u16 currDrivers;
+    
 
     driverManager();
     // driverManager(const driverManager& orig);
     // virtual ~driverManager();
 
     static void setup();
-    static void addDriver(const s8 *name, u32 *address, u32 irqID, processor::TSSEntry *drvTss);
+    static u32 addDriver(const s8 *name, processor::TSSEntry *drvTss);
     static void callDriverByIRQ(u16 IRQId);
+    static void callDriverMain(u32 driverId);
+    static void updateDriverIRQAddrs(u32 driverID, void (* irqListener)());
 
 private:
+    
+    static Drivers *drvManager;
+    static u16 maxDrivers;
+    static u16 currDrivers;
 
 };
 

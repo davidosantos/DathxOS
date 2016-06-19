@@ -27,10 +27,8 @@ void DriverLoader::loadDriver(const s8 *file) {
 
     ElfLoader *exec = new ElfLoader();
     processor::TSSEntry *tss = new processor::TSSEntry();
-    Paging::PagesDir *pageDir;
-    Paging::PagesDir *KernelPageDir;
+    Paging::PageDirectory *pageDir;
     u8 *loadAddrs; // = (u32*) Paging::getNewPage();
-
     if (exec->openFile(file) == OK) {
 
         pageDir = Paging::getNewDir();
@@ -51,7 +49,7 @@ void DriverLoader::loadDriver(const s8 *file) {
             u16 sel_data = 0;
             u16 sel_code = 0;
             sel_data = processor::getRng0Data();
-            sel_code = 0x08; //processor::getRng0Code();
+            sel_code = processor::getRng0Code();
 
             tss->eax = 0;
             tss->ebx = 0;
@@ -73,17 +71,12 @@ void DriverLoader::loadDriver(const s8 *file) {
             tss->eip = (u32) exec->Header->e_entry;
             tss->cr3 = (u32) pageDir;
             tss->eflags = 0x203002;
-
-
+            
             asm("movl %%esp,%0" : "=m" (tss->esp0));
 
-            driverManager::addDriver(file, (u32*) exec->Header->e_entry, 1, tss);
-            driverManager::callDriverByIRQ(1);
 
-            // KernelPageDir = (Paging::PagesDir*) processor::getPDBR();
-            // processor::loadPDBR(pageDir);
-            //(exec->Header->e_entry)();
-            //processor::loadPDBR(KernelPageDir);
+            driverManager::callDriverMain(driverManager::addDriver(file,tss));
+
         }
     } else {
         Console::print("%cttDriveLoader: File open error %s", file);

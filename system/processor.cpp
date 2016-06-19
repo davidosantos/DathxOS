@@ -28,20 +28,18 @@ u16 processor::TssSelRng0;
 u16 processor::TssSelRng3;
 u16 processor::TssSelInts;
 
-processor::TSSEntry *processor::TSSrng0;
-processor::TSSEntry *processor::TSSrng3;
-processor::TSSEntry *processor::TSSInts;
-processor::IDTEntry *processor::IDT;
+processor::TSSEntry processor::TSSrng0;
+processor::TSSEntry processor::TSSrng3;
+processor::TSSEntry processor::TSSInts;
+processor::IDTEntry processor::IDT[255];
 processor::LDTEntry processor::LDT[8192];
-processor::GDTEntry *processor::GDT;
-processor::GDTPtr *processor::PointGDT;
-processor::IDTPtr *processor::PointIDT;
+processor::GDTEntry processor::GDT[8192];
+processor::GDTPtr processor::PointGDT;
+processor::IDTPtr processor::PointIDT;
 processor::LDTPtr processor::PointLDT;
 
 void processor::setupGDT() {
     cli();
-    PointGDT = new GDTPtr();
-    GDT = new GDTEntry [8192];
 
 
     GDTInitDesc[1] = prsnt_rng0_code_eo_naccssd;
@@ -57,7 +55,7 @@ void processor::setupGDT() {
     }
 
 
-    LGDT(PointGDT);
+    LGDT(&PointGDT);
 
     asm("pushl %eax\n"
                 "movl  	%cr0, %eax\n"
@@ -83,10 +81,6 @@ void processor::setupGDT() {
 }
 
 void processor::setupIDT() {
-
-    PointIDT = new IDTPtr();
-
-    IDT = new IDTEntry [255];
 
     for (u32 i = 0; i < 256; i++) {
         //add for security reasons, some application may cause invalid interrupt
@@ -155,8 +149,8 @@ void processor::setupIDT() {
     //adds system calls
     addIDTDesc((u32) & Syscall0x80, 0x28, intrrgt_rng3, 0x80);
 
-    PointIDT->size = 255 * 8;
-    LIDT(PointIDT);
+    PointIDT.size = 255 * 8;
+    LIDT(&PointIDT);
 }
 
 void processor::setupLDT() {
@@ -164,18 +158,15 @@ void processor::setupLDT() {
 }
 
 void processor::setupTR() {
-    TSSrng0 = new TSSEntry();
-    TSSrng3 = new TSSEntry();
-    TSSInts = new TSSEntry;
 
-    TSSrng0->cr3 = processor::getPDBR();
-    TssSelRng3 = addGDTDesc(sizeof (TSSEntry), (u32) TSSrng3, tss_p_rng3, Flags_Granu_Big);
-    TssSelRng0 = addGDTDesc(sizeof (TSSEntry), (u32) TSSrng0, tss_p_rng0, Flags_Granu_Big);
+    TSSrng0.cr3 = processor::getPDBR();
+    TssSelRng3 = addGDTDesc(sizeof (TSSEntry), (u32) & TSSrng3, tss_p_rng3, Flags_Granu_Big);
+    TssSelRng0 = addGDTDesc(sizeof (TSSEntry), (u32) & TSSrng0, tss_p_rng0, Flags_Granu_Big);
 
     //add entry for task switching for drivers, this can be called only by
     //kernel, and/or interrupts
-    TssSelInts = addGDTDesc(sizeof (TSSEntry), (u32) TSSInts, tss_p_rng0, Flags_Granu_Big);
-    
+    TssSelInts = addGDTDesc(sizeof (TSSEntry), (u32) & TSSInts, tss_p_rng0, Flags_Granu_Big);
+
     //addGDTDesc(getGDTFreeEntry(), 0, makeSelector(TssSelInts, false, 0), tskgt_rng0, 0); //call gate
     //link both
     //TSSrng0->prev_tss = makeSelector(TssSelRng3, false, 0) + 3;
@@ -278,7 +269,7 @@ u16 processor::addGDTDesc(u32 limit, u32 base, u8 type, u8 flags) {
     GDT[Entry].limit = limit;
     GDT[Entry].flags = limitflag;
     GDTCounter++;
-    LGDT(PointGDT);
+    LGDT(&PointGDT);
     return Entry;
 }
 
@@ -305,7 +296,7 @@ void processor::addIDTDesc(u32 base, u16 sel, u8 type, u32 Entry) {
     }
 }
 
-void processor::loadPDBR(Paging::PagesDir *Ptr) {
+void processor::loadPDBR(Paging::PageDirectory *Ptr) {
     asm ("movl %0,%%cr3 " ::"r" (Ptr));
 
 }
@@ -773,7 +764,7 @@ extern "C" void Generalprotection(processor::ErroCode errorCode, u32 oldEIP, u32
 
 static u32 pageFaults = 0;
 
-extern "C" void Pagefault(processor::PageFaultErroCode *pageFault, Paging::PagesDir *ppageDir) {
+extern "C" void Pagefault(processor::PageFaultErroCode *pageFault, Paging::PageDirectory *ppageDir) {
 
     pageFaults++;
 
@@ -790,15 +781,23 @@ extern "C" void Pagefault(processor::PageFaultErroCode *pageFault, Paging::Pages
     if (pageFault->Reserved) Console::print(17, 0, "pageFault.Reserved %i", pageFault->Reserved);
 
     u32 faultAdress = processor::getCR2();
-    u32 *physAddress = Paging::getNewPage();
+
     Console::print(19, 0, "Linear Address: %h", (u32) faultAdress);
-    Console::print(21, 0, "physAddress: %h", (u32) physAddress);
+    
     Console::print(23, 0, "ppageDir: %h", (u32) ppageDir);
     Console::print(27, 0, "pageFaults: %i", pageFaults);
 
+    if (ppageDir == kernel_Page_Directory) {
+        Console::print(29, 0, "Page Fault was Kernel: %i", pageFaults);
+        Paging::mapRange(faultAdress, faultAdress + pageSize,
+                ppageDir, (u32*)faultAdress, false);
+    } else {
+        u32 *physAddress = Paging::getNewPage();
+        Console::print(21, 0, "physAddress: %h", (u32) physAddress);
+        Paging::mapRange(faultAdress, faultAdress + pageSize,
+                ppageDir, physAddress, false);
+    }
 
-    Paging::mapRange(faultAdress, faultAdress,
-            ppageDir, physAddress, false);
 
 
     //

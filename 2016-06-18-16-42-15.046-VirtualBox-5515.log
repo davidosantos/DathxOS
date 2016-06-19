@@ -1,0 +1,8 @@
+Log created: 2016-06-18T16:42:15.462595000Z
+Executable: /usr/lib/virtualbox/VirtualBox
+Arg[0]: /usr/lib/virtualbox/VirtualBox
+Arg[1]: --startvm
+Arg[2]: Dathx
+Arg[3]: --dbg
+Arg[4]: --tcpserver
+Arg[5]: 12355

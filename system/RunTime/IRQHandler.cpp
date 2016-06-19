@@ -23,27 +23,32 @@ IRQHandler::IRQHandler() {
 //}
 
 IRQHandler::Irq *IRQHandler::handlers;
-Paging::PagesDir *IRQHandler::pageDirs[maxFunction];
 
 void IRQHandler::setup() {
 
     handlers = new Irq();
     for (int i = 0; i < maxFunction; i++) {
-        handlers->functions[i] = 0;
+        handlers->irqId[i] = 0;
+        handlers->driverId[i] = 0;
     }
 
 }
 
-void IRQHandler::add(u32 id, void (* funtion)()) {
+void IRQHandler::add(u32 id, void (* listener)(),u32 driverId) {
     bool added = false;
+    if(driverId == 0){
+        Console::print("IRQ add: driverId is 0, something is wrong");
+        return;
+    }
     if (id < maxIRQ) {
         u32 base = id * 64;
         for (u32 i = base; i < (base + 64); i++) {
-            if (handlers->functions[i] == 0 || handlers->asInt[i] == msgDisplayed) { // if empty
-                handlers->functions[i] = funtion;
-                pageDirs[i] = (Paging::PagesDir*) processor::getPDBR();
+            if (handlers->irqId[i] == 0 || handlers->irqId[i] == msgDisplayed) { // if empty
+                handlers->irqId[i] = id;
+                handlers->driverId[i] = driverId;
+                driverManager::updateDriverIRQAddrs(driverId,listener);
                 Console::print("IRQ: added handler for IRQ %i.", id);
-                Console::print("IRQ: handler address is %h.", (u32) Paging::getPhysAddrs((u32*) handlers->functions[i], pageDirs[i]));
+                Console::print("IRQ: driverId for IRQ handler %h.", driverId);
                 added = true;
                 break;
             }
@@ -62,16 +67,19 @@ void IRQHandler::dispatch(u32 id) {
     if (id < maxIRQ) {
         u32 base = id * 64;
         for (u32 i = base; i < (base + 64); i++) {
-            if (*handlers->functions[i] && handlers->asInt[i] != msgDisplayed) {
-              
-                driverManager::drvManager[0].drvTss->eip = handlers->asInt[i];
-                driverManager::callDriverByIRQ(1);
+            if (handlers->irqId[i] && handlers->irqId[i] != msgDisplayed) {
+                if(handlers->driverId[i] ==0){
+                    Console::print("IRQ dispatch: driverId is 0, something is wrong");
+                    return;
+                }
+            
+                driverManager::callDriverByIRQ(handlers->driverId[i]);
                 dispached = true;
             } else {
-                if (!dispached && handlers->asInt[i] != msgDisplayed) {
+                if (!dispached && handlers->irqId[i] != msgDisplayed) {
                     Console::print("IRQ dispatch: No handler for IRQ %i", id);
                 }
-                handlers->asInt[i] = msgDisplayed;
+                handlers->irqId[i] = msgDisplayed;
                 break;
             }
         }
@@ -82,82 +90,80 @@ void IRQHandler::dispatch(u32 id) {
 
 extern "C" void HandlerIRQ00() {
 
-    //Console::print("IRQ00");
-
-    IRQHandler::dispatch(0);
+    IRQHandler::dispatch(1);
 }
 
 extern "C" void HandlerIRQ01() {
 
-    IRQHandler::dispatch(1);
-}
-
-extern "C" void HandlerIRQ02() {
-    Console::print("IRQ02");
     IRQHandler::dispatch(2);
 }
 
-extern "C" void HandlerIRQ03() {
-    Console::print("IRQ03");
+extern "C" void HandlerIRQ02() {
+    
     IRQHandler::dispatch(3);
 }
 
-extern "C" void HandlerIRQ04() {
-    Console::print("IRQ04");
+extern "C" void HandlerIRQ03() {
+    
     IRQHandler::dispatch(4);
+}
+
+extern "C" void HandlerIRQ04() {
+    
+    IRQHandler::dispatch(5);
 }
 
 extern "C" void HandlerIRQ05() {
     Console::print("IRQ05");
-    IRQHandler::dispatch(5);
+    IRQHandler::dispatch(6);
 }
 
 extern "C" void HandlerIRQ06() {
-    Console::print("IRQ06");
-    IRQHandler::dispatch(6);
+    
+    IRQHandler::dispatch(7);
 }
 
 extern "C" void HandlerIRQ07() {
     Console::print("IRQ07");
-    IRQHandler::dispatch(7);
-}
-
-extern "C" void HandlerIRQ08() {
-    Console::print("IRQ08");
     IRQHandler::dispatch(8);
 }
 
-extern "C" void HandlerIRQ09() {
-    Console::print("IRQ09");
+extern "C" void HandlerIRQ08() {
+    
     IRQHandler::dispatch(9);
 }
 
-extern "C" void HandlerIRQ10() {
-    Console::print("IRQ10");
+extern "C" void HandlerIRQ09() {
+    
     IRQHandler::dispatch(10);
 }
 
-extern "C" void HandlerIRQ11() {
-    Console::print("IRQ11");
+extern "C" void HandlerIRQ10() {
+    
     IRQHandler::dispatch(11);
 }
 
-extern "C" void HandlerIRQ12() {
-    Console::print("IRQ12");
+extern "C" void HandlerIRQ11() {
+    
     IRQHandler::dispatch(12);
 }
 
-extern "C" void HandlerIRQ13() {
-    Console::print("IRQ13");
+extern "C" void HandlerIRQ12() {
+    
     IRQHandler::dispatch(13);
 }
 
-extern "C" void HandlerIRQ14() {
-    Console::print("IRQ14");
+extern "C" void HandlerIRQ13() {
+    
     IRQHandler::dispatch(14);
 }
 
-extern "C" void HandlerIRQ15() {
-    Console::print("IRQ15");
+extern "C" void HandlerIRQ14() {
+    
     IRQHandler::dispatch(15);
+}
+
+extern "C" void HandlerIRQ15() {
+    
+    IRQHandler::dispatch(16);
 }

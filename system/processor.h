@@ -83,6 +83,7 @@ extern "C" void ExternalInterrupt13();
 extern "C" void ExternalInterrupt14();
 extern "C" void ExternalInterrupt15();
 extern "C" void Syscall0x80();
+extern Paging::PageDirectory *kernel_Page_Directory;
 
 class processor {
 public:
@@ -93,7 +94,7 @@ public:
 public:
     static void enablePaging();
 
-    static void loadPDBR(Paging::PagesDir *Ptr);
+    static void loadPDBR(Paging::PageDirectory *Ptr);
 
     static u32 getPDBR();
     static u32 getCR2();
@@ -172,8 +173,8 @@ public:
         LDTEntry addrs;
     } __attribute__((packed));
 
-    static GDTPtr *PointGDT;
-    static IDTPtr *PointIDT;
+    static GDTPtr PointGDT;
+    static IDTPtr PointIDT;
     static LDTPtr PointLDT;
 
     static void LGDT(GDTPtr *gdt);
@@ -219,12 +220,12 @@ public:
     static u16 STRGDTIndex();
 
 
-    static TSSEntry *TSSrng0;
-    static TSSEntry *TSSrng3;
-    static TSSEntry *TSSInts;
-    static IDTEntry *IDT;
+    static TSSEntry TSSrng0;
+    static TSSEntry TSSrng3;
+    static TSSEntry TSSInts;
+    static IDTEntry IDT[255];
     static LDTEntry LDT[8192];
-    static GDTEntry *GDT;
+    static GDTEntry GDT[8192];
 
     static GDTEntry *getGDTEntry();
 

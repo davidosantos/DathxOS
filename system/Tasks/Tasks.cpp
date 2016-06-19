@@ -181,19 +181,22 @@ u32 Tasks::TaskCount = 0;
 void Tasks::createProcess(const s8 *file) {
 
     ElfLoader *exec = new ElfLoader();
-    Paging::PagesDir *pageDir;
-    u8 *loadAddrs; // = (u32*) Paging::getNewPage();
+    Paging::PageDirectory *pageDir;
+    u32 *loadAddrs; // = (u32*) Paging::getNewPage();
 
     if (exec->openFile(file) == OK) {
         pageDir = Paging::getNewDir();
-        loadAddrs = new u8 [exec->pHeader[0].p_memsz];
-        Paging::mapRange(0, 0x800000, pageDir, 0, true);
+        loadAddrs = new u32 [exec->pHeader[0].p_memsz];
+        Paging::mapRange(0x100000, 0x500000, pageDir, (u32*) 0x100000, true);
+
+
         Paging::mapRange(exec->pHeader[0].p_vaddr, (exec->pHeader[0].p_vaddr +
-                exec->pHeader[0].p_memsz), pageDir, (u32*) loadAddrs, true);
+                exec->pHeader[0].p_memsz), pageDir, loadAddrs, true, 0);
         if (exec->loadProgram(pageDir) == Error) {
             Console::print("%cttELF Loader: Error Loading file %s", file);
         } else {
             u32 *stack = new u32 [1024];
+            Paging::mapRange((u32) stack, (u32) stack + pageSize, pageDir, stack, true, 0);
             Tasks::NewTask(file, exec->Header->e_entry, pageDir, stack, 1024, 3);
             Console::print("%ctuELF Loader: File loaded %s", file);
         }
@@ -202,13 +205,15 @@ void Tasks::createProcess(const s8 *file) {
     }
 }
 
-void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDir, u32 *stack, u32 stackSize, u8 ring) {
+void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PageDirectory *pageDir, u32 *stack, u32 stackSize, u8 ring) {
 
     TaskCount++;
     TasksList[TaskCount].Name = name;
-    TasksList[TaskCount].PID = TaskCount;
+    TasksList[TaskCount].PID = (u32)pageDir;
     TasksList[TaskCount].Addrs = function;
     TasksList[TaskCount].taskState = new TaskState();
+    TasksList[TaskCount].MessageListener = false;
+    
     u16 sel_data = 0;
     u16 sel_code = 0;
 
@@ -245,29 +250,32 @@ void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PagesDir *pageDi
     TasksList[TaskCount].taskState->ebp = (u32) stack;
     TasksList[TaskCount].taskState->PageDir = pageDir; //test
 
-    processor::TSSrng3->eip = TasksList[TaskCount].taskState->eip;
-    processor::TSSrng3->eax = TasksList[TaskCount].taskState->eax;
-    processor::TSSrng3->ebx = TasksList[TaskCount].taskState->ebx;
-    processor::TSSrng3->ecx = TasksList[TaskCount].taskState->ecx;
-    processor::TSSrng3->edx = TasksList[TaskCount].taskState->edx;
-    processor::TSSrng3->esp = TasksList[TaskCount].taskState->esp;
-    processor::TSSrng3->ebp = TasksList[TaskCount].taskState->ebp;
-    processor::TSSrng3->esi = TasksList[TaskCount].taskState->esi;
-    processor::TSSrng3->edi = TasksList[TaskCount].taskState->edi;
-    processor::TSSrng3->eflags = TasksList[TaskCount].taskState->eflags;
-    processor::TSSrng3->ss = TasksList[TaskCount].taskState->ss;
-    processor::TSSrng3->cs = TasksList[TaskCount].taskState->cs;
-    processor::TSSrng3->ds = TasksList[TaskCount].taskState->ds;
-    processor::TSSrng3->es = TasksList[TaskCount].taskState->es;
-    processor::TSSrng3->fs = TasksList[TaskCount].taskState->fs;
-    processor::TSSrng3->gs = TasksList[TaskCount].taskState->gs;
-    processor::TSSrng3->cr3 = (u32) TasksList[TaskCount].taskState->PageDir;
+    processor::TSSrng3.eip = TasksList[TaskCount].taskState->eip;
+    processor::TSSrng3.eax = TasksList[TaskCount].taskState->eax;
+    processor::TSSrng3.ebx = TasksList[TaskCount].taskState->ebx;
+    processor::TSSrng3.ecx = TasksList[TaskCount].taskState->ecx;
+    processor::TSSrng3.edx = TasksList[TaskCount].taskState->edx;
+    processor::TSSrng3.esp = TasksList[TaskCount].taskState->esp;
+    processor::TSSrng3.ebp = TasksList[TaskCount].taskState->ebp;
+    processor::TSSrng3.esi = TasksList[TaskCount].taskState->esi;
+    processor::TSSrng3.edi = TasksList[TaskCount].taskState->edi;
+    processor::TSSrng3.eflags = TasksList[TaskCount].taskState->eflags;
+    processor::TSSrng3.ss = TasksList[TaskCount].taskState->ss;
+    processor::TSSrng3.cs = TasksList[TaskCount].taskState->cs;
+    processor::TSSrng3.ds = TasksList[TaskCount].taskState->ds;
+    processor::TSSrng3.es = TasksList[TaskCount].taskState->es;
+    processor::TSSrng3.fs = TasksList[TaskCount].taskState->fs;
+    processor::TSSrng3.gs = TasksList[TaskCount].taskState->gs;
+    processor::TSSrng3.cr3 = (u32) TasksList[TaskCount].taskState->PageDir;
 
     u32 espKernel = 0;
     asm("movl %%esp,%0\n" : "=m" (espKernel) ::);
-    processor::TSSrng3->ss0 = 0x10;
-    processor::TSSrng3->esp0 = espKernel;
-    processor::TSSrng0->prev_tss = 0x38;
+    processor::TSSrng3.ss0 = 0x10;
+    processor::TSSrng3.esp0 = espKernel;
+    processor::TSSrng0.prev_tss = 0x38;
+    
+    
+    
 
 }
 
@@ -289,7 +297,7 @@ void inline Tasks::saveTask(u32 task_Id) {
     TasksList[task_Id].taskState->es = esReg;
     TasksList[task_Id].taskState->fs = fsReg;
     TasksList[task_Id].taskState->gs = gsReg;
-    TasksList[task_Id].taskState->PageDir = (Paging::PagesDir*) cr3Reg;
+    TasksList[task_Id].taskState->PageDir = (Paging::PageDirectory*) cr3Reg;
 }
 
 void inline Tasks::loadTask(u32 task_Id) {
@@ -313,23 +321,23 @@ void inline Tasks::loadTask(u32 task_Id) {
     gsReg = TasksList[task_Id].taskState->gs;
     cr3Reg = (u32) TasksList[task_Id].taskState->PageDir;
 
-//    processor::TSSrng3->eip = eipReg;
-//    processor::TSSrng3->eax = eaxReg;
-//    processor::TSSrng3->ebx = ebxReg;
-//    processor::TSSrng3->ecx = ecxReg;
-//    processor::TSSrng3->edx = edxReg;
-//    processor::TSSrng3->esp = espReg;
-//    processor::TSSrng3->ebp = ebpReg;
-//    processor::TSSrng3->esi = esiReg;
-//    processor::TSSrng3->edi = ediReg;
-//    processor::TSSrng3->eflags = eflags;
-//    processor::TSSrng3->ss = ssReg;
-//    processor::TSSrng3->cs = csReg;
-//    processor::TSSrng3->ds = dsReg;
-//    processor::TSSrng3->es = esReg;
-//    processor::TSSrng3->fs = fsReg;
-//    processor::TSSrng3->gs = gsReg;
-//    processor::TSSrng3->cr3 = cr3Reg;
+    //    processor::TSSrng3->eip = eipReg;
+    //    processor::TSSrng3->eax = eaxReg;
+    //    processor::TSSrng3->ebx = ebxReg;
+    //    processor::TSSrng3->ecx = ecxReg;
+    //    processor::TSSrng3->edx = edxReg;
+    //    processor::TSSrng3->esp = espReg;
+    //    processor::TSSrng3->ebp = ebpReg;
+    //    processor::TSSrng3->esi = esiReg;
+    //    processor::TSSrng3->edi = ediReg;
+    //    processor::TSSrng3->eflags = eflags;
+    //    processor::TSSrng3->ss = ssReg;
+    //    processor::TSSrng3->cs = csReg;
+    //    processor::TSSrng3->ds = dsReg;
+    //    processor::TSSrng3->es = esReg;
+    //    processor::TSSrng3->fs = fsReg;
+    //    processor::TSSrng3->gs = gsReg;
+    //    processor::TSSrng3->cr3 = cr3Reg;
 
     //    processor::TSSrng3->ss0 = processor::TSS->ss;
     //    processor::TSSrng3->esp0 = processor::TSS->esp0;

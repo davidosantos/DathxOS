@@ -140,7 +140,7 @@ Program Headers:
 
  */
 
-returnCode ElfLoader::loadProgram(Paging::PagesDir *pageDir) {
+returnCode ElfLoader::loadProgram(Paging::PageDirectory *pageDir) {
     
     for (u8 i = 0; i < Header->e_shnum; i++) {
 
