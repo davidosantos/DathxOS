@@ -110,8 +110,7 @@ public:
     static void mapRange(u32 virtStart, u32 virtEnd, u32 physStart);
 
     static void mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user);
-    static void mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user,u32 teste);
-
+   
     //static void mapRange(u32 virtEnd, Paging::PagesDir *pageDir);
 
     static u32 *getPhysAddrs(u32 *Addrs, PageDirectory *pageDir);

@@ -13,7 +13,7 @@
 
 #ifndef OUT_H
 #define OUT_H
-#include "../Syscalls.h"
+#include <system/RunTime/SysCallHandler.h>
 
 class out {
 public:

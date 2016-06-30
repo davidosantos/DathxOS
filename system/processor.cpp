@@ -394,7 +394,7 @@ processor::CPUString processor::getCPUString() {
     CPUString cpustr;
     asm ("cpuid;"
                 : "=a"(cpustr.EAX), "=b"(cpustr.EBX), "=c"(cpustr.ECX), "=d"(cpustr.EDX) /* output */
-                : "a"(getString) /* input */
+                : "a"(getPrcStrings) /* input */
                 );
     cpustr.String[4 * 3] = 0; //Null Terminated String
     return cpustr;
@@ -627,16 +627,17 @@ extern "C" void Doublefault() {
 Begin:
     ;
 
-    const u8 msg[] = {"Doublefault"};
-
-    u8* videoPtr = (u8*) 0xB8000;
-
-    for (u32 i = 0; i < sizeof msg; i++) {
-
-        *videoPtr++ = msg[i];
-        *videoPtr++ = 15;
-    }
-
+Console::print("Doublefault");
+//    const u8 msg[] = {"Doublefault"};
+//
+//    u8* videoPtr = (u8*) 0xB8000;
+//
+//    for (u32 i = 0; i < sizeof msg; i++) {
+//
+//        *videoPtr++ = msg[i];
+//        *videoPtr++ = 15;
+//    }
+ asm("hlt");
     goto Begin;
 }
 

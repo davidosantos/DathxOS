@@ -191,12 +191,12 @@ void Tasks::createProcess(const s8 *file) {
 
 
         Paging::mapRange(exec->pHeader[0].p_vaddr, (exec->pHeader[0].p_vaddr +
-                exec->pHeader[0].p_memsz), pageDir, loadAddrs, true, 0);
+                exec->pHeader[0].p_memsz), pageDir, loadAddrs, true);
         if (exec->loadProgram(pageDir) == Error) {
             Console::print("%cttELF Loader: Error Loading file %s", file);
         } else {
             u32 *stack = new u32 [1024];
-            Paging::mapRange((u32) stack, (u32) stack + pageSize, pageDir, stack, true, 0);
+            Paging::mapRange((u32) stack, (u32) stack + pageSize, pageDir, stack, true);
             Tasks::NewTask(file, exec->Header->e_entry, pageDir, stack, 1024, 3);
             Console::print("%ctuELF Loader: File loaded %s", file);
         }
@@ -356,3 +356,14 @@ void inline Tasks::loadTask(u32 task_Id) {
 Tasks::Task Tasks::getTask(u32 index) {
     return TasksList[index];
 }
+
+ Tasks::Task *Tasks::getTaskbyPid(u32 pid){
+     for (u32 i = 0; i < TaskCount; i++) {
+        if(TasksList[i].PID == pid){
+            return &TasksList[i];
+        }
+
+    }
+     //the first task is not used
+     return &TasksList[0];
+ }

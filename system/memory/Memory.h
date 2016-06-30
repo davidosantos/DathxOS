@@ -15,10 +15,6 @@
 extern "C" {
 #endif
 
-
-
-
-
     void *operator new( unsigned int size);
 
     void *operator new[](unsigned int size);

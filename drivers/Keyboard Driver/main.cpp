@@ -15,19 +15,34 @@
 #include <DathxLib/Drivers.h>
 #include <system/drivers/HardwareIO.h>
 #include <system/Providers/Messaging.h>
+#include <system/Providers/Keyboard.h>
 
 void IrqListener() {
-    
-    static Messaging::message newChar;
-    newChar.keycode = HardwareIO::inb(0x60);
 
-    out::print(41,0,"Test of System Calls by Driver %h", newChar.keycode);
-   
-    
+    Messaging::MessageAddrs newChar;
+    newChar.keycode = 0;
+    newChar.keycode = HardwareIO::inb(0x60);
+    newChar.type = Type_unread;
+
+    if (newChar.upKey == 1) {
+        if (newChar.keycode == 0x9c) {
+            newChar.keychar = 0x9c;
+
+            Messaging::broadcastMessage(&newChar);
+        }
+    } else {
+        newChar.keychar = keys_ptbr[newChar.keycode];
+        Messaging::broadcastMessage(&newChar);
+    }
+
+
+
     HardwareIO::outb(0xA0, 0x20);
     HardwareIO::outb(0x20, 0x20);
-    
-    Messaging::broadcastMessage(&newChar);
+    out::print(45, 0, "newChar.upKey %i", newChar.upKey);
+    out::print(41, 0, "newChar.keycode %i", newChar.keycode);
+    out::print(43, 0, "newChar.keychar %i", newChar.keychar);
+
 
 }
 
@@ -51,9 +66,9 @@ void HardwareIO::outb(u16 port, u8 cmd) {
  */
 int main() {
 
-    
+
     out::print("Driver main successfully called");
-    
+
     Drivers::IrqInstall(2);
 
     return 0;

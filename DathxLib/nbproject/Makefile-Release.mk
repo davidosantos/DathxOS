@@ -36,7 +36,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/Drivers.o \
+	${OBJECTDIR}/io/in.o \
 	${OBJECTDIR}/io/out.o \
+	${OBJECTDIR}/memory/memory.o \
 	${OBJECTDIR}/system/Providers/Messaging.o
 
 
@@ -69,17 +71,27 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libdathxlib.a: ${OBJECTFILES}
 ${OBJECTDIR}/Drivers.o: Drivers.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Drivers.o Drivers.cpp
+	$(COMPILE.cc) -O2 -I.. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Drivers.o Drivers.cpp
+
+${OBJECTDIR}/io/in.o: io/in.cpp 
+	${MKDIR} -p ${OBJECTDIR}/io
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -I.. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/io/in.o io/in.cpp
 
 ${OBJECTDIR}/io/out.o: io/out.cpp 
 	${MKDIR} -p ${OBJECTDIR}/io
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/io/out.o io/out.cpp
+	$(COMPILE.cc) -O2 -I.. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/io/out.o io/out.cpp
+
+${OBJECTDIR}/memory/memory.o: memory/memory.cpp 
+	${MKDIR} -p ${OBJECTDIR}/memory
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -I.. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/memory/memory.o memory/memory.cpp
 
 ${OBJECTDIR}/system/Providers/Messaging.o: system/Providers/Messaging.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/Providers
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/Providers/Messaging.o system/Providers/Messaging.cpp
+	$(COMPILE.cc) -O2 -I.. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/Providers/Messaging.o system/Providers/Messaging.cpp
 
 # Subprojects
 .build-subprojects:

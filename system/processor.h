@@ -292,7 +292,7 @@ public:
 
 
 
-#define getString 0x00
+#define getPrcStrings 0x00
 #define getStringEx 0x80000002
 #define ProcessorSignature 0x01
 #define CacheandTLBDescriptors 0x02

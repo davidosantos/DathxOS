@@ -92,6 +92,8 @@ public:
     static Task TasksList[50];
 public:
     static Task getTask(u32 index);
+    
+    static Task *getTaskbyPid(u32 pid);
 
 };
 

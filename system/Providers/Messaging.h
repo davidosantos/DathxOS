@@ -18,37 +18,53 @@
 #include "../../system/memory/Paging.h"
 #include "../../system/memory/Memory.h"
 
-
+#define Type_unread       1
+#define Type_read         2
+#define Type_removed      3
 
 class Messaging {
-    
 public:
-    
-    struct message{
+
+    struct MessageAddrs {
         bool read;
         u8 type;
         s8 keychar;
-        u8 keycode;
-    }__attribute__((packed));
-    
-    struct inbox{
-        u16 messageIndex;
+
+        union {
+
+            struct {
+u8:
+                7,
+                upKey : 1;
+            };
+            u8 keycode;
+        };
+    } __attribute__((packed));
+
+    struct inbox {
         u16 inboxCapacity;
-        bool full;
-        message *Messages;
-    }__attribute__((packed));
-    
+        MessageAddrs *Messages;
+    } __attribute__((packed));
+
     static inbox getNewInbox();
-    
-    static void broadcastMessage(message *Message);
-    
-    static inbox readMessage(u16 messageIndex);
-    
+
+    static void broadcastMessage(MessageAddrs *Message);
+
+    static MessageAddrs readMessage(u32 pid);
+
+    static MessageAddrs readMessage();
+
+    static bool isThereMessage(u32 pid);
+
     static bool isThereMessage();
-   
+
+    static MessageAddrs *initMessaging(u32 pid);
+
+    static void initMessaging();
+
     Messaging();
-//    Message(const Message& orig);
-//    virtual ~Message();
+    //    Message(const Message& orig);
+    //    virtual ~Message();
 private:
 
 };

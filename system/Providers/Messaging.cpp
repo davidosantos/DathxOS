@@ -24,24 +24,54 @@ Messaging::Messaging() {
 
 Messaging::inbox Messaging::getNewInbox() {
     inbox inboxVar;
-    inboxVar.Messages = new message [pageSize / sizeof (message)];
-    inboxVar.inboxCapacity = (pageSize / sizeof (message));
+    inboxVar.Messages = new MessageAddrs();
+    inboxVar.inboxCapacity = (pageSize / sizeof (MessageAddrs));
     return inboxVar;
 }
 
-void Messaging::broadcastMessage(message *Message) {
-    for (u32 i = 0; i < Tasks::TaskCount; i++) {
-        if (Tasks::getTask(i).MessageListener) {
-            if (Tasks::getTask(i).inboxAddrss.messageIndex <=
-                    Tasks::getTask(i).inboxAddrss.inboxCapacity){
+void Messaging::broadcastMessage(MessageAddrs *Message) {
+    //Console::clear();
+    for (u32 taskIndex = 0; taskIndex <= Tasks::TaskCount; taskIndex++) {
+        if (Tasks::getTask(taskIndex).MessageListener) {
+            for (u16 messageIndex = 0; messageIndex <
+                    Tasks::getTask(taskIndex).inboxAddrss.inboxCapacity; messageIndex++) {
 
-                Tasks::getTask(i).inboxAddrss.Messages[
-                    Tasks::getTask(i).inboxAddrss.messageIndex] = *Message;
-                
-                Tasks::TasksList[i].inboxAddrss.messageIndex++;
-            } else {
-                Tasks::TasksList[i].inboxAddrss.full = true;
+
+                //Console::print("[messageIndex].type %i", Tasks::TasksList[taskIndex].inboxAddrss.Messages[messageIndex].type);
+                if (Tasks::TasksList[taskIndex].inboxAddrss.Messages[messageIndex].type == Type_read ||
+                        Tasks::TasksList[taskIndex].inboxAddrss.Messages[messageIndex].type == 0) {
+
+                    Tasks::TasksList[taskIndex].inboxAddrss.Messages[messageIndex] = *Message;
+                    break;
+                }
+
             }
         }
     }
+}
+
+Messaging::MessageAddrs *Messaging::initMessaging(u32 pid) {
+    Tasks::getTaskbyPid(pid)->MessageListener = true;
+    Tasks::getTaskbyPid(pid)->inboxAddrss = getNewInbox();
+    return Tasks::getTaskbyPid(pid)->inboxAddrss.Messages;
+}
+
+Messaging::MessageAddrs Messaging::readMessage(u32 pid) {
+     for (u32 i = 0; i < Tasks::getTaskbyPid(pid)->inboxAddrss.inboxCapacity; i++) {
+        if (Tasks::getTaskbyPid(pid)->inboxAddrss.Messages[i].type == Type_unread) {
+            Tasks::getTaskbyPid(pid)->inboxAddrss.Messages[i].type = Type_read;
+            return Tasks::getTaskbyPid(pid)->inboxAddrss.Messages[i];
+        }
+    }
+    Messaging::MessageAddrs newMes;
+    return newMes;
+}
+
+bool Messaging::isThereMessage(u32 pid) {
+    for (u32 i = 0; i < Tasks::getTaskbyPid(pid)->inboxAddrss.inboxCapacity; i++) {
+        if (Tasks::getTaskbyPid(pid)->inboxAddrss.Messages[i].type == Type_unread) {
+            return true;
+        }
+    }
+    return false;
 }

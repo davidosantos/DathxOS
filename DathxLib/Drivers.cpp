@@ -28,11 +28,14 @@ void Drivers::IrqInstall(u32 irqNum) {
     irqp->driverId = driverId;
     irqp->listener = localListener;
     
-    callp->Function = IRQinstall;
+    callp->Function = sys_call_IRQinstall;
     callp->Value = (u32) irqp;
 
-    asm("movl %0,%%eax" ::"m" (callp) : "eax");
-    asm("int $0x80");
+    asm (
+                "int $0x80;"
+                :
+                : "a"(sys_call_IRQinstall), "c" (callp) /* input */
+                );
 }
 
 void DriverMain() {

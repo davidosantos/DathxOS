@@ -6,6 +6,8 @@
                    projectFiles="true">
       <itemPath>Drivers.h</itemPath>
       <itemPath>Syscalls.h</itemPath>
+      <itemPath>io/in.h</itemPath>
+      <itemPath>memory/memory.h</itemPath>
       <itemPath>io/out.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -17,6 +19,8 @@
                    projectFiles="true">
       <itemPath>Drivers.cpp</itemPath>
       <itemPath>system/Providers/Messaging.cpp</itemPath>
+      <itemPath>io/in.cpp</itemPath>
+      <itemPath>memory/memory.cpp</itemPath>
       <itemPath>io/out.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -49,9 +53,17 @@
       </item>
       <item path="Syscalls.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="io/in.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="io/in.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="io/out.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="io/out.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="memory/memory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="memory/memory.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/Providers/Messaging.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -68,6 +80,9 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>..</pElem>
+          </incDir>
           <commandLine>-O -fstrength-reduce -fomit-frame-pointer -finline-functions -fno-builtin -fno-threadsafe-statics -Wall -Wextra -fno-exceptions -nostdinc -fno-strict-aliasing -fno-common -fno-stack-protector -nodefaultlibs</commandLine>
         </ccTool>
         <fortranCompilerTool>
@@ -85,9 +100,17 @@
       </item>
       <item path="Syscalls.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="io/in.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="io/in.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="io/out.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="io/out.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="memory/memory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="memory/memory.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/Providers/Messaging.cpp" ex="false" tool="1" flavor2="0">
       </item>

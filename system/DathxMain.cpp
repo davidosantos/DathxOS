@@ -21,7 +21,6 @@
 #include "drivers/APIC.h"
 #include "RunTime/IRQHandler.h"
 #include "drivers/DriverLoader.h"
-#include "Providers/InputProvider.h"
 #include "drivers/driverManager.h"
 
 #define KernelStackSize 0x1000
@@ -144,7 +143,7 @@ int main() {
     IRQHandler::setup();
    //IRQHandler::add(0, test2);
 
-    if (cpuFeature.APIC == ON) {
+    if (cpuFeature.APIC == OFF) { //must fix apic programming
         Chip8259::remap(32); // remap to 32
         APIC::setup(&cpuFeature, kernel_Page_Directory);
         APIC::startTimer(0xFFFFFFFF);
@@ -164,17 +163,17 @@ int main() {
     MBR::setup();
     FAT::setup();
     Tasks::createProcess("bin/systemapp");
-    Tasks::createProcess("bin/systemapp");
-    Tasks::createProcess("bin/systemapp");
+    //Tasks::createProcess("bin/systemapp");
+    //Tasks::createProcess("bin/systemapp");
    
 
 
 
 
-   Tasks::createProcess("bin/integrit_checker");
+   //Tasks::createProcess("bin/integrit_checker");
 
    DriverLoader::loadDriver("drivers/keyboard.dri");
-   //DriverLoader::loadDriver("drivers/mouse.dri");
+   
 
  
   
@@ -226,10 +225,9 @@ int main() {
     
     //--------------------------- System Resources -------------------------
     
-    InputProvider::setup();
     
     
-    
+
     
     //--------------------------- Kernel load Finished -------------------------
     asm("ljmp $0x33,$0"); // jmp to the first task, ring 3

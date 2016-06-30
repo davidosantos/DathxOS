@@ -99,6 +99,52 @@ align 4
 
 [EXTERN HandlerIRQ15]
 
+
+%macro save_sys_call 0
+mov     dword   [sys_call_eax],eax 
+mov     dword   [sys_call_ecx],ecx
+mov     dword   [sys_call_edx],edx
+mov     dword   [sys_call_ebx],ebx
+mov     dword   [sys_call_esp],esp 
+mov     dword   [sys_call_ebp],ebp 
+mov     dword   [sys_call_esi],esi 
+mov     dword   [sys_call_edi],edi 
+%endmacro
+
+%macro restore_sys_call 0
+mov     dword   eax,[sys_call_eax] 
+mov     dword   ecx,[sys_call_ecx]  
+mov     dword   edx,[sys_call_edx] 
+mov     dword   ebx,[sys_call_ebx] 
+mov     dword   esp,[sys_call_esp] 
+mov     dword   ebp,[sys_call_ebp] 
+mov     dword   esi,[sys_call_esi] 
+mov     dword   edi,[sys_call_edi] 
+%endmacro
+
+%macro save_exceptions 0
+mov     dword   [exceptions_eax],eax 
+mov     dword   [exceptions_ecx],ecx
+mov     dword   [exceptions_edx],edx
+mov     dword   [exceptions_ebx],ebx
+;mov     dword   [exceptions_esp],esp 
+mov     dword   [exceptions_ebp],ebp 
+mov     dword   [exceptions_esi],esi 
+mov     dword   [exceptions_edi],edi 
+%endmacro
+
+%macro restore_exceptions 0
+mov     dword   eax,[exceptions_eax] 
+mov     dword   ecx,[exceptions_ecx]  
+mov     dword   edx,[exceptions_edx] 
+mov     dword   ebx,[exceptions_ebx] 
+;mov     dword   esp,[exceptions_esp] 
+mov     dword   ebp,[exceptions_ebp] 
+mov     dword   esi,[exceptions_esi] 
+mov     dword   edi,[exceptions_edi] 
+%endmacro
+
+
 %macro saveALL 0
 pushad
 mov     dword   eax,cr3
@@ -321,9 +367,8 @@ call Generalprotection
 ;restoreALL
 iretd
 InternalInterrupt14:
+save_exceptions
 mov     dword   [SavedErrorCode],esp  ;get error code address
-saveALL
-cld
 mov     dword   eax,cr3
 mov     dword   [SavedPageDir],eax
 push    dword   [SavedPageDir]
@@ -331,8 +376,8 @@ push    dword   [SavedErrorCode]
 call            Pagefault
 pop     dword   eax ;remove arg1
 pop     dword   eax ;remove arg2
-pop     dword   eax ;remove erro code
-restoreALL
+pop     dword   eax ;remove error code
+restore_exceptions
 iretd
 
 InternalInterrupt15:
@@ -556,20 +601,17 @@ iretd
 
 [global Syscall0x80]
 Syscall0x80:
-mov dword [SavedSyscalParameter],eax 
-pushad
+save_sys_call
 mov     dword   eax,cr3
 mov     dword   [SavedPageDirSysCall],eax
 mov     dword   eax,[kerPageDir]
 mov     dword   cr3,eax                     ;hangle system call in kernel page dir
 push dword [SavedPageDirSysCall]
-push dword [SavedSyscalParameter]
 call SyscallsDelivery
-pop dword eax
 pop dword eax
 mov     dword   eax,[SavedPageDirSysCall]
 mov     dword   cr3,eax
-popad
+restore_sys_call
 iretd
 
 
@@ -597,6 +639,33 @@ ret
 
 section .data
 align 4
+[global sys_call_eax]
+[global sys_call_ecx]
+[global sys_call_edx]
+[global sys_call_ebx]
+[global sys_call_esp]
+[global sys_call_ebp]
+[global sys_call_esi]
+[global sys_call_edi]
+
+sys_call_eax dd 0
+sys_call_ecx dd 0 
+sys_call_edx dd 0
+sys_call_ebx dd 0
+sys_call_esp dd 0
+sys_call_ebp dd 0
+sys_call_esi dd 0
+sys_call_edi dd 0
+
+exceptions_eax dd 0
+exceptions_ecx dd 0 
+exceptions_edx dd 0
+exceptions_ebx dd 0
+exceptions_esp dd 0
+exceptions_ebp dd 0
+exceptions_esi dd 0
+exceptions_edi dd 0
+
 
 SavedErrorCode dd 0
 SavedPageDir dd 0

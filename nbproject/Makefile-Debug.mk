@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/system/DathxMain.o \
 	${OBJECTDIR}/system/Interrupts.o \
 	${OBJECTDIR}/system/Providers/InputProvider.o \
+	${OBJECTDIR}/system/Providers/Keyboard.o \
 	${OBJECTDIR}/system/Providers/Messaging.o \
 	${OBJECTDIR}/system/RunTime/ElfLoader.o \
 	${OBJECTDIR}/system/RunTime/IRQHandler.o \
@@ -105,6 +106,11 @@ ${OBJECTDIR}/system/Providers/InputProvider.o: system/Providers/InputProvider.cp
 	${MKDIR} -p ${OBJECTDIR}/system/Providers
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/Providers/InputProvider.o system/Providers/InputProvider.cpp
+
+${OBJECTDIR}/system/Providers/Keyboard.o: system/Providers/Keyboard.cpp 
+	${MKDIR} -p ${OBJECTDIR}/system/Providers
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/Providers/Keyboard.o system/Providers/Keyboard.cpp
 
 ${OBJECTDIR}/system/Providers/Messaging.o: system/Providers/Messaging.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/Providers

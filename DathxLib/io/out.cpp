@@ -22,26 +22,76 @@ out::out() {
 //out::~out() {
 //}
 
-
- void out::print(const s8 *String){
+void out::print(const s8 *String) {
     static CallsDirectives call, *callp;
     callp = &call;
-    callp->Function = Print;
-    callp->Subfunction = Print;
+    callp->Function = sys_call_print;
+    callp->Subfunction = sys_call_print;
     callp->String = String;
-    asm("movl %0,%%eax" ::"m" (callp) : "eax");
-    asm("int $0x80");
- }
- 
- void out::print(u16 y, u16 x, const s8 *String, u32 arg){
+    asm (
+                "int $0x80;"
+                :
+                : "a"(sys_call_print), "c" (callp) /* input */
+                );
+}
+
+void out::print(u16 y, u16 x, const s8 *String, u32 arg) {
     static CallsDirectives call, *callp;
     callp = &call;
-    callp->Function = Print;
-    callp->Subfunction = PrintatXYwArgs;
+    callp->Function = sys_call_print;
+    callp->Subfunction = sys_call_printatXYwArgs;
     callp->y = y;
     callp->x = x;
     callp->String = String;
     callp->Value = arg;
-    asm("movl %0,%%eax" ::"m" (callp) : "eax");
-    asm("int $0x80");
- }
+    asm (
+                "int $0x80;"
+                :
+                : "a"(sys_call_print), "c" (callp) /* input */
+                );
+}
+
+void out::print(u16 y, u16 x, const s8 *String, const s8 *arg) {
+    static CallsDirectives call, *callp;
+    callp = &call;
+    callp->Function = sys_call_print;
+    callp->Subfunction = sys_call_printatXYwString;
+    callp->y = y;
+    callp->x = x;
+    callp->String = String;
+    callp->Value = (u32) arg;
+
+    asm (
+                "int $0x80;"
+                :
+                : "a"(sys_call_print), "c" (callp) /* input */
+                );
+}
+
+void out::print(const s8 *String, u32 arg){
+    static CallsDirectives call, *callp;
+    callp = &call;
+    callp->Function = sys_call_print;
+    callp->Subfunction = sys_call_printwArgs;
+    callp->String = String;
+    callp->Value = (u32) arg;
+     asm (
+                "int $0x80;"
+                :
+                : "a"(sys_call_print), "c" (callp) /* input */
+                );
+     
+}
+
+void out::clear(){
+    static CallsDirectives call, *callp;
+    callp = &call;
+    callp->Function = sys_call_print;
+    callp->Subfunction = sys_call_printClear;
+
+     asm (
+                "int $0x80;"
+                :
+                : "a"(sys_call_print), "c" (callp) /* input */
+                );
+}

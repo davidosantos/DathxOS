@@ -8,13 +8,7 @@
 #ifndef SYSCALLS_H
 #define	SYSCALLS_H
 
-#include "../../Dathx OS/util/util.h"
-
-#define     Print                   1
-#define     PrintatXY               2
-#define     PrintatXYwArgs          3
-#define     BroadCastMessage        10
-#define     IRQinstall              20
+#include "util.h"
 
 
 struct CallsDirectives {
@@ -25,6 +19,18 @@ struct CallsDirectives {
     u32 Value;
 }__attribute__((packed));;
 
+class Syscalls {
+    /**
+     
+     */
+
+
+public:
+
+private:
+//    CPU *CPUAddress;
+
+};
 
 #endif	/* SYSCALLS_H */
 

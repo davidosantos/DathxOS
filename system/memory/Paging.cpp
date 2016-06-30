@@ -168,58 +168,6 @@ void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir
     }
 }
 
-void Paging::mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user, u32 teste) {
-
-    // Make sure that both addresses are page-aligned.
-    u32 pdIndex = ((u32) virtStart >> 22);
-
-    u32 pdIndexEnd = ((u32) virtEnd >> 22); // & 0x03FF;
-
-    u32 ptIndex = (u32) virtStart >> 12 & PageEntry_10Bits;
-    u32 ptIndexEnd = (u32) virtEnd >> 12 & PageEntry_10Bits;
-    u32 physIndex = (u32) physStart >> 12;
-
-    for (; pdIndex <= pdIndexEnd; pdIndex++) {
-        PageTable *pTable;
-        //if the page table pointed by pdIndex is already present, the use the same
-        if (pageDir->dir[pdIndex].phys && pageDir->dir[pdIndex].Present) {
-            pTable = (PageTable*) (pageDir->dir[pdIndex].phys << 12);
-        } else {
-            //get page table physical address and convert to logical
-            pTable = (PageTable*) getNewPage();
-            //Console::print("pTable %h", (u32)pTable);
-            pageDir->dir[pdIndex].phys = ((u32) pTable >> 12);
-            pageDir->dir[pdIndex].Present = 1;
-            pageDir->dir[pdIndex].unused = 0;
-            if (user) {
-                pageDir->dir[pdIndex].User = 1;
-                pageDir->dir[pdIndex].Read = 1;
-            }
-            if(teste ==1){
-                pageDir->dir[pdIndex].Present = 0;
-            }
-        }
-        //check whether is is the last directory to allocate, if it is
-        //then the End will be ptIndexEnd which might be less than _1kb
-        u32 End = (pdIndex == pdIndexEnd) ? ptIndexEnd : _1kb;
-
-        for (; ptIndex <= End; ptIndex++) {
-            pTable->page[ptIndex].phys = physIndex;
-            pTable->page[ptIndex].Present = 1;
-            if (user) {
-                pTable->page[ptIndex].User = 1;
-                pTable->page[ptIndex].Read = 1;
-            }
-            if(teste ==1){
-                pTable->page[ptIndex].Present = 0;
-            }
-            physIndex++;
-        }
-        ptIndex = 0;
-    }
-}
-
-
 /**
  * This function is designed to map virtual address into physical address
  * the physical address is chosen by function @getNewPage();

@@ -14,7 +14,7 @@
 #ifndef DRIVERS_H
 #define DRIVERS_H
 #include "../../Dathx OS/util/util.h"
-#include "../DathxLib/Syscalls.h"
+#include "../system/RunTime/SysCallHandler.h"
 /**
  * Warning: Dathx calls this function by a task switch, therefore by leaving NT
  *  flag in the eflags register on, system drivers must return the function with

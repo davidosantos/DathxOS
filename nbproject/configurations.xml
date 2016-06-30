@@ -16,6 +16,7 @@
       <itemPath>system/drivers/HardwareIO.h</itemPath>
       <itemPath>system/RunTime/IRQHandler.h</itemPath>
       <itemPath>system/Providers/InputProvider.h</itemPath>
+      <itemPath>system/Providers/Keyboard.h</itemPath>
       <itemPath>system/fs/MBR.h</itemPath>
       <itemPath>system/memory/Memory.h</itemPath>
       <itemPath>system/Providers/Messaging.h</itemPath>
@@ -51,6 +52,7 @@
       <itemPath>system/RunTime/IRQHandler.cpp</itemPath>
       <itemPath>system/Providers/InputProvider.cpp</itemPath>
       <itemPath>system/Interrupts.asm</itemPath>
+      <itemPath>system/Providers/Keyboard.cpp</itemPath>
       <itemPath>system/fs/MBR.cpp</itemPath>
       <itemPath>system/memory/Memory.cpp</itemPath>
       <itemPath>system/Providers/Messaging.cpp</itemPath>
@@ -111,6 +113,10 @@
       <item path="system/Providers/InputProvider.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/Providers/InputProvider.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/Providers/Keyboard.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Providers/Keyboard.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/Providers/Messaging.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -234,6 +240,10 @@
       <item path="system/Providers/InputProvider.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/Providers/InputProvider.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/Providers/Keyboard.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/Providers/Keyboard.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/Providers/Messaging.cpp" ex="false" tool="1" flavor2="0">
       </item>
