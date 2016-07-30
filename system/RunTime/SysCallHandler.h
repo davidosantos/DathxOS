@@ -156,6 +156,57 @@ extern "C" u32 sys_call_edi;
 #define     sys_call_alloc                   30
 
 
+/*
+ *|sys_call_eax | sys_call_killTask                   |
+ *|---------------------------------------------------|
+ *|Input                                              |
+ *|---------------------------------------------------|
+ *|sys_call_ecx | Tasks::Task::PID                    |
+ *|sys_call_edx |                                     |
+ *|sys_call_ebx |                                     |
+ *|sys_call_ebp |                                     |
+ *|sys_call_esi |                                     |
+ *|sys_call_edi |                                     |
+ *|---------------------------------------------------|
+ *|Output                                             |
+ *|---------------------------------------------------|
+ *|sys_call_eax |                                     |
+ *|sys_call_ecx |                                     |
+ *|sys_call_edx |                                     |
+ *|sys_call_ebx |                                     |
+ *|sys_call_ebp |                                     |
+ *|sys_call_esi |                                     |
+ *|sys_call_edi |                                     |
+ */
+#define     sys_call_killTask                   40
+
+
+
+/*
+ *|sys_call_eax | sys_call_startTask                   |
+ *|---------------------------------------------------|
+ *|Input                                              |
+ *|---------------------------------------------------|
+ *|sys_call_ecx | directive                           |
+ *|sys_call_edx |                                     |
+ *|sys_call_ebx |                                     |
+ *|sys_call_ebp |                                     |
+ *|sys_call_esi |                                     |
+ *|sys_call_edi |                                     |
+ *|---------------------------------------------------|
+ *|Output                                             |
+ *|---------------------------------------------------|
+ *|sys_call_eax |                                     |
+ *|sys_call_ecx |                                     |
+ *|sys_call_edx |                                     |
+ *|sys_call_ebx |                                     |
+ *|sys_call_ebp |                                     |
+ *|sys_call_esi |                                     |
+ *|sys_call_edi |                                     |
+ */
+#define     sys_call_startTask                   45
+
+
 
 
 

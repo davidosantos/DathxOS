@@ -15,9 +15,8 @@
 #define IN_H
 #include <system/Providers/Messaging.h>
 #include <system/RunTime/SysCallHandler.h>
-
-#define Key_Enter_UP        0x9c
-#define Key_Enter_Down      0x1c     
+#include <system/Providers/Keyboard.h>
+  
 
 class in {
 private:
@@ -28,6 +27,7 @@ private:
 public:
 
     static Messaging::inbox inbox;
+    static u16 index;
 
     in();
     //    in(const in& orig);

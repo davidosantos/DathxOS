@@ -25,46 +25,55 @@ in::in() {
 
 bool in::isMassagingInit = false;
 Messaging::inbox in::inbox;
+u16 in::index = 0;
 s8 in::String[1024];
 
+/**
+ * Get input from the keyboard from broadcasted by the driver
+ * through the use o messaging.
+ * @return s8
+ */
 s8 in::getChar() {
     if (isMassagingInit == false) {
-         Messaging::initMessaging();
+        Messaging::initMessaging();
         isMassagingInit = true;
     }
 
 
     while (Messaging::isThereMessage() == false) {
-    
+
     }
-    static u32 teste;
-    out::print(21, 0, "getChar %i", teste++);
+   
     return Messaging::readMessage().keychar;
 
 }
-
+/**
+ * Get input from the keyboard from broadcasted by the driver
+ * through the use o messaging until a Enter key is pressed
+ * Max: 1024 characters.
+ * @return 
+ */
 const s8 *in::getLine() {
     if (isMassagingInit == false) {
         Messaging::initMessaging();
         isMassagingInit = true;
     }
-    u16 index = 0;
-    u8 character = 0;
-    ;
-    do {
 
+    u8 character = 0;
+    index = 0;
+    do {
+        
         character = in::getChar();
 
-        if (character != Key_Enter_Down || character != Key_Enter_UP) {
-            String[index++] = character;
-
+        if (character != Key_Enter_Down) {
+            String[index] = character;
+            if (index >= 1024)
+                index = 1024;
         } else {
             String[index] = 0;
+            index = 0;
         }
-
-        out::print(25, 0, "in %i", character);
-        out::print(23, 0, "in %s", (const s8*) &String);
-
+        index++;
     } while (character != Key_Enter_Down);
 
 

@@ -470,24 +470,27 @@ iretd
 
 
 ExternalInterrupt00:
-cli  ;CPU Eflags will be restorned when iret executes
-saveTaskState
+;saveTaskState
+pushad
 mov     dword   eax,[kerPageDir]
 mov     dword   cr3,eax                     ;hangle task switch in kernel page dir
 call IntsReturnTaskSwitch
 call HandlerIRQ00
+popad
 restoreTaskState
 iretd
 
 ExternalInterrupt01:
-saveTaskState
+pushad
 toKernelPage
 call HandlerIRQ01
 backFromKernelPage
-restoreTaskState
+popad
+;restoreTaskState
 iretd
 
 ExternalInterrupt02:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ02
@@ -496,6 +499,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt03:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ03
@@ -504,6 +508,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt04:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ04
@@ -512,6 +517,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt05:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ05
@@ -520,6 +526,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt06:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ06
@@ -528,6 +535,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt07:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ07
@@ -536,6 +544,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt08:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ08
@@ -544,6 +553,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt09:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ09
@@ -552,6 +562,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt10:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ10
@@ -560,6 +571,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt11:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ11
@@ -568,6 +580,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt12:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ12
@@ -576,6 +589,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt13:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ13
@@ -584,6 +598,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt14:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ14
@@ -592,6 +607,7 @@ restoreTaskState
 iretd
 
 ExternalInterrupt15:
+iretd
 saveTaskState
 toKernelPage
 call HandlerIRQ15
@@ -647,6 +663,8 @@ align 4
 [global sys_call_ebp]
 [global sys_call_esi]
 [global sys_call_edi]
+[global SavedPageDirSysCall]
+
 
 sys_call_eax dd 0
 sys_call_ecx dd 0 
@@ -656,6 +674,8 @@ sys_call_esp dd 0
 sys_call_ebp dd 0
 sys_call_esi dd 0
 sys_call_edi dd 0
+SavedPageDirSysCall dd 0
+
 
 exceptions_eax dd 0
 exceptions_ecx dd 0 
@@ -669,7 +689,7 @@ exceptions_edi dd 0
 
 SavedErrorCode dd 0
 SavedPageDir dd 0
-SavedPageDirSysCall dd 0
+
 SavedPageDirInts dd 0
 SavedSyscalParameter dd 0
 SavedCr3 dd 0

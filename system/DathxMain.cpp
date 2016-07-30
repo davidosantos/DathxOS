@@ -67,11 +67,6 @@ Paging::PageDirectory *kernel_Page_Directory;
 
 extern "C" void ExternalInterrupt00();
 
-void test() {
-    Console::print("My Handler");
-}
-
-
 /*
  * 
  */
@@ -162,15 +157,21 @@ int main() {
     HardDriveDriver::setup(0);
     MBR::setup();
     FAT::setup();
-    Tasks::createProcess("bin/systemapp");
-    //Tasks::createProcess("bin/systemapp");
-    //Tasks::createProcess("bin/systemapp");
+    Tasks::createProcess("bin/system");
+   // Tasks::createProcess("bin/system");
+//    Tasks::createProcess("bin/system");
+//    Tasks::createProcess("bin/system");
+//    Tasks::createProcess("bin/system");
+//    Tasks::createProcess("bin/system");
+//    Tasks::createProcess("bin/system");
+    //Tasks::createProcess("bin/testapp");
+  
    
 
 
 
 
-   //Tasks::createProcess("bin/integrit_checker");
+  // Tasks::createProcess("bin/integrit_checker");
 
    DriverLoader::loadDriver("drivers/keyboard.dri");
    

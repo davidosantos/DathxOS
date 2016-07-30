@@ -60,7 +60,7 @@ void driverManager::callDriverByIRQ(u16 driverId) {
                 processor::TSSInts.esi =0;
                 processor::TSSInts.edi =0;
                 processor::TSSInts.eip = (u32) drvManager[i].irqListener;
-                asm("lcall   $0x40,$0");
+                asm("lcall   $0x48,$0");
             } else {
                 Console::print("driverManager: driver %i has no irqListener.", i);
             }
@@ -75,7 +75,7 @@ void driverManager::callDriverMain(u32 driverId) {
     if (drvManager[driverId].drvTss->eip) {
         processor::TSSInts = *drvManager[driverId].drvTss;
         processor::TSSInts.eax = driverId; //inform the driver its Id
-        asm("lcall   $0x40,$0");
+        asm("lcall   $0x48,$0");
     } else {
         Console::print("driverManager: driver %i has no entry point.", driverId);
     }

@@ -26,8 +26,23 @@ Tasks::Task Tasks::TasksList[50];
 //Tasks::~Tasks() {
 //}
 
-void IntsReturnTaskSwitch() {
-    Tasks::interruptReceiver();
+void IntsReturnTaskSwitch(processor::GeneralPurposeRegs regs, processor::LinkBackRng3 linkBack) {
+
+    //eax, ecx, edx, ebx, esp, ebp, esi, edi
+    Tasks::TasksList[Tasks::runningTask].taskState->eax = regs.eax;
+    Tasks::TasksList[Tasks::runningTask].taskState->ecx = regs.ecx;
+    Tasks::TasksList[Tasks::runningTask].taskState->edx = regs.edx;
+    Tasks::TasksList[Tasks::runningTask].taskState->ebx = regs.ebx;
+    Tasks::TasksList[Tasks::runningTask].taskState->esp = linkBack.esp;
+    Tasks::TasksList[Tasks::runningTask].taskState->ebp = regs.ebp;
+    Tasks::TasksList[Tasks::runningTask].taskState->esi = regs.esi;
+    Tasks::TasksList[Tasks::runningTask].taskState->edi = regs.edi;
+    Tasks::TasksList[Tasks::runningTask].taskState->eip = linkBack.eip;
+    Tasks::TasksList[Tasks::runningTask].taskState->cs = linkBack.cs;
+    Tasks::TasksList[Tasks::runningTask].taskState->eflags = linkBack.eflags;
+    Tasks::TasksList[Tasks::runningTask].taskState->ss = linkBack.ss;
+
+    Tasks::switchTask();
     APIC::issueEOI();
 }
 
@@ -37,87 +52,13 @@ void IntsReturnTaskSwitch() {
  * into the outgoing tss's EIP.
  * @param eipReg last task eip.
  */
-void Tasks::interruptReceiver() {
-
-
-
-    if (runningTask >= TaskCount) {
-        saveTask(runningTask);
-        runningTask = 1;
-        loadTask(runningTask);
-    } else {
-        saveTask(runningTask);
-        runningTask++;
-        loadTask(runningTask);
-    }
-
-    //        debug->print(18, 0, "Task %1", runningTask);
-    //        debug->print(19, 0, "Task %i", runningTask+1);
-    //        debug->print(20, 0, "Task 1 eflags %h", (u32) TasksList[runningTask].taskState->eflags);
-    //        debug->print(22, 0, "Task 1 addres %h", (u32) TasksList[runningTask].Addrs);
-    //        debug->print(24, 0, "Task 1 eip %h", (u32) TasksList[runningTask].taskState->eip);
-    //        debug->print(26, 0, "Task 1 esp %h", (u32) TasksList[runningTask].taskState->esp);
-    //
-    //        debug->print(30, 0, "Task 1 eax %h", (u32) TasksList[runningTask].taskState->eax);
-    //        debug->print(32, 0, "Task 1 ecx %h", (u32) TasksList[runningTask].taskState->ecx);
-    //        debug->print(34, 0, "Task 1 ebx %h", (u32) TasksList[runningTask].taskState->ebx);
-    //        debug->print(36, 0, "Task 1 esi %h", (u32) TasksList[runningTask].taskState->esi);
-    //        debug->print(38, 0, "Task 1 edi %h", (u32) TasksList[runningTask].taskState->edi);
-    //        debug->print(40, 0, "Task 1 ebp %h", (u32) TasksList[runningTask].taskState->ebp);
-    //        debug->print(42, 0, "Task 1 ss %h", (u32) TasksList[runningTask].taskState->ss);
-    //
-    //        debug->print(21, 0, "Task 2 eflags %h", (u32) TasksList[runningTask+1].taskState->eflags);
-    //        debug->print(23, 0, "Task 2 addres %h", (u32) TasksList[runningTask+1].Addrs);
-    //        debug->print(25, 0, "Task 2 eip %h", (u32) TasksList[runningTask+1].taskState->eip);
-    //        debug->print(27, 0, "Task 2 esp %h", (u32) TasksList[runningTask+1].taskState->esp);
-    //        debug->print(31, 0, "Task 2 eax %h", (u32) TasksList[runningTask+1].taskState->eax);
-    //        debug->print(33, 0, "Task 2 ecx %h", (u32) TasksList[runningTask+1].taskState->ecx);
-    //        debug->print(35, 0, "Task 2 ebx %h", (u32) TasksList[runningTask+1].taskState->ebx);
-    //        debug->print(37, 0, "Task 2 esi %h", (u32) TasksList[runningTask+1].taskState->esi);
-    //        debug->print(39, 0, "Task 2 edi %h", (u32) TasksList[runningTask+1].taskState->edi);
-    //        debug->print(41, 0, "Task 2 ebp %h", (u32) TasksList[runningTask+1].taskState->ebp);
-    //        debug->print(43, 0, "Task 2 ss %h", (u32) TasksList[runningTask+1].taskState->ss);
-
-    //    CPU::GDTEntry GDTEntry = CPUAddress->GDT[CPUAddress->STRGDTIndex()];
-    //    lastTss = (Tss_32*) ((u32) ((GDTEntry.base_31_24 << 24) | (GDTEntry.base_23_16 << 16) | (GDTEntry.base)));
-    //
-    //
-    //    debug->print("eip %h", eipReg);
-    //    lastTss->eip = (u32) anotherTask;
-    //    lastTss->eax = eaxReg;
-    //    lastTss->ecx = ecxReg;
-    //    lastTss->edx = edxReg;
-    //    lastTss->esp = espReg;
-    //    lastTss->ebp = ebpReg;
-    //    lastTss->esi = esiReg;
-    //    lastTss->edi = ediReg;
-    //    lastTss->eflags = eflags;
-    //
-    //    //    //GDTEntry.type = tss_p_rng0b;
-    //    //
-    //    //CPUAddress->LTR(0x190);
-    //
-    //    GDTEntry = CPUAddress->GDT[CPUAddress->STRGDTIndex()];
-    //    lastTss = (Tss_32*) ((u32) ((GDTEntry.base_31_24 << 24) | (GDTEntry.base_23_16 << 16) | (GDTEntry.base)));
-    //    //    lastTss->prev_task_link = 0x1a8;
-    //    //GDTEntry.type = tss_p_rng0;
-    //
-    //
-    //    //    CPUAddress->Set_NT();
-    //    //    //while(1){}
-    //    //    //asm("ljmp $0x1a8,$0"); //goto internalTaskSwitcher task 50 in the GDT.
-    //    //    asm("iret"); //goto internalTaskSwitcher task 50 in the GDT.
-    //
-    //    //asm("jmp %0 " : : "m" (eipReg) );
+void Tasks::switchTask() {
+    runningTask = Tasks::nextTask(runningTask);
+    loadTask(TasksList[runningTask].taskIndex);
 }
 
-
-
-
-Tasks::Tss_32* Tasks::lastTss;
-
 u32 Tasks::runningTask = 0;
-u32 Tasks::TaskCount = 0;
+s32 Tasks::TaskCount = 0;
 
 
 //Tasks::TaskList Tasks::TasksList[50];
@@ -187,11 +128,12 @@ void Tasks::createProcess(const s8 *file) {
     if (exec->openFile(file) == OK) {
         pageDir = Paging::getNewDir();
         loadAddrs = new u32 [exec->pHeader[0].p_memsz];
-        Paging::mapRange(0x100000, 0x500000, pageDir, (u32*) 0x100000, true);
+        Paging::mapRange(0x100000, 0x800000, pageDir, (u32*) 0x100000, true);
 
 
         Paging::mapRange(exec->pHeader[0].p_vaddr, (exec->pHeader[0].p_vaddr +
                 exec->pHeader[0].p_memsz), pageDir, loadAddrs, true);
+
         if (exec->loadProgram(pageDir) == Error) {
             Console::print("%cttELF Loader: Error Loading file %s", file);
         } else {
@@ -199,6 +141,9 @@ void Tasks::createProcess(const s8 *file) {
             Paging::mapRange((u32) stack, (u32) stack + pageSize, pageDir, stack, true);
             Tasks::NewTask(file, exec->Header->e_entry, pageDir, stack, 1024, 3);
             Console::print("%ctuELF Loader: File loaded %s", file);
+
+            // Console::print("%ctuELF Loader: File loaded %h", (u32)Paging::getPhysAddrs((u32*)exec->pHeader[0].p_vaddr,pageDir));
+            // Console::print("%ctuELF Loader: File loaded %h", exec->pHeader[0].p_vaddr);
         }
     } else {
         Console::print("%cttELF Loader: File open error %s", file);
@@ -207,34 +152,36 @@ void Tasks::createProcess(const s8 *file) {
 
 void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PageDirectory *pageDir, u32 *stack, u32 stackSize, u8 ring) {
 
-    TaskCount++;
+
     TasksList[TaskCount].Name = name;
-    TasksList[TaskCount].PID = (u32)pageDir;
+    TasksList[TaskCount].PID = (u32) pageDir;
     TasksList[TaskCount].Addrs = function;
-    TasksList[TaskCount].taskState = new TaskState();
+    TasksList[TaskCount].taskState = new processor::TSSEntry();
     TasksList[TaskCount].MessageListener = false;
-    
+    TasksList[TaskCount].pStatus = Running;
+    TasksList[TaskCount].taskIndex = TaskCount;
+
     u16 sel_data = 0;
     u16 sel_code = 0;
 
     if (ring == 0) {
 
-        TasksList[TaskCount].taskState->taskPrevLevel = 0;
+
         sel_data = processor::getRng0Data();
         sel_code = processor::getRng0Code();
         TasksList[TaskCount].taskState->eflags = 0x203202;
-    } else if (ring == 3) {
-        TasksList[TaskCount].taskState->taskPrevLevel = 3;
+    } else {
+
         sel_data = processor::getRng3Data();
         sel_code = processor::getRng3Code();
         TasksList[TaskCount].taskState->eflags = 0x203202;
     }
     if ((TaskCount - 1) == 0) { //necessary for the first task 0 to be reliable
-        TasksList[0].taskState->taskPrevLevel = 0;
+
     }
 
     TasksList[TaskCount].taskState->eip = (u32) function;
-    TasksList[TaskCount].taskState->eax = 0;
+    TasksList[TaskCount].taskState->eax = TasksList[TaskCount].PID; //pass it to the lib
     TasksList[TaskCount].taskState->ebx = 0;
     TasksList[TaskCount].taskState->ecx = 0;
     TasksList[TaskCount].taskState->edx = 0;
@@ -248,34 +195,18 @@ void Tasks::NewTask(const s8 *name, void (*function)(), Paging::PageDirectory *p
     TasksList[TaskCount].taskState->cs = sel_code;
     TasksList[TaskCount].taskState->esp = (u32) stack + stackSize;
     TasksList[TaskCount].taskState->ebp = (u32) stack;
-    TasksList[TaskCount].taskState->PageDir = pageDir; //test
-
-    processor::TSSrng3.eip = TasksList[TaskCount].taskState->eip;
-    processor::TSSrng3.eax = TasksList[TaskCount].taskState->eax;
-    processor::TSSrng3.ebx = TasksList[TaskCount].taskState->ebx;
-    processor::TSSrng3.ecx = TasksList[TaskCount].taskState->ecx;
-    processor::TSSrng3.edx = TasksList[TaskCount].taskState->edx;
-    processor::TSSrng3.esp = TasksList[TaskCount].taskState->esp;
-    processor::TSSrng3.ebp = TasksList[TaskCount].taskState->ebp;
-    processor::TSSrng3.esi = TasksList[TaskCount].taskState->esi;
-    processor::TSSrng3.edi = TasksList[TaskCount].taskState->edi;
-    processor::TSSrng3.eflags = TasksList[TaskCount].taskState->eflags;
-    processor::TSSrng3.ss = TasksList[TaskCount].taskState->ss;
-    processor::TSSrng3.cs = TasksList[TaskCount].taskState->cs;
-    processor::TSSrng3.ds = TasksList[TaskCount].taskState->ds;
-    processor::TSSrng3.es = TasksList[TaskCount].taskState->es;
-    processor::TSSrng3.fs = TasksList[TaskCount].taskState->fs;
-    processor::TSSrng3.gs = TasksList[TaskCount].taskState->gs;
-    processor::TSSrng3.cr3 = (u32) TasksList[TaskCount].taskState->PageDir;
-
+    TasksList[TaskCount].taskState->cr3 = (u32) pageDir; //test
+    Console::print("%ELF Loader: File loaded %h", TasksList[TaskCount].taskState->cr3);
     u32 espKernel = 0;
     asm("movl %%esp,%0\n" : "=m" (espKernel) ::);
-    processor::TSSrng3.ss0 = 0x10;
-    processor::TSSrng3.esp0 = espKernel;
+    TasksList[TaskCount].taskState->ss0 = 0x10;
+    TasksList[TaskCount].taskState->esp0 = espKernel;
     processor::TSSrng0.prev_tss = 0x38;
-    
-    
-    
+    processor::TSSrng3 = *TasksList[TaskCount].taskState;
+
+
+
+    TaskCount++;
 
 }
 
@@ -297,11 +228,11 @@ void inline Tasks::saveTask(u32 task_Id) {
     TasksList[task_Id].taskState->es = esReg;
     TasksList[task_Id].taskState->fs = fsReg;
     TasksList[task_Id].taskState->gs = gsReg;
-    TasksList[task_Id].taskState->PageDir = (Paging::PageDirectory*) cr3Reg;
+    TasksList[task_Id].taskState->cr3 = cr3Reg;
+
 }
 
 void inline Tasks::loadTask(u32 task_Id) {
-
 
     eipReg = TasksList[task_Id].taskState->eip;
     eaxReg = TasksList[task_Id].taskState->eax;
@@ -319,37 +250,8 @@ void inline Tasks::loadTask(u32 task_Id) {
     esReg = TasksList[task_Id].taskState->es;
     fsReg = TasksList[task_Id].taskState->fs;
     gsReg = TasksList[task_Id].taskState->gs;
-    cr3Reg = (u32) TasksList[task_Id].taskState->PageDir;
+    cr3Reg = (u32) TasksList[task_Id].taskState->cr3;
 
-    //    processor::TSSrng3->eip = eipReg;
-    //    processor::TSSrng3->eax = eaxReg;
-    //    processor::TSSrng3->ebx = ebxReg;
-    //    processor::TSSrng3->ecx = ecxReg;
-    //    processor::TSSrng3->edx = edxReg;
-    //    processor::TSSrng3->esp = espReg;
-    //    processor::TSSrng3->ebp = ebpReg;
-    //    processor::TSSrng3->esi = esiReg;
-    //    processor::TSSrng3->edi = ediReg;
-    //    processor::TSSrng3->eflags = eflags;
-    //    processor::TSSrng3->ss = ssReg;
-    //    processor::TSSrng3->cs = csReg;
-    //    processor::TSSrng3->ds = dsReg;
-    //    processor::TSSrng3->es = esReg;
-    //    processor::TSSrng3->fs = fsReg;
-    //    processor::TSSrng3->gs = gsReg;
-    //    processor::TSSrng3->cr3 = cr3Reg;
-
-    //    processor::TSSrng3->ss0 = processor::TSS->ss;
-    //    processor::TSSrng3->esp0 = processor::TSS->esp0;
-    //    processor::TSS->prev_tss = 0x40;
-    // asm("cli");
-    //asm("hlt");
-    //processor::Set_NT();
-    //processor::GDT[7].type = tss_p_rng3;
-
-
-    //asm("ljmp $0x38,$0");
-    //asm("iret");
 
 }
 
@@ -357,13 +259,62 @@ Tasks::Task Tasks::getTask(u32 index) {
     return TasksList[index];
 }
 
- Tasks::Task *Tasks::getTaskbyPid(u32 pid){
-     for (u32 i = 0; i < TaskCount; i++) {
-        if(TasksList[i].PID == pid){
+Tasks::Task *Tasks::getTaskbyPid(u32 pid) {
+    for (s32 i = 0; i <= TaskCount; i++) {
+
+        if (TasksList[i].PID == pid) {
             return &TasksList[i];
         }
 
     }
-     //the first task is not used
-     return &TasksList[0];
- }
+    return 0;
+}
+
+void Tasks::killProcess(u32 pid) {
+    Task *task = getTaskbyPid(pid);
+    if (task == 0) {
+        Console::print("Task: Error pid not found %h", pid);
+    } else {
+
+
+        //Paging::deAlloc((Paging::PageDirectory*)task->taskState->cr3);
+        TaskCount--;
+
+        Console::print("killProcess runningTaskb %i", runningTask);
+        //runningTask = Tasks::nextTask(TaskCount);
+        Console::print("killProcess task->Name %s", task->Name);
+        Console::print("killProcess task->taskState->cr3 %h", task->taskState->cr3);
+        Console::print("killProcess processor::getPDBR() %h", processor::getPDBR());
+        //Console::print(49, 0, "killProcess runningTask %i", task->taskIndex);
+        // Console::print("killProcess task->PID %h", task->PID);
+
+        //load next task so that the system call has a task to return to.
+        // Console::print("TSSrng3 ss0 %h", processor::TSSrng3.ss0);
+        // Console::print("TSSrng3 esp0 %h", processor::TSSrng3.esp0);
+        //Console::print("getPDBR %h", processor::getPDBR());
+    }
+    processor::TSSrng3 = *TasksList[0].taskState;
+    // runningTask =0;
+    // loadTask(runningTask);
+    // Console::print("TasksList[0].taskState %h", TasksList[0].taskState->cr3);
+
+    processor::LTR(processor::makeSelector(processor::TssSelRng3tmp, 0, true));
+    processor::GDT[processor::TssSelRng3].type = tss_p_rng3;
+    task->pStatus = Destroyed;
+    task->MessageListener = false;
+    task->taskState = 0;
+    task->PID = 0;
+    task = 0;
+    asm("ljmp $0x33,$0");
+
+}
+
+u32 Tasks::nextTask(u32 RunningTask_Id) {
+
+    for (s32 i = RunningTask_Id + 1; i < TaskCount; i++) {
+        if (TasksList[i].pStatus == Running) {
+            return TasksList[i].taskIndex;
+        }
+    }
+    return 0;
+}

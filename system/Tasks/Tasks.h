@@ -21,17 +21,29 @@ extern u16 ssReg, dsReg, esReg, fsReg, gsReg;
 extern "C" u32 intsStart;
 extern "C" u32 intsEnd;
 
+extern "C" u32 SavedPageDirSysCall;
+extern "C" u32 sys_call_eax;
+extern "C" u32 sys_call_ebx;
+extern "C" u32 sys_call_ecx;
+extern "C" u32 sys_call_edx;
+extern "C" u32 sys_call_esp;
+extern "C" u32 sys_call_ebp;
+extern "C" u32 sys_call_edi;
+extern "C" u32 sys_call_esi;
 
-extern "C" void IntsReturnTaskSwitch();
+
+extern "C" void IntsReturnTaskSwitch(processor::GeneralPurposeRegs regs,processor::LinkBackRng3 linkBack);
 
 class Tasks {
 public:
 
-    static void interruptReceiver();
+    static void switchTask();
 
     //void NewTask(const s8 *name, u32 Addrs);
 
     static void createProcess(const s8 *file);
+
+    static void killProcess(u32 pid);
 
     static void NewTask(const s8 *name, void (*function)(), Paging::PageDirectory *pageDir, u32 *stack, u32 stackSize, u8 ring);
 
@@ -41,6 +53,10 @@ public:
 
     static void inline loadTask(u32 task_Id);
 
+    static u32 nextTask(u32 task_Id);
+
+
+
     //Tasks(CPU *Cpu);
     //Tasks(const Tasks& orig);
     //virtual ~Tasks();
@@ -48,51 +64,37 @@ public:
 
     static u32 runningTask;
 
-    static u32 TaskCount;
+    static s32 TaskCount;
 
 private:
 
-    typedef struct Tss_32 {
-        u8 taskPrevLevel;
-        Paging::PageDirectory *PageDir;
-        u32 eip;
-        u32 eflags;
-        u32 eax;
-        u32 ecx;
-        u32 edx;
-        u32 ebx;
-        u32 esp;
-        u32 ebp;
-        u32 esi;
-        u32 edi;
-        u16 es;
-        u32 cs;
-        u16 ss;
-        u16 ds;
-        u16 fs;
-        u16 gs;
-        u16 ldt_selector;
+    enum processStatus {
+        unsed,
+        Running,
+        waiting,
+        Destroyed
 
-    } TaskState;
+    };
 
 
 public:
-    static Tss_32 *lastTss;
 
     struct Task {
         const s8 *Name;
         u16 Selector; //>> by 3 to get the gdt entry
         u32 PID;
         void (*Addrs)();
-        TaskState* taskState;
+        processor::TSSEntry* taskState;
         Messaging::inbox inboxAddrss;
         bool MessageListener;
+        processStatus pStatus;
+        u32 taskIndex;
     } __attribute__((packed));
 
     static Task TasksList[50];
 public:
     static Task getTask(u32 index);
-    
+
     static Task *getTaskbyPid(u32 pid);
 
 };

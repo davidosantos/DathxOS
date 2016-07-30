@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>Drivers.h</itemPath>
       <itemPath>Syscalls.h</itemPath>
+      <itemPath>apps/application.h</itemPath>
       <itemPath>io/in.h</itemPath>
       <itemPath>memory/memory.h</itemPath>
       <itemPath>io/out.h</itemPath>
@@ -19,6 +20,7 @@
                    projectFiles="true">
       <itemPath>Drivers.cpp</itemPath>
       <itemPath>system/Providers/Messaging.cpp</itemPath>
+      <itemPath>apps/application.cpp</itemPath>
       <itemPath>io/in.cpp</itemPath>
       <itemPath>memory/memory.cpp</itemPath>
       <itemPath>io/out.cpp</itemPath>
@@ -52,6 +54,10 @@
       <item path="Drivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Syscalls.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="apps/application.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="apps/application.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="io/in.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -99,6 +105,10 @@
       <item path="Drivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Syscalls.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="apps/application.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="apps/application.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="io/in.cpp" ex="false" tool="1" flavor2="0">
       </item>

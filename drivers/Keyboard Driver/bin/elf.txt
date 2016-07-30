@@ -1,0 +1,121 @@
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0x600120
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          14252 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         2
+  Size of section headers:           40 (bytes)
+  Number of section headers:         16
+  Section header string table index: 13
+
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .text             PROGBITS        00600000 001000 0003ba 00  AX  0   0 32
+  [ 2] .rodata.str1.4    PROGBITS        006003bc 0013bc 000020 01 AMS  0   0  4
+  [ 3] .eh_frame         PROGBITS        006003dc 0013dc 0001c4 00   A  0   0  4
+  [ 4] .data             PROGBITS        006005a0 0015a0 000a60 00  WA  0   0  1
+  [ 5] .bss              NOBITS          00601000 002000 001000 00  WA  0   0  4
+  [ 6] .debug_info       PROGBITS        00000000 002000 000610 00      0   0  1
+  [ 7] .debug_abbrev     PROGBITS        00000000 002610 0002b1 00      0   0  1
+  [ 8] .debug_loc        PROGBITS        00000000 0028c1 000054 00      0   0  1
+  [ 9] .debug_aranges    PROGBITS        00000000 002915 000020 00      0   0  1
+  [10] .debug_line       PROGBITS        00000000 002935 000167 00      0   0  1
+  [11] .debug_str        PROGBITS        00000000 002a9c 000595 01  MS  0   0  1
+  [12] .comment          PROGBITS        00000000 003031 00002f 01  MS  0   0  1
+  [13] .shstrtab         STRTAB          00000000 003710 000099 00      0   0  1
+  [14] .symtab           SYMTAB          00000000 003060 000370 10     15  27  4
+  [15] .strtab           STRTAB          00000000 0033d0 000340 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  LOAD           0x001000 0x00600000 0x00600000 0x01000 0x02000 RWE 0x1000
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x10
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .text .rodata.str1.4 .eh_frame .data .bss 
+   01     
+
+There is no dynamic section in this file.
+
+There are no relocations in this file.
+
+The decoding of unwind sections for machine type Intel 80386 is not currently supported.
+
+Symbol table '.symtab' contains 55 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 00600000     0 SECTION LOCAL  DEFAULT    1 
+     2: 006003bc     0 SECTION LOCAL  DEFAULT    2 
+     3: 006003dc     0 SECTION LOCAL  DEFAULT    3 
+     4: 006005a0     0 SECTION LOCAL  DEFAULT    4 
+     5: 00601000     0 SECTION LOCAL  DEFAULT    5 
+     6: 00000000     0 SECTION LOCAL  DEFAULT    6 
+     7: 00000000     0 SECTION LOCAL  DEFAULT    7 
+     8: 00000000     0 SECTION LOCAL  DEFAULT    8 
+     9: 00000000     0 SECTION LOCAL  DEFAULT    9 
+    10: 00000000     0 SECTION LOCAL  DEFAULT   10 
+    11: 00000000     0 SECTION LOCAL  DEFAULT   11 
+    12: 00000000     0 SECTION LOCAL  DEFAULT   12 
+    13: 00000000     0 FILE    LOCAL  DEFAULT  ABS main.cpp
+    14: 00601000     1 OBJECT  LOCAL  DEFAULT    5 _ZL5shift
+    15: 00600300    90 OBJECT  LOCAL  DEFAULT    1 _ZL14keys_ptbrShift
+    16: 00600360    90 OBJECT  LOCAL  DEFAULT    1 _ZL9keys_ptbr
+    17: 00000000     0 FILE    LOCAL  DEFAULT  ABS Drivers.cpp
+    18: 00601008    12 OBJECT  LOCAL  DEFAULT    5 _ZZN7Drivers10IrqInstallE
+    19: 00601014    14 OBJECT  LOCAL  DEFAULT    5 _ZZN7Drivers10IrqInstallE
+    20: 00000000     0 FILE    LOCAL  DEFAULT  ABS out.cpp
+    21: 00601064    14 OBJECT  LOCAL  DEFAULT    5 _ZZN3out5printEPKcE4call
+    22: 00601054    14 OBJECT  LOCAL  DEFAULT    5 _ZZN3out5printEttPKcjE4ca
+    23: 00601044    14 OBJECT  LOCAL  DEFAULT    5 _ZZN3out5printEttPKcS1_E4
+    24: 00601034    14 OBJECT  LOCAL  DEFAULT    5 _ZZN3out5printEPKcjE4call
+    25: 00601024    14 OBJECT  LOCAL  DEFAULT    5 _ZZN3out5clearEvE4call
+    26: 00000000     0 FILE    LOCAL  DEFAULT  ABS Messaging.cpp
+    27: 00600000     0 NOTYPE  GLOBAL DEFAULT  ABS phys
+    28: 00600180    72 FUNC    GLOBAL DEFAULT    1 _ZN3out5printEttPKcj
+    29: 00601004     4 OBJECT  GLOBAL DEFAULT    5 _ZN7Drivers8driverIdE
+    30: 006005a0     0 NOTYPE  GLOBAL DEFAULT    4 Kernel_Data_Start
+    31: 0060007c    10 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIO4outbEth
+    32: 00600140     2 FUNC    GLOBAL DEFAULT    1 _ZN3outC1Ev
+    33: 006002d0    22 FUNC    GLOBAL DEFAULT    1 _ZN9Messaging11readMessag
+    34: 006000d0     2 FUNC    GLOBAL DEFAULT    1 _ZN7DriversC1Ev
+    35: 00601000     0 NOTYPE  GLOBAL DEFAULT    5 Kernel_BSS_Start
+    36: 00600290     2 FUNC    GLOBAL DEFAULT    1 _ZN9MessagingC2Ev
+    37: 00600000   118 FUNC    GLOBAL DEFAULT    1 IrqListener
+    38: 006002a0    20 FUNC    GLOBAL DEFAULT    1 _ZN9Messaging16broadcastM
+    39: 00600260    36 FUNC    GLOBAL DEFAULT    1 _ZN3out5clearEv
+    40: 006002f0    14 FUNC    GLOBAL DEFAULT    1 _ZN9Messaging14isThereMes
+    41: 00600140     2 FUNC    GLOBAL DEFAULT    1 _ZN3outC2Ev
+    42: 00600150    45 FUNC    GLOBAL DEFAULT    1 _ZN3out5printEPKc
+    43: 00600000     0 NOTYPE  GLOBAL DEFAULT    1 Kernel_Code_Start
+    44: 00600120    18 FUNC    GLOBAL DEFAULT    1 DriverMain
+    45: 00600086    55 FUNC    GLOBAL DEFAULT    1 main
+    46: 00602000     0 NOTYPE  GLOBAL DEFAULT    5 Kernel_BSS_End
+    47: 006000d0     2 FUNC    GLOBAL DEFAULT    1 _ZN7DriversC2Ev
+    48: 00600220    54 FUNC    GLOBAL DEFAULT    1 _ZN3out5printEPKcj
+    49: 006001d0    72 FUNC    GLOBAL DEFAULT    1 _ZN3out5printEttPKcS1_
+    50: 00600076     6 FUNC    GLOBAL DEFAULT    1 _ZN10HardwareIO3inbEt
+    51: 006000c0    13 FUNC    GLOBAL DEFAULT    1 _Z13localListenerv
+    52: 006000e0    63 FUNC    GLOBAL DEFAULT    1 _ZN7Drivers10IrqInstallEj
+    53: 00600290     2 FUNC    GLOBAL DEFAULT    1 _ZN9MessagingC1Ev
+    54: 006002c0     8 FUNC    GLOBAL DEFAULT    1 _ZN9Messaging13initMessag
+
+No version information found in this file.

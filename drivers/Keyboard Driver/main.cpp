@@ -17,31 +17,36 @@
 #include <system/Providers/Messaging.h>
 #include <system/Providers/Keyboard.h>
 
+static bool shift = false;
+
 void IrqListener() {
 
     Messaging::MessageAddrs newChar;
     newChar.keycode = 0;
     newChar.keycode = HardwareIO::inb(0x60);
-    newChar.type = Type_unread;
+    
+    if(newChar.keycode == Key_lShit_Down || newChar.keycode == Key_rShit_Down){
+        shift = true;
+        return;
+    } else if(newChar.keycode == Key_lShit_UP || newChar.keycode == Key_rShit_UP){
+        shift = false;
+        return;
+    }
 
-    if (newChar.upKey == 1) {
-        if (newChar.keycode == 0x9c) {
-            newChar.keychar = 0x9c;
-
-            Messaging::broadcastMessage(&newChar);
+    if (newChar.upKey == 0) {
+        if (shift) {
+            newChar.keychar = keys_ptbrShift[newChar.keycode];
+        } else {
+            newChar.keychar = keys_ptbr[newChar.keycode];
         }
-    } else {
-        newChar.keychar = keys_ptbr[newChar.keycode];
         Messaging::broadcastMessage(&newChar);
+        newChar.type = Type_unread;
     }
 
 
 
     HardwareIO::outb(0xA0, 0x20);
     HardwareIO::outb(0x20, 0x20);
-    out::print(45, 0, "newChar.upKey %i", newChar.upKey);
-    out::print(41, 0, "newChar.keycode %i", newChar.keycode);
-    out::print(43, 0, "newChar.keychar %i", newChar.keychar);
 
 
 }

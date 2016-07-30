@@ -215,7 +215,24 @@ u32 *Paging::getPhysAddrs(u32 *PhysAddrs, PageDirectory *pageDir) {
     return (u32*) ((u32) physPage | (offset & PageOffset_12Bits));
 }
 
+void Paging::deAlloc(PageDirectory *pageDir) {
 
+    for (int pageDirIndex = 0; pageDirIndex < 1024; pageDirIndex++) {
+        if (pageDir->dir[pageDirIndex].Present == 1 &&
+                pageDir->dir[pageDirIndex].phys > 0) {
+
+            PageTable *pTable = (PageTable*) (pageDir->dir[pageDirIndex].phys * pageSize);
+            for (int pageTableIndex = 0; pageTableIndex < 1024; pageTableIndex++) {
+                if (pTable->page[pageTableIndex].Present &&
+                        pTable->page[pageTableIndex].phys > 0) {
+                    pageManagment::setFree((u32*) (pTable->page[pageTableIndex].phys * pageSize));
+                }
+            }
+
+        }
+    }
+    pageManagment::setFree((u32*) pageDir);
+}
 
 //void *Paging::get_physaddr(void * virtualaddr) {
 //    unsigned long pdindex = (unsigned long) virtualaddr >> 22;

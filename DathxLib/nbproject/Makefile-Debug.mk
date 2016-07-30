@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/Drivers.o \
+	${OBJECTDIR}/apps/application.o \
 	${OBJECTDIR}/io/in.o \
 	${OBJECTDIR}/io/out.o \
 	${OBJECTDIR}/memory/memory.o \
@@ -72,6 +73,11 @@ ${OBJECTDIR}/Drivers.o: Drivers.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Drivers.o Drivers.cpp
+
+${OBJECTDIR}/apps/application.o: apps/application.cpp 
+	${MKDIR} -p ${OBJECTDIR}/apps
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/apps/application.o apps/application.cpp
 
 ${OBJECTDIR}/io/in.o: io/in.cpp 
 	${MKDIR} -p ${OBJECTDIR}/io

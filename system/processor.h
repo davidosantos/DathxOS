@@ -102,7 +102,7 @@ public:
     static u32 getSIDT();
     static u32 getSGDT();
     static u32 getSLDT();
-    
+
     static u16 getRng0Code();
     static u16 getRng0Data();
     static u16 getRng3Code();
@@ -183,6 +183,26 @@ public:
 
     static void LLDT(LDTPtr *ldt);
 
+    struct GeneralPurposeRegs {//stack layout
+        //eax, ecx, edx, ebx, esp, ebp, esi, edi
+        u32 edi;
+        u32 esi;
+        u32 ebp;
+        u32 esp;
+        u32 ebx;
+        u32 edx;
+        u32 ecx;
+        u32 eax;
+    } __attribute__((packed));
+
+    struct LinkBackRng3 {
+        u32 eip; //save return address
+        u32 cs; //code segment
+        u32 eflags; //eflags
+        u32 esp; // remove oldESP
+        u32 ss; // remove oldSS from stack
+    } __attribute__((packed));
+
     struct TSSEntry {
         u32 prev_tss; // The previous TSS - if we used hardware task switching this would form a linked list.
         u32 esp0; // The stack pointer to load when we change to kernel mode.
@@ -222,6 +242,7 @@ public:
 
     static TSSEntry TSSrng0;
     static TSSEntry TSSrng3;
+    static TSSEntry TSSrng3tmp;
     static TSSEntry TSSInts;
     static IDTEntry IDT[255];
     static LDTEntry LDT[8192];
@@ -237,6 +258,7 @@ public:
 
     static u16 TssSelRng0;
     static u16 TssSelRng3;
+    static u16 TssSelRng3tmp;
     static u16 TssSelInts;
 
 

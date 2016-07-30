@@ -26,10 +26,12 @@ int processor::LDTCounter;
 
 u16 processor::TssSelRng0;
 u16 processor::TssSelRng3;
+u16 processor::TssSelRng3tmp;
 u16 processor::TssSelInts;
 
 processor::TSSEntry processor::TSSrng0;
 processor::TSSEntry processor::TSSrng3;
+processor::TSSEntry processor::TSSrng3tmp;
 processor::TSSEntry processor::TSSInts;
 processor::IDTEntry processor::IDT[255];
 processor::LDTEntry processor::LDT[8192];
@@ -161,6 +163,7 @@ void processor::setupTR() {
 
     TSSrng0.cr3 = processor::getPDBR();
     TssSelRng3 = addGDTDesc(sizeof (TSSEntry), (u32) & TSSrng3, tss_p_rng3, Flags_Granu_Big);
+    TssSelRng3tmp = addGDTDesc(sizeof (TSSEntry), (u32) & TSSrng3tmp, tss_p_rng3, Flags_Granu_Big);
     TssSelRng0 = addGDTDesc(sizeof (TSSEntry), (u32) & TSSrng0, tss_p_rng0, Flags_Granu_Big);
 
     //add entry for task switching for drivers, this can be called only by
@@ -622,23 +625,30 @@ Begin:
     goto Begin;
 }
 
-extern "C" void Doublefault() {
-    //    autoCheck::runCheck();
-Begin:
-    ;
+extern "C" void Doublefault(processor::ErroCode errorCode, u32 oldEIP, u32 oldCS, u32 oldEFLAGS, u32 oldESP, u32 oldSS) {
+    Console::print("Doublefault, Event was: %s", errorCode.External == 1 ? "External" : "Internal");
+    if (errorCode.InterruptTable == 1) {
+        Console::print("Gate of IDT: %i", errorCode.Index);
+    } else {
+        if (errorCode.GDTorLDT == 0) {
+            Console::print("Gate of GDT: %i", errorCode.Index);
+            Console::print("Gate of GDT: %h", errorCode.Index * 8);
+        } else {
+            Console::print("Gate of LDT: %i", errorCode.Index);
+        }
+    }
 
-Console::print("Doublefault");
-//    const u8 msg[] = {"Doublefault"};
-//
-//    u8* videoPtr = (u8*) 0xB8000;
-//
-//    for (u32 i = 0; i < sizeof msg; i++) {
-//
-//        *videoPtr++ = msg[i];
-//        *videoPtr++ = 15;
-//    }
- asm("hlt");
-    goto Begin;
+    Console::print("Doublefault errorCode %h", errorCode.cause);
+    Console::print("Doublefault oldEIP %h", oldEIP);
+    Console::print("Doublefault oldCS %h", oldCS);
+    Console::print("Doublefault oldEFLAGS %h", oldEFLAGS);
+    Console::print("Doublefault oldESP %h", oldESP);
+    Console::print("Doublefault oldSS %h", oldSS);
+
+    asm("cli");
+
+    while (true) {
+    }
 }
 
 extern "C" void reserved0() {
@@ -783,7 +793,7 @@ extern "C" void Pagefault(processor::PageFaultErroCode *pageFault, Paging::PageD
 
     u32 faultAdress = processor::getCR2();
 
-    Console::print(19, 0, "Linear Address: %h", (u32) faultAdress);
+    Console::print("Linear Address: %h", (u32) faultAdress);
     
     Console::print(23, 0, "ppageDir: %h", (u32) ppageDir);
     Console::print(27, 0, "pageFaults: %i", pageFaults);

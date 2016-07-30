@@ -7,11 +7,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/david/Documents/Dathx%20OS/DathxLib/io/in.h</file>
-            <file>file:/home/david/Documents/Dathx%20OS/DathxLib/io/out.h</file>
-            <file>file:/home/david/Documents/Dathx%20OS/DathxLib/io/in.cpp</file>
-            <file>file:/home/david/Documents/Dathx%20OS/DathxLib/system/Providers/Messaging.cpp</file>
-            <file>file:/home/david/Documents/Dathx%20OS/DathxLib/io/out.cpp</file>
+            <file>file:/home/david/Documents/Dathx%20OS/DathxLib/apps/application.cpp</file>
+            <file>file:/home/david/Documents/Dathx%20OS/DathxLib/apps/application.h</file>
         </group>
     </open-files>
 </project-private>

@@ -114,6 +114,8 @@ public:
     //static void mapRange(u32 virtEnd, Paging::PagesDir *pageDir);
 
     static u32 *getPhysAddrs(u32 *Addrs, PageDirectory *pageDir);
+    
+    static void deAlloc(PageDirectory *pageDir);
 
     static void dirCopy(PageDirectory *from, PageDirectory *to);
 

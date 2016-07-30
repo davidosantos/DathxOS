@@ -150,6 +150,7 @@ returnCode ElfLoader::loadProgram(Paging::PageDirectory *pageDir) {
             
                 if (file.read(sHeader[i].sh_offset, sHeader[i].sh_size,
                         (u8*) Paging::getPhysAddrs((u32*) sHeader[i].sh_addr, pageDir)) == OK) {
+                    
                 } else {
                     return Error;
                 }

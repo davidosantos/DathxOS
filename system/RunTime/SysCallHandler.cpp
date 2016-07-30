@@ -108,6 +108,18 @@ void SysCallHandler::interruptReceiver(Paging::PageDirectory *pageDir) {
 
         }
             break;
+            
+        case sys_call_killTask:
+        {
+            Tasks::killProcess(sys_call_ecx);
+        }
+            break;
+        case sys_call_startTask:
+        {
+            //Tasks::createProcess((const s8*) Paging::getPhysAddrs((u32*) directive->String, pageDir));
+        Tasks::createProcess("bin/testapp");
+        }
+            break;
 
         default:
         {
