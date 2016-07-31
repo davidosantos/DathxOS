@@ -5,8 +5,8 @@
  * Created on 7 de Novembro de 2015, 16:12
  */
 
-#ifndef PAGEMANAGMENT_H
-#define PAGEMANAGMENT_H
+#ifndef PHYSMANAGMENT_H
+#define PHYSMANAGMENT_H
 #include "../../util/util.h"
 #include "../monitor/Console.h"
 #include "Memory.h"
@@ -15,7 +15,7 @@
 #define used 1
 #define free 0
 
-class pageManagment {
+class physManagment {
 
     struct byte {
         u8 b7 : 1,

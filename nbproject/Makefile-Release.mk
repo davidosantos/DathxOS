@@ -58,7 +58,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/system/fs/MBR.o \
 	${OBJECTDIR}/system/memory/Memory.o \
 	${OBJECTDIR}/system/memory/Paging.o \
-	${OBJECTDIR}/system/memory/pageManagment.o \
+	${OBJECTDIR}/system/memory/physManagment.o \
 	${OBJECTDIR}/system/monitor/Console.o \
 	${OBJECTDIR}/system/processor.o \
 	${OBJECTDIR}/util/util.o
@@ -201,10 +201,10 @@ ${OBJECTDIR}/system/memory/Paging.o: system/memory/Paging.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/memory/Paging.o system/memory/Paging.cpp
 
-${OBJECTDIR}/system/memory/pageManagment.o: system/memory/pageManagment.cpp 
+${OBJECTDIR}/system/memory/physManagment.o: system/memory/physManagment.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/memory
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/memory/pageManagment.o system/memory/pageManagment.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/system/memory/physManagment.o system/memory/physManagment.cpp
 
 ${OBJECTDIR}/system/monitor/Console.o: system/monitor/Console.cpp 
 	${MKDIR} -p ${OBJECTDIR}/system/monitor

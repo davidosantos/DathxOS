@@ -9,7 +9,7 @@
 #include "memory/Memory.h"
 #include "memory/Paging.h"
 #include "processor.h"
-#include "memory/pageManagment.h"
+#include "memory/physManagment.h"
 #include "drivers/HardDriveDriver.h"
 #include "fs/MBR.h"
 #include "fs/FAT32.h"
@@ -87,8 +87,8 @@ int main() {
 
 
     //--------------------------Memory config ------------------------
-    pageManagment::setup(totalMemoryInKB * 1024 / 4096);
-    pageManagment::setRangeBusy(0, baseMemoryPointer);
+    physManagment::setup(totalMemoryInKB * 1024 / 4096);
+    physManagment::setRangeBusy(0, baseMemoryPointer);
 
     if (multiboot_Info->mmap_info == 1) {
         memory_map_t *mmap = (memory_map*) multiboot_Info->mmap_addr;
@@ -100,7 +100,7 @@ int main() {
             if (mmap->type != MULTIBOOT_MEMORY_AVAILABLE) {
                 u32 *rsvd_start = (u32*) (mmap->base_addr_low + mmap->base_addr_high);
                 u32 *rsvd_end = (u32*) ((mmap->base_addr_low + mmap->base_addr_high) + (u32) (mmap->length_low + mmap->length_high));
-                pageManagment::setRangeBusy(rsvd_start, rsvd_end);
+                physManagment::setRangeBusy(rsvd_start, rsvd_end);
             }
         }
     }

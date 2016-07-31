@@ -128,11 +128,11 @@ void Tasks::createProcess(const s8 *file) {
     if (exec->openFile(file) == OK) {
         pageDir = Paging::getNewDir();
         loadAddrs = new u32 [exec->pHeader[0].p_memsz];
-        Paging::mapRange(0x100000, 0x800000, pageDir, (u32*) 0x100000, true);
+        Paging::mapRange(0x100000, 0x700000, pageDir, (u32*) 0x100000, true);
 
 
         Paging::mapRange(exec->pHeader[0].p_vaddr, (exec->pHeader[0].p_vaddr +
-                exec->pHeader[0].p_memsz), pageDir, loadAddrs, true);
+                exec->pHeader[0].p_memsz), pageDir, true);
 
         if (exec->loadProgram(pageDir) == Error) {
             Console::print("%cttELF Loader: Error Loading file %s", file);
@@ -277,7 +277,7 @@ void Tasks::killProcess(u32 pid) {
     } else {
 
 
-        //Paging::deAlloc((Paging::PageDirectory*)task->taskState->cr3);
+        Paging::deAlloc((Paging::PageDirectory*)task->taskState->cr3);
         TaskCount--;
 
         Console::print("killProcess runningTaskb %i", runningTask);

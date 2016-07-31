@@ -27,7 +27,7 @@
       <itemPath>system/drivers/driverManager.h</itemPath>
       <itemPath>system/drivers/msr.h</itemPath>
       <itemPath>system/multiboot.h</itemPath>
-      <itemPath>system/memory/pageManagment.h</itemPath>
+      <itemPath>system/memory/physManagment.h</itemPath>
       <itemPath>system/processor.h</itemPath>
       <itemPath>util/util.h</itemPath>
     </logicalFolder>
@@ -62,7 +62,7 @@
       <itemPath>system/Tasks/Tasks.cpp</itemPath>
       <itemPath>system/autoCheck.cpp</itemPath>
       <itemPath>system/drivers/driverManager.cpp</itemPath>
-      <itemPath>system/memory/pageManagment.cpp</itemPath>
+      <itemPath>system/memory/physManagment.cpp</itemPath>
       <itemPath>system/processor.cpp</itemPath>
       <itemPath>util/util.cpp</itemPath>
     </logicalFolder>
@@ -190,9 +190,9 @@
       </item>
       <item path="system/memory/Paging.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="system/memory/pageManagment.cpp" ex="false" tool="1" flavor2="0">
+      <item path="system/memory/physManagment.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="system/memory/pageManagment.h" ex="false" tool="3" flavor2="0">
+      <item path="system/memory/physManagment.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/monitor/Console.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -317,9 +317,9 @@
       </item>
       <item path="system/memory/Paging.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="system/memory/pageManagment.cpp" ex="false" tool="1" flavor2="0">
+      <item path="system/memory/physManagment.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="system/memory/pageManagment.h" ex="false" tool="3" flavor2="0">
+      <item path="system/memory/physManagment.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/monitor/Console.cpp" ex="false" tool="1" flavor2="0">
       </item>

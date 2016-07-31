@@ -107,7 +107,7 @@ public:
 
 
 
-    static void mapRange(u32 virtStart, u32 virtEnd, u32 physStart);
+    static void mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, bool user);
 
     static void mapRange(u32 virtStart, u32 virtEnd, Paging::PageDirectory *pageDir, u32 *physStart, bool user);
    
